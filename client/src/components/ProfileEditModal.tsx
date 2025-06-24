@@ -8,11 +8,17 @@ interface ProfileEditModalProps {
     profilePicture?: string;
     name: string;
     bio: string;
+    countdownDate?: string;
+    countdownEndMessage?: string;
+    countdownMessageDismissed?: boolean;
   };
   onSave: (profileData: {
     profilePicture?: File | string;
     name: string;
     bio: string;
+    countdownDate?: string;
+    countdownEndMessage?: string;
+    countdownMessageDismissed?: boolean;
   }) => Promise<void>;
   isDarkMode: boolean;
 }
@@ -26,6 +32,9 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
 }) => {
   const [name, setName] = useState(currentProfileData.name);
   const [bio, setBio] = useState(currentProfileData.bio);
+  const [countdownDate, setCountdownDate] = useState(currentProfileData.countdownDate || '');
+  const [countdownEndMessage, setCountdownEndMessage] = useState(currentProfileData.countdownEndMessage || '');
+  const [resetMessageVisibility, setResetMessageVisibility] = useState(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(
     currentProfileData.profilePicture || null
@@ -51,7 +60,10 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       await onSave({
         profilePicture: profilePicture || currentProfileData.profilePicture,
         name: name.trim(),
-        bio: bio.trim()
+        bio: bio.trim(),
+        countdownDate: countdownDate || undefined,
+        countdownEndMessage: countdownEndMessage.trim() || undefined,
+        countdownMessageDismissed: resetMessageVisibility ? false : currentProfileData.countdownMessageDismissed
       });
       onClose();
     } catch (error) {
@@ -67,6 +79,9 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       // Reset form data
       setName(currentProfileData.name);
       setBio(currentProfileData.bio);
+      setCountdownDate(currentProfileData.countdownDate || '');
+      setCountdownEndMessage(currentProfileData.countdownEndMessage || '');
+      setResetMessageVisibility(false);
       setProfilePicture(null);
       setProfilePicturePreview(currentProfileData.profilePicture || null);
       onClose();
@@ -215,6 +230,84 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
             {bio.length}/200 Zeichen
           </p>
         </div>
+
+        {/* Countdown Date Section */}
+        <div className="mb-6">
+          <label className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          }`}>
+            Countdown Datum (optional)
+          </label>
+          <input
+            type="datetime-local"
+            value={countdownDate}
+            onChange={(e) => setCountdownDate(e.target.value)}
+            disabled={isSaving}
+            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-colors duration-300 ${
+              isSaving
+                ? 'cursor-not-allowed opacity-50'
+                : isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white' 
+                  : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          />
+          <p className={`text-xs mt-1 transition-colors duration-300 ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}>
+            Setzt ein Datum für den Countdown im Profil
+          </p>
+        </div>
+
+        {/* Countdown End Message Section */}
+        {countdownDate && (
+          <div className="mb-6">
+            <label className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>
+              Nachricht nach Countdown Ende (optional)
+            </label>
+            <textarea
+              value={countdownEndMessage}
+              onChange={(e) => setCountdownEndMessage(e.target.value)}
+              disabled={isSaving}
+              placeholder="Diese Nachricht wird angezeigt wenn der Countdown beendet ist..."
+              rows={3}
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none resize-none transition-colors duration-300 ${
+                isSaving
+                  ? 'cursor-not-allowed opacity-50'
+                  : isDarkMode 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
+              maxLength={150}
+            />
+            <p className={`text-xs mt-1 transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-500'
+            }`}>
+              {countdownEndMessage.length}/150 Zeichen
+            </p>
+            
+            {/* Reset Message Visibility Option */}
+            {currentProfileData.countdownMessageDismissed && (
+              <div className="mt-3">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={resetMessageVisibility}
+                    onChange={(e) => setResetMessageVisibility(e.target.checked)}
+                    disabled={isSaving}
+                    className="rounded focus:ring-pink-500"
+                  />
+                  <span className={`text-sm transition-colors duration-300 ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Nachricht wieder anzeigen (falls geschlossen)
+                  </span>
+                </label>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex gap-3">

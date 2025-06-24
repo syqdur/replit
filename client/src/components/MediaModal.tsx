@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, Heart, MessageCircle, Trash2 } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Heart, MessageCircle } from 'lucide-react';
 import { MediaItem, Comment, Like } from '../types';
 
 interface MediaModalProps {
@@ -84,15 +84,6 @@ export const MediaModal: React.FC<MediaModalProps> = ({
     }
   };
 
-  const handleDeleteComment = (commentId: string, comment: Comment) => {
-    // User can delete their own comments or admin can delete any
-    const canDeleteComment = isAdmin || comment.userName === userName;
-    
-    if (canDeleteComment && window.confirm('Kommentar wirklich löschen?')) {
-      onDeleteComment(commentId);
-    }
-  };
-
   const handleImageLoad = () => {
     setImageLoading(false);
     setImageError(false);
@@ -139,281 +130,213 @@ export const MediaModal: React.FC<MediaModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black z-50 flex">
-      {/* Mobile Instagram-style modal */}
-      <div className={`w-full max-w-md mx-auto flex flex-col transition-colors duration-300 ${
-        isDarkMode ? 'bg-gray-800' : 'bg-white'
-      }`}>
-        {/* Header */}
-        <div className={`flex items-center justify-between p-4 border-b transition-colors duration-300 ${
-          isDarkMode ? 'border-gray-700' : 'border-gray-200'
-        }`}>
-          <button onClick={onClose}>
-            <X className={`w-6 h-6 transition-colors duration-300 ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`} />
+    <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+      {/* Close button */}
+      <button 
+        onClick={onClose}
+        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300"
+      >
+        <X className="w-6 h-6" />
+      </button>
+
+      {/* Navigation buttons */}
+      {items.length > 1 && (
+        <>
+          <button
+            onClick={onPrev}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300"
+          >
+            <ChevronLeft className="w-6 h-6" />
           </button>
-          <span className={`font-semibold transition-colors duration-300 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            Beitrag
-          </span>
-          <div></div>
-        </div>
+          <button
+            onClick={onNext}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </>
+      )}
 
-        {/* Media */}
-        <div className="flex-1 relative bg-black flex items-center justify-center">
-          {currentItem.type === 'video' ? (
-            <video
-              src={currentItem.url}
-              controls
-              className="max-w-full max-h-full"
-              preload="metadata"
-              onLoadStart={() => setImageLoading(true)}
-              onLoadedData={() => setImageLoading(false)}
-              onError={() => {
-                setImageLoading(false);
-                setImageError(true);
-              }}
-            />
-          ) : currentItem.type === 'note' ? (
-            <div className={`w-full h-full flex flex-col items-center justify-center p-8 transition-colors duration-300 ${
-              isDarkMode 
-                ? 'bg-gradient-to-br from-purple-900/50 to-pink-900/50' 
-                : 'bg-gradient-to-br from-purple-100 to-pink-100'
-            }`}>
-              <div className={`max-w-sm w-full p-6 rounded-2xl transition-colors duration-300 ${
-                isDarkMode ? 'bg-gray-800/80 border border-purple-700/30' : 'bg-white/90 border border-purple-200/50'
+      {/* Main content area */}
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="max-w-7xl max-h-full w-full h-full flex items-center justify-center">
+          {/* Media container */}
+          <div className="relative max-w-full max-h-full flex items-center justify-center">
+            {currentItem.type === 'video' ? (
+              <video
+                src={currentItem.url}
+                controls
+                className="max-w-full max-h-full"
+                preload="metadata"
+                onLoadStart={() => setImageLoading(true)}
+                onLoadedData={() => setImageLoading(false)}
+                onError={() => {
+                  setImageLoading(false);
+                  setImageError(true);
+                }}
+              />
+            ) : currentItem.type === 'note' ? (
+              <div className={`w-full h-full flex flex-col items-center justify-center p-8 transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'bg-gradient-to-br from-purple-900/50 to-pink-900/50' 
+                  : 'bg-gradient-to-br from-purple-100 to-pink-100'
               }`}>
-                <div className="text-center mb-6">
-                  <div className="text-4xl mb-2">💌</div>
-                  <h3 className={`text-xl font-semibold transition-colors duration-300 ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    Notiz
-                  </h3>
-                </div>
-                <div className={`p-4 rounded-xl transition-colors duration-300 ${
-                  isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
+                <div className={`max-w-sm w-full p-6 rounded-2xl transition-colors duration-300 ${
+                  isDarkMode ? 'bg-gray-800/80 border border-purple-700/30' : 'bg-white/90 border border-purple-200/50'
                 }`}>
-                  <p className={`text-base leading-relaxed transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-200' : 'text-gray-800'
-                  }`}>
-                    "{currentItem.noteText}"
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="relative w-full h-full flex items-center justify-center">
-              {imageLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black">
-                  <div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-              )}
-              
-              {imageError ? (
-                <div className="flex flex-col items-center justify-center text-white p-8">
-                  <div className="text-6xl mb-4">📷</div>
-                  <p className="text-lg text-center mb-2">
-                    Bild nicht verfügbar
-                  </p>
-                  <p className="text-sm text-center opacity-75 mb-4">
-                    Von {currentItem.uploadedBy}
-                  </p>
-                  <button
-                    onClick={() => {
-                      setImageError(false);
-                      setImageLoading(true);
-                      // Force reload
-                      const img = new Image();
-                      img.onload = handleImageLoad;
-                      img.onerror = handleImageError;
-                      img.src = currentItem.url;
-                    }}
-                    className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition-colors"
-                  >
-                    Erneut versuchen
-                  </button>
-                </div>
-              ) : (
-                <img
-                  src={currentItem.url}
-                  alt="Hochzeitsfoto"
-                  className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${
-                    imageLoading ? 'opacity-0' : 'opacity-100'
-                  }`}
-                  onLoad={handleImageLoad}
-                  onError={handleImageError}
-                />
-              )}
-            </div>
-          )}
-          
-          {items.length > 1 && (
-            <>
-              <button
-                onClick={onPrev}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-              <button
-                onClick={onNext}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* Actions and Comments */}
-        <div className={`transition-colors duration-300 ${
-          isDarkMode ? 'bg-gray-800' : 'bg-white'
-        }`}>
-          {/* Action buttons */}
-          <div className={`flex items-center justify-between p-4 border-b transition-colors duration-300 ${
-            isDarkMode ? 'border-gray-700' : 'border-gray-200'
-          }`}>
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => onToggleLike(currentItem.id)}
-                className={`transition-colors ${
-                  isLiked ? 'text-red-500' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}
-              >
-                <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
-              </button>
-              <MessageCircle className={`w-6 h-6 transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`} />
-            </div>
-          </div>
-
-          {/* Post info */}
-          <div className="px-4 py-2">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-orange-500 p-0.5">
-                <div className="w-full h-full rounded-full overflow-hidden">
-                  <img 
-                    src={getAvatarUrl(currentItem.uploadedBy)}
-                    alt={currentItem.uploadedBy}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-              <div>
-                <span className={`font-semibold text-sm transition-colors duration-300 ${
-                  isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}>
-                  {currentItem.uploadedBy}
-                  {currentItem.uploadedBy === userName && (
-                    <span className={`ml-2 text-xs px-2 py-0.5 rounded-full transition-colors duration-300 ${
-                      isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      Du
-                    </span>
-                  )}
-                </span>
-                <div className={`text-xs transition-colors duration-300 ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                }`}>
-                  {formatDate(currentItem.uploadedAt)}
-                </div>
-              </div>
-            </div>
-            <div className="mb-2">
-              <span className={`font-semibold text-sm transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>
-                {likeCount > 0 ? `${likeCount} „Gefällt mir"-Angabe${likeCount > 1 ? 'n' : ''}` : 'Gefällt dir das?'}
-              </span>
-            </div>
-          </div>
-
-          {/* Comments */}
-          <div className="max-h-40 overflow-y-auto px-4">
-            {currentComments.map((comment) => {
-              const canDeleteThisComment = isAdmin || comment.userName === userName;
-              
-              return (
-                <div key={comment.id} className="flex items-start gap-3 py-2 group">
-                  <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
-                    <img 
-                      src={getAvatarUrl(comment.userName)}
-                      alt={comment.userName}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <span className={`font-semibold text-sm mr-2 transition-colors duration-300 ${
+                  <div className="text-center mb-6">
+                    <div className="text-4xl mb-2">💌</div>
+                    <h3 className={`text-xl font-semibold transition-colors duration-300 ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
                     }`}>
-                      {comment.userName}
-                      {comment.userName === userName && (
-                        <span className={`ml-1 text-xs px-1.5 py-0.5 rounded transition-colors duration-300 ${
-                          isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          Du
-                        </span>
-                      )}
-                    </span>
-                    <span className={`text-sm transition-colors duration-300 ${
-                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      {comment.text}
-                    </span>
-                    <div className={`text-xs mt-1 transition-colors duration-300 ${
-                      isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                    }`}>
-                      {formatDate(comment.createdAt)}
-                    </div>
+                      Notiz
+                    </h3>
                   </div>
-                  {canDeleteThisComment && (
-                    <button
-                      onClick={() => handleDeleteComment(comment.id, comment)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-red-50 rounded transition-all"
-                      title="Kommentar löschen"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  )}
+                  <div className={`p-4 rounded-xl transition-colors duration-300 ${
+                    isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
+                  }`}>
+                    <p className={`text-base leading-relaxed transition-colors duration-300 ${
+                      isDarkMode ? 'text-gray-200' : 'text-gray-800'
+                    }`}>
+                      "{currentItem.noteText}"
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            ) : (
+              <div className="relative w-full h-full flex items-center justify-center">
+                {imageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black">
+                    <div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
+                
+                {imageError ? (
+                  <div className="flex flex-col items-center justify-center text-white p-8">
+                    <div className="text-6xl mb-4">📷</div>
+                    <p className="text-lg text-center mb-2">
+                      Bild nicht verfügbar
+                    </p>
+                    <p className="text-sm text-center opacity-75 mb-4">
+                      Von {currentItem.uploadedBy}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setImageError(false);
+                        setImageLoading(true);
+                        // Force reload
+                        const img = new Image();
+                        img.onload = handleImageLoad;
+                        img.onerror = handleImageError;
+                        img.src = currentItem.url;
+                      }}
+                      className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition-colors"
+                    >
+                      Erneut versuchen
+                    </button>
+                  </div>
+                ) : (
+                  <img
+                    src={currentItem.url}
+                    alt="Hochzeitsfoto"
+                    className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${
+                      imageLoading ? 'opacity-0' : 'opacity-100'
+                    }`}
+                    onLoad={handleImageLoad}
+                    onError={handleImageError}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Info panel - bottom overlay */}
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+        <div className="max-w-2xl mx-auto">
+          {/* User info */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-full overflow-hidden">
+              <img 
+                src={getAvatarUrl(currentItem.uploadedBy)}
+                alt={currentItem.uploadedBy}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <span className="font-semibold text-white">
+                {currentItem.uploadedBy}
+              </span>
+              <div className="text-sm text-gray-300">
+                {formatDate(currentItem.uploadedAt)}
+              </div>
+            </div>
           </div>
 
-          {/* Add comment */}
-          <form onSubmit={handleSubmitComment} className={`p-4 border-t transition-colors duration-300 ${
-            isDarkMode ? 'border-gray-700' : 'border-gray-200'
-          }`}>
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 rounded-full overflow-hidden">
-                <img 
-                  src={getAvatarUrl(userName)}
-                  alt={userName}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <input
-                type="text"
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Kommentieren..."
-                className={`flex-1 text-sm outline-none bg-transparent transition-colors duration-300 ${
-                  isDarkMode ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'
-                }`}
-              />
-              {commentText.trim() && (
-                <button
-                  type="submit"
-                  className="text-blue-500 font-semibold text-sm"
-                >
-                  Posten
-                </button>
+          {/* Actions */}
+          <div className="flex items-center gap-6 mb-4">
+            <button 
+              onClick={() => onToggleLike(currentItem.id)}
+              className={`transition-all duration-300 transform hover:scale-110 ${
+                isLiked ? 'text-red-500' : 'text-white hover:text-red-400'
+              }`}
+            >
+              <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
+            </button>
+            <MessageCircle className="w-6 h-6 text-white" />
+            <span className="text-sm text-gray-300">
+              {likeCount > 0 ? `${likeCount} Likes` : ''}
+            </span>
+          </div>
+
+          {/* Note text for note items */}
+          {currentItem.type === 'note' && currentItem.noteText && (
+            <div className="mb-4 p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+              <p className="text-white leading-relaxed">
+                "{currentItem.noteText}"
+              </p>
+            </div>
+          )}
+
+          {/* Comments preview */}
+          {currentComments.length > 0 && (
+            <div className="space-y-2 mb-4 max-h-32 overflow-y-auto">
+              {currentComments.slice(-3).map((comment) => (
+                <div key={comment.id} className="text-sm">
+                  <span className="font-semibold text-white mr-2">
+                    {comment.userName}
+                  </span>
+                  <span className="text-gray-300">
+                    {comment.text}
+                  </span>
+                </div>
+              ))}
+              {currentComments.length > 3 && (
+                <div className="text-xs text-gray-400">
+                  +{currentComments.length - 3} weitere Kommentare
+                </div>
               )}
             </div>
+          )}
+
+          {/* Add comment */}
+          <form onSubmit={handleSubmitComment} className="flex items-center gap-3">
+            <input
+              type="text"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Kommentieren..."
+              className="flex-1 bg-white/10 text-white placeholder-gray-400 px-3 py-2 rounded-lg border border-white/20 outline-none focus:border-white/40 transition-colors"
+            />
+            {commentText.trim() && (
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+              >
+                Senden
+              </button>
+            )}
           </form>
         </div>
       </div>

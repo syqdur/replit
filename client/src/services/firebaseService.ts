@@ -432,6 +432,9 @@ export const updateProfile = async (
     profilePicture?: File | string;
     name: string;
     bio: string;
+    countdownDate?: string;
+    countdownEndMessage?: string;
+    countdownMessageDismissed?: boolean;
   },
   userName: string
 ): Promise<void> => {
@@ -451,6 +454,9 @@ export const updateProfile = async (
       name: profileData.name,
       bio: profileData.bio,
       profilePicture: profilePictureUrl,
+      countdownDate: profileData.countdownDate,
+      countdownEndMessage: profileData.countdownEndMessage,
+      countdownMessageDismissed: profileData.countdownMessageDismissed,
       updatedAt: new Date().toISOString(),
       updatedBy: userName
     };

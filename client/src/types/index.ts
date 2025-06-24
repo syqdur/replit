@@ -7,6 +7,7 @@ export interface MediaItem {
   deviceId: string;
   type: 'image' | 'video' | 'note';
   noteText?: string;
+  note?: string; // Legacy support
   isUnavailable?: boolean;
 }
 
@@ -74,6 +75,9 @@ export interface ProfileData {
   name: string;
   bio: string;
   profilePicture?: string;
+  countdownDate?: string;
+  countdownEndMessage?: string;
+  countdownMessageDismissed?: boolean;
   updatedAt: string;
   updatedBy: string;
 }

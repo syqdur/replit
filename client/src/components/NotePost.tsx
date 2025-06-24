@@ -117,82 +117,99 @@ export const NotePost: React.FC<NotePostProps> = ({
   };
 
   return (
-    <div className={`border-b transition-colors duration-300 ${
-      isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+    <div className={`mb-6 mx-4 rounded-3xl border transition-all duration-500 relative overflow-hidden backdrop-blur-xl ${
+      isDarkMode 
+        ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+        : 'bg-white/80 border-gray-200/40 shadow-2xl shadow-pink-500/10'
     }`}>
-      {/* Post Header */}
-      <div className="flex items-center justify-between p-3">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-orange-500 p-0.5">
-            <div className="w-full h-full rounded-full overflow-hidden">
-              <img 
-                src={getAvatarUrl(item.uploadedBy)}
-                alt={item.uploadedBy}
-                className="w-full h-full object-cover"
-              />
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 opacity-5">
+        <div className={`absolute top-0 right-0 w-20 h-20 rounded-full blur-xl ${
+          isDarkMode ? 'bg-purple-500' : 'bg-purple-300'
+        }`} style={{ transform: 'translate(30%, -30%)' }}></div>
+        <div className={`absolute bottom-0 left-0 w-16 h-16 rounded-full blur-xl ${
+          isDarkMode ? 'bg-pink-500' : 'bg-pink-300'
+        }`} style={{ transform: 'translate(-30%, 30%)' }}></div>
+      </div>
+      
+      <div className="relative z-10">
+        {/* Post Header */}
+        <div className="flex items-center justify-between p-6">
+          <div className="flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-full p-0.5 bg-gradient-to-r ${
+              isDarkMode 
+                ? 'from-purple-500 via-pink-500 to-rose-500' 
+                : 'from-purple-400 via-pink-400 to-rose-400'
+            }`}>
+              <div className="w-full h-full rounded-full overflow-hidden">
+                <img 
+                  src={getAvatarUrl(item.uploadedBy)}
+                  alt={item.uploadedBy}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            <div>
+              <span className={`font-semibold text-base transition-colors duration-300 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
+                {item.uploadedBy}
+                {item.uploadedBy === userName && (
+                  <span className={`ml-2 text-xs px-3 py-1 rounded-full transition-colors duration-300 ${
+                    isDarkMode ? 'bg-blue-600/80 text-white' : 'bg-blue-100/80 text-blue-800'
+                  }`}>
+                    Du
+                  </span>
+                )}
+              </span>
+              <div className={`text-sm transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                {formatDate(item.uploadedAt)}
+              </div>
             </div>
           </div>
-          <div>
-            <span className={`font-semibold text-sm transition-colors duration-300 ${
+          <div className="flex items-center gap-3">
+            {canEditNote && (
+              <button
+                onClick={() => setIsEditingNote(true)}
+                className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                  isDarkMode ? 'text-blue-400 hover:bg-blue-900/30' : 'text-blue-500 hover:bg-blue-50/80'
+                }`}
+                title="Notiz bearbeiten"
+              >
+                <Edit3 className="w-5 h-5" />
+              </button>
+            )}
+            {canDeletePost && (
+              <button
+                onClick={handleDelete}
+                className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                  isDarkMode ? 'text-red-400 hover:bg-red-900/30' : 'text-red-500 hover:bg-red-50/80'
+                }`}
+                title="Notiz löschen"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            )}
+            <MoreHorizontal className={`w-6 h-6 transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`} />
+          </div>
+        </div>
+
+        {/* Note Content */}
+        {isEditingNote ? (
+          <div className={`mx-6 mb-4 p-6 rounded-2xl transition-colors duration-300 backdrop-blur-sm ${
+            isDarkMode 
+              ? 'bg-blue-900/30 border border-blue-700/30' 
+              : 'bg-blue-50/80 border border-blue-200/50'
+          }`}>
+            <h4 className={`font-semibold mb-3 transition-colors duration-300 ${
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}>
-              {item.uploadedBy}
-              {item.uploadedBy === userName && (
-                <span className={`ml-2 text-xs px-2 py-0.5 rounded-full transition-colors duration-300 ${
-                  isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
-                }`}>
-                  Du
-                </span>
-              )}
-            </span>
-            <div className={`text-xs transition-colors duration-300 ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              {formatDate(item.uploadedAt)}
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {canEditNote && (
-            <button
-              onClick={() => setIsEditingNote(true)}
-              className={`p-1 rounded transition-colors duration-300 ${
-                isDarkMode ? 'text-blue-400 hover:bg-gray-700' : 'text-blue-500 hover:bg-blue-50'
-              }`}
-              title="Notiz bearbeiten"
-            >
-              <Edit3 className="w-4 h-4" />
-            </button>
-          )}
-          {canDeletePost && (
-            <button
-              onClick={handleDelete}
-              className={`p-1 rounded transition-colors duration-300 ${
-                isDarkMode ? 'text-red-400 hover:bg-gray-700' : 'text-red-500 hover:bg-red-50'
-              }`}
-              title="Notiz löschen"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
-          <MoreHorizontal className={`w-5 h-5 transition-colors duration-300 ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          }`} />
-        </div>
-      </div>
-
-      {/* Note Content */}
-      {isEditingNote ? (
-        <div className={`mx-3 mb-3 p-6 rounded-2xl transition-colors duration-300 ${
-          isDarkMode 
-            ? 'bg-blue-900/30 border border-blue-700/30' 
-            : 'bg-blue-50 border border-blue-200'
-        }`}>
-          <h4 className={`font-semibold mb-3 transition-colors duration-300 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            💌 Notiz bearbeiten:
-          </h4>
+              💌 Notiz bearbeiten:
+            </h4>
           <textarea
             value={editNoteText}
             onChange={(e) => setEditNoteText(e.target.value)}
@@ -226,15 +243,15 @@ export const NotePost: React.FC<NotePostProps> = ({
             >
               Speichern
             </button>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className={`mx-3 mb-3 p-6 rounded-2xl transition-colors duration-300 ${
-          isDarkMode 
-            ? 'bg-gradient-to-br from-purple-900/30 to-pink-900/30 border border-purple-700/30' 
-            : 'bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200/50'
-        }`}>
-          <div className="flex items-center gap-3 mb-4">
+        ) : (
+          <div className={`mx-6 mb-4 p-6 rounded-2xl transition-colors duration-300 backdrop-blur-sm ${
+            isDarkMode 
+              ? 'bg-gradient-to-br from-purple-900/30 to-pink-900/30 border border-purple-700/30' 
+              : 'bg-gradient-to-br from-purple-50/80 to-pink-50/80 border border-purple-200/50'
+          }`}>
+            <div className="flex items-center gap-3 mb-4">
             <div className={`p-3 rounded-full transition-colors duration-300 ${
               isDarkMode ? 'bg-purple-800/50' : 'bg-white/80'
             }`}>
@@ -265,38 +282,38 @@ export const NotePost: React.FC<NotePostProps> = ({
               "{item.noteText}"
             </p>
           </div>
-        </div>
-      )}
-
-      {/* Action Buttons */}
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => onToggleLike(item.id)}
-              className={`transition-colors ${
-                isLiked ? 'text-red-500' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}
-            >
-              <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
-            </button>
-            <MessageCircle className={`w-6 h-6 transition-colors duration-300 ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-700'
-            }`} />
           </div>
-        </div>
+        )}
 
-        {/* Likes */}
-        <div className="mb-2">
-          <span className={`font-semibold text-sm transition-colors duration-300 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            {likeCount > 0 ? `${likeCount} „Gefällt mir"-Angabe${likeCount > 1 ? 'n' : ''}` : 'Gefällt dir das?'}
-          </span>
-        </div>
+        {/* Action Buttons */}
+        <div className="px-6 pb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-6">
+              <button 
+                onClick={() => onToggleLike(item.id)}
+                className={`transition-all duration-300 transform hover:scale-110 ${
+                  isLiked ? 'text-red-500' : isDarkMode ? 'text-gray-300 hover:text-red-400' : 'text-gray-700 hover:text-red-500'
+                }`}
+              >
+                <Heart className={`w-7 h-7 ${isLiked ? 'fill-current' : ''}`} />
+              </button>
+              <MessageCircle className={`w-7 h-7 transition-colors duration-300 cursor-pointer ${
+                isDarkMode ? 'text-gray-300 hover:text-gray-100' : 'text-gray-700 hover:text-gray-900'
+              }`} />
+            </div>
+          </div>
 
-        {/* Comments */}
-        <div className="space-y-1">
+          {/* Likes */}
+          <div className="mb-3">
+            <span className={`font-semibold text-base transition-colors duration-300 ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>
+              {likeCount > 0 ? `${likeCount} „Gefällt mir"-Angabe${likeCount > 1 ? 'n' : ''}` : 'Gefällt dir das?'}
+            </span>
+          </div>
+
+          {/* Comments */}
+          <div className="space-y-2">
           {displayComments.map((comment) => {
             const canDeleteThisComment = isAdmin || comment.userName === userName;
             
@@ -344,39 +361,40 @@ export const NotePost: React.FC<NotePostProps> = ({
               Alle {comments.length} Kommentare ansehen
             </button>
           )}
-        </div>
-
-        {/* Add Comment */}
-        <form onSubmit={handleSubmitComment} className={`mt-3 pt-3 border-t transition-colors duration-300 ${
-          isDarkMode ? 'border-gray-700' : 'border-gray-100'
-        }`}>
-          <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full overflow-hidden">
-              <img 
-                src={getAvatarUrl(userName)}
-                alt={userName}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <input
-              type="text"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Kommentieren..."
-              className={`flex-1 text-sm outline-none bg-transparent transition-colors duration-300 ${
-                isDarkMode ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'
-              }`}
-            />
-            {commentText.trim() && (
-              <button
-                type="submit"
-                className="text-blue-500 font-semibold text-sm"
-              >
-                Posten
-              </button>
-            )}
           </div>
-        </form>
+
+          {/* Add Comment */}
+          <form onSubmit={handleSubmitComment} className={`mt-4 pt-4 border-t transition-colors duration-300 ${
+            isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'
+          }`}>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full overflow-hidden">
+                <img 
+                  src={getAvatarUrl(userName)}
+                  alt={userName}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <input
+                type="text"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Kommentieren..."
+                className={`flex-1 text-sm outline-none bg-transparent transition-colors duration-300 ${
+                  isDarkMode ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'
+                }`}
+              />
+              {commentText.trim() && (
+                <button
+                  type="submit"
+                  className="text-blue-500 font-semibold text-sm"
+                >
+                  Posten
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

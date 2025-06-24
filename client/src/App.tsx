@@ -471,23 +471,34 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
+    <div className={`min-h-screen transition-all duration-500 ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-purple-900/10 to-pink-900/10' 
+        : 'bg-gradient-to-br from-gray-50 via-pink-50/30 to-purple-50/20'
     }`}>
-      {/* Instagram-style header */}
-      <div className={`border-b sticky top-0 z-40 transition-colors duration-300 ${
+      {/* Modern Instagram 2.0 Header */}
+      <div className={`sticky top-0 z-50 transition-all duration-300 ${
         isDarkMode 
-          ? 'bg-gray-800/80 border-gray-700/50 backdrop-blur-sm' 
-          : 'bg-white/80 border-gray-200/50 backdrop-blur-sm'
-      }`}>
-        <div className="max-w-md mx-auto px-4 py-3">
+          ? 'bg-gray-900/70 border-gray-700/30 backdrop-blur-xl shadow-xl shadow-purple-500/5' 
+          : 'bg-white/70 border-gray-200/30 backdrop-blur-xl shadow-xl shadow-pink-500/5'
+      } border-b`}>
+        <div className="max-w-md mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className={`text-xl font-semibold transition-colors duration-300 ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}>
-              👰🤵‍♂️ kristinundmauro
-            </h1>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                isDarkMode 
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600' 
+                  : 'bg-gradient-to-r from-pink-500 to-purple-500'
+              }`}>
+                <span className="text-white text-sm font-bold">K&M</span>
+              </div>
+              <h1 className={`text-lg font-bold tracking-tight transition-colors duration-300 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
+                kristinundmauro
+              </h1>
+            </div>
+            <div className="flex items-center gap-2">
               {/* Live User Indicator */}
               <LiveUserIndicator 
                 currentUser={userName || ''}
@@ -496,32 +507,26 @@ function App() {
               
               <button
                 onClick={toggleDarkMode}
-                className={`p-2 rounded-full transition-colors duration-300 ${
+                className={`p-2.5 rounded-full transition-all duration-300 ${
                   isDarkMode 
-                    ? 'text-yellow-400 hover:bg-gray-700' 
-                    : 'text-gray-600 hover:bg-gray-100'
+                    ? 'text-yellow-400 hover:bg-gray-800/50 hover:scale-110' 
+                    : 'text-gray-600 hover:bg-gray-100/50 hover:scale-110'
                 }`}
               >
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
-              <Heart className={`w-6 h-6 transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`} />
-              <MessageCircle className={`w-6 h-6 transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`} />
+              
             </div>
           </div>
         </div>
       </div>
 
-      <div className={`max-w-md mx-auto transition-colors duration-300 ${
-        isDarkMode ? 'bg-gray-800' : 'bg-white'
-      }`}>
+      <div className="max-w-md mx-auto">
         <ProfileHeader 
           isDarkMode={isDarkMode} 
           isAdmin={isAdmin}
           userName={userName}
+          mediaItems={mediaItems}
         />
         
         {/* Stories Bar */}

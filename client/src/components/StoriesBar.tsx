@@ -103,10 +103,12 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
 
   // 🔧 FIX: Always show Stories Bar, even if no stories exist
   return (
-    <div className={`p-4 border-b transition-colors duration-300 ${
-      isDarkMode ? 'border-gray-700' : 'border-gray-100'
+    <div className={`mx-4 my-4 p-4 rounded-2xl transition-all duration-500 ${
+      isDarkMode 
+        ? 'bg-gray-800/30 border border-gray-700/20 backdrop-blur-xl' 
+        : 'bg-white/50 border border-gray-200/30 backdrop-blur-xl'
     }`}>
-      <div className="flex gap-4 overflow-x-auto pb-2">
+      <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
         {/* Add Story Button - Always visible */}
         <div className="flex flex-col items-center gap-2 flex-shrink-0">
           <button

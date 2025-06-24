@@ -2,6 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 999999999 !important;
+  isolation: isolate;
+}
+
+/* Modern scrollbar styling for Instagram 2.0 design */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom gradient ring effect */
+.ring-gradient {
+  background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+  padding: 2px;
+  border-radius: 50%;
+}
+
+/* Glassmorphism backdrop effects */
+.backdrop-blur-xl {
+  backdrop-filter: blur(16px);
+}
+
+/* Smooth animations for scale transforms */
+.hover-scale {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
 /* Enhanced slideshow animations */
 @keyframes slideInFromRight {
   from {

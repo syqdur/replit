@@ -167,40 +167,109 @@ export const UnderConstructionPage: React.FC<UnderConstructionPageProps> = ({
           </p>
         </div>
 
-        {/* Countdown */}
-        <div className="mb-12">
-          <h3 className={`text-xl mb-6 transition-colors duration-500 ${
-            isDarkMode ? 'text-pink-300' : 'text-pink-600'
+        {/* Countdown - Instagram 2.0 Style */}
+        <div className="mb-16">
+          <div className={`mx-auto max-w-4xl p-8 rounded-3xl transition-all duration-500 relative overflow-hidden ${
+            isDarkMode 
+              ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-purple-500/10' 
+              : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-pink-500/10'
           }`}>
-            Noch so lange bis zu unserem großen Tag:
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-lg mx-auto">
-            {[
-              { value: timeLeft.days, label: 'Tage' },
-              { value: timeLeft.hours, label: 'Stunden' },
-              { value: timeLeft.minutes, label: 'Minuten' },
-              { value: timeLeft.seconds, label: 'Sekunden' }
-            ].map((item, index) => (
-              <div 
-                key={index}
-                className={`p-4 rounded-2xl backdrop-blur-sm transition-all duration-500 ${
-                  isDarkMode 
-                    ? 'bg-white/10 border border-white/20' 
-                    : 'bg-white/60 border border-white/40 shadow-lg'
-                }`}
-              >
-                <div className={`text-3xl md:text-4xl font-bold transition-colors duration-500 ${
-                  isDarkMode ? 'text-white' : 'text-gray-800'
-                }`}>
-                  {item.value.toString().padStart(2, '0')}
+            {/* Decorative Background Elements */}
+            <div className="absolute inset-0 opacity-5 pointer-events-none">
+              <div className={`absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl ${
+                isDarkMode ? 'bg-pink-500' : 'bg-pink-300'
+              }`} style={{ transform: 'translate(30%, -30%)' }}></div>
+              <div className={`absolute bottom-0 left-0 w-32 h-32 rounded-full blur-3xl ${
+                isDarkMode ? 'bg-purple-500' : 'bg-purple-300'
+              }`} style={{ transform: 'translate(-30%, 30%)' }}></div>
+            </div>
+
+            <div className="relative z-10">
+              {/* Header */}
+              <div className="text-center mb-10">
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  <div className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                    isDarkMode 
+                      ? 'bg-gradient-to-br from-pink-600/20 to-purple-600/20 border border-pink-500/30' 
+                      : 'bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-200/50'
+                  }`}>
+                    <span className="text-4xl">💒</span>
+                  </div>
                 </div>
-                <div className={`text-sm uppercase tracking-wide transition-colors duration-500 ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                <h3 className={`text-3xl md:text-4xl font-bold tracking-tight mb-3 transition-colors duration-500 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>
-                  {item.label}
+                  Noch so lange bis zu unserem großen Tag
+                </h3>
+                <p className={`text-lg transition-colors duration-500 ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Jeder Moment bringt uns näher zusammen ✨
+                </p>
+              </div>
+
+              {/* Countdown Cards */}
+              <div className="flex justify-center gap-8 max-w-2xl mx-auto">
+                {[
+                  { value: timeLeft.days, label: 'Tage', icon: '📅' },
+                  { value: timeLeft.hours, label: 'Stunden', icon: '⏰' },
+                  { value: timeLeft.minutes, label: 'Minuten', icon: '⏱️' },
+                  { value: timeLeft.seconds, label: 'Sekunden', icon: '⚡' }
+                ].map((item, index) => (
+                  <div 
+                    key={index}
+                    className={`group w-28 h-32 rounded-2xl backdrop-blur-sm transition-all duration-500 hover:scale-105 ${
+                      isDarkMode 
+                        ? 'bg-gray-800/60 border border-gray-700/50 hover:bg-gray-800/80' 
+                        : 'bg-white/80 border border-gray-200/60 hover:bg-white/90 shadow-lg hover:shadow-xl'
+                    }`}
+                    style={{
+                      animation: 'pulse 2s ease-in-out infinite',
+                      animationDelay: `${index * 0.3}s`
+                    }}
+                  >
+                    <div className="h-full flex flex-col items-center justify-center text-center px-3">
+                      {/* Icon */}
+                      <div className="text-2xl mb-2 transform group-hover:scale-110 transition-transform duration-300">
+                        {item.icon}
+                      </div>
+
+                      {/* Value */}
+                      <div className={`text-2xl font-bold mb-2 transition-all duration-500 ${
+                        isDarkMode 
+                          ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400' 
+                          : 'text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600'
+                      }`}>
+                        {item.value.toString().padStart(2, '0')}
+                      </div>
+
+                      {/* Label */}
+                      <div className={`text-xs uppercase tracking-wide font-medium text-center transition-colors duration-500 leading-tight ${
+                        isDarkMode ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-700'
+                      }`}>
+                        {item.label}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom Message */}
+              <div className="mt-10 text-center">
+                <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-300 ${
+                  isDarkMode 
+                    ? 'bg-gradient-to-r from-pink-600/20 to-purple-600/20 border border-pink-500/30' 
+                    : 'bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200/50'
+                }`}>
+                  <span className="text-2xl">💕</span>
+                  <span className={`text-lg font-medium transition-colors duration-300 ${
+                    isDarkMode ? 'text-pink-300' : 'text-pink-700'
+                  }`}>
+                    Wir freuen uns auf euch!
+                  </span>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
 

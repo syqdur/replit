@@ -407,7 +407,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                     : 'bg-pink-500 hover:bg-pink-600 text-white'
                 }`}
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-5 h-5" />
                 Event hinzufügen
               </button>
             )}
@@ -420,7 +420,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
             isDarkMode ? 'bg-red-900/20 border-red-700/30' : 'bg-red-50 border-red-200'
           }`}>
             <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
-              <Heart className={`w-8 h-8 transition-colors duration-300 ${
+              <Heart className={`w-6 h-6 transition-colors duration-300 ${
                 isDarkMode ? 'text-red-400' : 'text-red-500'
               }`} />
             </div>
@@ -473,13 +473,15 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
   }
 
   return (
-    <div className={`transition-colors duration-300 ${
-      isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-slate-900 via-purple-900/50 to-pink-900/30' 
+        : 'bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50'
     }`}>
       {/* Modal für Medienanzeige */}
       {modalMedia && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-70"
           onClick={() => setModalMedia(null)}
         >
           <div
@@ -516,26 +518,30 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
         </div>
       )}
       {/* Header */}
-      <div className={`p-6 border-b transition-colors duration-300 ${
-        isDarkMode ? 'border-gray-700' : 'border-gray-200'
+      <div className={`p-6 backdrop-blur-xl border-b transition-all duration-300 ${
+        isDarkMode 
+          ? 'bg-white/5 border-white/10' 
+          : 'bg-white/70 border-white/20'
       }`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`p-3 rounded-full transition-colors duration-300 ${
-              isDarkMode ? 'bg-pink-600' : 'bg-pink-500'
+          <div className="flex items-center gap-4">
+            <div className={`p-4 rounded-2xl transition-all duration-300 ${
+              isDarkMode 
+                ? 'bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/25' 
+                : 'bg-gradient-to-br from-pink-400 to-purple-500 shadow-lg shadow-pink-400/25'
             }`}>
-              <Heart className="w-6 h-6 text-white" />
+              <Heart className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className={`text-2xl font-bold transition-colors duration-300 ${
+              <h2 className={`text-3xl font-bold mb-1 transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
                 💕 Unsere Geschichte
               </h2>
-              <p className={`text-sm transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              <p className={`text-base transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
-                Die wichtigsten Momente unserer Beziehung mit Fotos & Videos
+                Die wichtigsten Momente unserer Beziehung
               </p>
             </div>
           </div>
@@ -543,14 +549,14 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
           {isAdmin && (
             <button
               onClick={() => setShowAddForm(true)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:scale-105 ${
+              className={`flex items-center gap-3 px-6 py-3 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 ${
                 isDarkMode 
-                  ? 'bg-pink-600 hover:bg-pink-700 text-white' 
-                  : 'bg-pink-500 hover:bg-pink-600 text-white'
+                  ? 'bg-gradient-to-r from-pink-500/80 to-purple-600/80 hover:from-pink-500 hover:to-purple-600 text-white border border-white/20 shadow-lg shadow-pink-500/25' 
+                  : 'bg-gradient-to-r from-pink-400/80 to-purple-500/80 hover:from-pink-400 hover:to-purple-500 text-white border border-white/30 shadow-lg shadow-pink-400/25'
               }`}
             >
-              <Plus className="w-4 h-4" />
-              Event hinzufügen
+              <Plus className="w-5 h-5" />
+              <span className="font-medium">Event hinzufügen</span>
             </button>
           )}
         </div>
@@ -558,7 +564,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
 
       {/* Add/Edit Form */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
           <div className={`rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto transition-colors duration-300 ${
             isDarkMode ? 'bg-gray-800' : 'bg-white'
           }`}>
@@ -809,7 +815,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                                   : 'hover:bg-red-50 text-red-600'
                             }`}
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-5 h-5" />
                           </button>
                         </div>
                       ))}
@@ -889,7 +895,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
             <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center transition-colors duration-300 ${
               isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
             }`}>
-              <Heart className={`w-8 h-8 transition-colors duration-300 ${
+              <Heart className={`w-6 h-6 transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-500' : 'text-gray-400'
               }`} />
             </div>
@@ -919,88 +925,98 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
         ) : (
           <div className="relative">
             {/* Timeline Line */}
-            <div className={`absolute left-8 top-0 bottom-0 w-0.5 transition-colors duration-300 ${
-              isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
+            <div className={`absolute left-10 top-0 bottom-0 w-1 transition-all duration-300 ${
+              isDarkMode 
+                ? 'bg-gradient-to-b from-pink-500/30 via-purple-500/30 to-pink-500/30' 
+                : 'bg-gradient-to-b from-pink-400/40 via-purple-400/40 to-pink-400/40'
             }`}></div>
 
             {/* Timeline Events */}
-            <div className="space-y-8">
+            <div className="space-y-12">
               {events.map((event, index) => {
                 const eventType = getEventTypeInfo(event.type, event.customEventName);
                 const canEdit = isAdmin || event.createdBy === userName;
 
                 return (
-                  <div key={event.id} className="relative flex items-start gap-6">
+                  <div key={event.id} className="relative flex items-start gap-8">
                     {/* Timeline Dot */}
-                    <div className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-colors duration-300 ${
-                      eventType.color === 'pink' ? 'bg-pink-500' :
-                      eventType.color === 'red' ? 'bg-red-500' :
-                      eventType.color === 'blue' ? 'bg-blue-500' :
-                      eventType.color === 'green' ? 'bg-green-500' :
-                      eventType.color === 'yellow' ? 'bg-yellow-500' :
-                      eventType.color === 'purple' ? 'bg-purple-500' :
-                      eventType.color === 'indigo' ? 'bg-indigo-500' :
-                      isDarkMode ? 'bg-gray-600' : 'bg-gray-400'
+                    <div className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-xl border-2 ${
+                      eventType.color === 'pink' ? 'bg-gradient-to-br from-pink-400 to-pink-600 border-pink-200/30 shadow-lg shadow-pink-500/25' :
+                      eventType.color === 'red' ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-200/30 shadow-lg shadow-red-500/25' :
+                      eventType.color === 'blue' ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-200/30 shadow-lg shadow-blue-500/25' :
+                      eventType.color === 'green' ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-200/30 shadow-lg shadow-green-500/25' :
+                      eventType.color === 'yellow' ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-200/30 shadow-lg shadow-yellow-500/25' :
+                      eventType.color === 'purple' ? 'bg-gradient-to-br from-purple-400 to-purple-600 border-purple-200/30 shadow-lg shadow-purple-500/25' :
+                      eventType.color === 'indigo' ? 'bg-gradient-to-br from-indigo-400 to-indigo-600 border-indigo-200/30 shadow-lg shadow-indigo-500/25' :
+                      isDarkMode ? 'bg-gradient-to-br from-gray-600 to-gray-800 border-gray-400/30 shadow-lg shadow-gray-500/25' : 'bg-gradient-to-br from-gray-400 to-gray-600 border-gray-300/30 shadow-lg shadow-gray-400/25'
                     }`}>
-                      {eventType.icon}
+                      <span className="text-2xl leading-none w-8 h-8 flex items-center justify-center">
+                        {eventType.icon}
+                      </span>
                     </div>
 
                     {/* Event Content */}
-                    <div className={`flex-1 p-6 rounded-xl transition-colors duration-300 ${
-                      isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'
+                    <div className={`flex-1 p-8 rounded-3xl backdrop-blur-xl transition-all duration-300 border ${
+                      isDarkMode 
+                        ? 'bg-white/5 border-white/10 hover:bg-white/10 shadow-xl shadow-black/20' 
+                        : 'bg-white/70 border-white/40 hover:bg-white/90 shadow-xl shadow-pink-100/50'
                     }`}>
-                      <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-start justify-between mb-4">
                         <div>
-                          <h3 className={`text-lg font-semibold mb-1 transition-colors duration-300 ${
+                          <h3 className={`text-2xl font-bold mb-2 transition-colors duration-300 ${
                             isDarkMode ? 'text-white' : 'text-gray-900'
                           }`}>
                             {event.title}
                           </h3>
-                          <div className="flex items-center gap-4 text-sm">
-                            <div className={`flex items-center gap-1 transition-colors duration-300 ${
-                              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                          <div className="flex items-center gap-6 text-base">
+                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 ${
+                              isDarkMode ? 'bg-white/10 text-gray-300' : 'bg-white/60 text-gray-700'
                             }`}>
-                              <Calendar className="w-4 h-4" />
-                              <span>{formatDate(event.date)}</span>
+                              <Calendar className="w-5 h-5" />
+                              <span className="font-medium">{formatDate(event.date)}</span>
                             </div>
                             {event.location && (
-                              <div className={`flex items-center gap-1 transition-colors duration-300 ${
-                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 ${
+                                isDarkMode ? 'bg-white/10 text-gray-300' : 'bg-white/60 text-gray-700'
                               }`}>
-                                <MapPin className="w-4 h-4" />
-                                <span>{event.location}</span>
+                                <MapPin className="w-5 h-5" />
+                                <span className="font-medium">{event.location}</span>
                               </div>
                             )}
                           </div>
                         </div>
 
                         {canEdit && (
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleEdit(event)}
-                              className={`p-2 rounded-full transition-colors duration-300 ${
-                                isDarkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                              className={`p-3 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:scale-105 ${
+                                isDarkMode 
+                                  ? 'bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white' 
+                                  : 'bg-white/60 hover:bg-white/90 text-gray-600 hover:text-gray-900'
                               }`}
                               title="Event bearbeiten"
                             >
-                              <Edit3 className="w-4 h-4" />
+                              <Edit3 className="w-5 h-5" />
                             </button>
                             <button
                               onClick={() => handleDelete(event)}
-                              className={`p-2 rounded-full transition-colors duration-300 ${
-                                isDarkMode ? 'hover:bg-gray-700 text-red-400' : 'hover:bg-red-50 text-red-600'
+                              className={`p-3 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:scale-105 ${
+                                isDarkMode 
+                                  ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300' 
+                                  : 'bg-red-50/80 hover:bg-red-100 text-red-600 hover:text-red-700'
                               }`}
                               title="Event löschen"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-5 h-5" />
                             </button>
                           </div>
                         )}
                       </div>
 
                       {event.description && (
-                        <p className={`text-sm leading-relaxed mb-4 transition-colors duration-300 ${
-                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        <p className={`text-base leading-relaxed mb-6 transition-colors duration-300 ${
+                          isDarkMode ? 'text-gray-200' : 'text-gray-700'
                         }`}>
                           {event.description}
                         </p>
@@ -1008,8 +1024,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
 
                       {/* Media Gallery */}
                       {event.mediaUrls && event.mediaUrls.length > 0 && (
-                        <div className="mb-4">
-                          <div className={`grid gap-2 ${
+                        <div className="mb-6">
+                          <div className={`grid gap-3 ${
                             event.mediaUrls.length === 1 ? 'grid-cols-1' :
                             event.mediaUrls.length === 2 ? 'grid-cols-2' :
                             'grid-cols-2 md:grid-cols-3'
@@ -1018,11 +1034,11 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                               const mediaType = event.mediaTypes?.[mediaIndex] || 'image';
                               
                               return (
-                                <div key={mediaIndex} className="relative aspect-square rounded-lg overflow-hidden group">
+                                <div key={mediaIndex} className="relative aspect-square rounded-2xl overflow-hidden group backdrop-blur-sm border border-white/20">
                                   {mediaType === 'video' ? (
                                     <video
                                       src={url}
-                                      className="w-full h-full object-cover cursor-pointer"
+                                      className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-110"
                                       onClick={() => setModalMedia({ url, type: 'video', title: event.title })}
                                       preload="metadata"
                                     />
@@ -1030,18 +1046,18 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                                     <img
                                       src={url}
                                       alt={`${event.title} - Bild ${mediaIndex + 1}`}
-                                      className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
+                                      className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-110"
                                       onClick={() => setModalMedia({ url, type: 'image', title: event.title })}
                                     />
                                   )}
                                   
                                   {/* Media type indicator */}
-                                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <div className="bg-black/60 rounded-full p-1">
+                                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div className="bg-black/60 backdrop-blur-sm rounded-full p-2">
                                       {mediaType === 'video' ? (
-                                        <Video className="w-3 h-3 text-white" />
+                                        <Video className="w-4 h-4 text-white" />
                                       ) : (
-                                        <Camera className="w-3 h-3 text-white" />
+                                        <Camera className="w-4 h-4 text-white" />
                                       )}
                                     </div>
                                   </div>
@@ -1068,7 +1084,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                           <span>{eventType.label}</span>
                           {event.mediaUrls && event.mediaUrls.length > 0 && (
                             <span className="flex items-center gap-1">
-                              <Camera className="w-3 h-3" />
+                              <Camera className="w-4 h-4" />
                               {event.mediaUrls.length}
                             </span>
                           )}

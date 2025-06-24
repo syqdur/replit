@@ -44,26 +44,37 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   const tabs = allTabs.filter(tab => tab.enabled);
 
   return (
-    <div className={`border-b transition-colors duration-300 ${
-      isDarkMode ? 'border-gray-700' : 'border-gray-200'
+    <div className={`mx-4 mb-4 p-1 rounded-2xl transition-all duration-500 ${
+      isDarkMode 
+        ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl' 
+        : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl'
     }`}>
-      <div className="flex">
-        {tabs.map((tab) => (
+      <div className="flex relative">
+        {tabs.map((tab, index) => (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`flex-1 flex items-center justify-center gap-2 py-4 px-4 font-medium transition-all duration-300 ${
+            className={`flex-1 py-3 px-4 text-sm font-bold transition-all duration-300 relative rounded-xl ${
               activeTab === tab.id
                 ? isDarkMode
-                  ? 'text-pink-400 border-b-2 border-pink-400 bg-gray-700/30'
-                  : 'text-pink-600 border-b-2 border-pink-600 bg-pink-50'
+                  ? 'text-white bg-gray-700/50 shadow-lg'
+                  : 'text-gray-900 bg-white/80 shadow-lg'
                 : isDarkMode
-                  ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/20'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/30'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/50'
             }`}
           >
-            <span className="text-lg">{tab.emoji}</span>
-            <span className="hidden sm:inline">{tab.label}</span>
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-lg">{tab.emoji}</span>
+              <span className="tracking-tight hidden sm:inline">{tab.label}</span>
+            </div>
+            {activeTab === tab.id && (
+              <div className={`absolute inset-0 rounded-xl ring-2 transition-all duration-300 ${
+                isDarkMode 
+                  ? 'ring-purple-500/30 bg-gradient-to-r from-purple-600/10 to-pink-600/10' 
+                  : 'ring-pink-500/30 bg-gradient-to-r from-pink-500/10 to-purple-500/10'
+              }`} />
+            )}
           </button>
         ))}
       </div>

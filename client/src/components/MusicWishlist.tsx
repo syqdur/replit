@@ -386,25 +386,37 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
 
   if (!isSpotifyAvailable) {
     return (
-      <div className={`p-6 transition-colors duration-300 ${
-        isDarkMode ? 'bg-gray-900' : 'bg-white'
+      <div className={`mx-4 my-6 p-8 rounded-3xl transition-all duration-500 relative overflow-hidden ${
+        isDarkMode 
+          ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-green-500/10' 
+          : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-green-500/10'
       }`}>
-        <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto mb-6">
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-green-500' : 'bg-green-300'
+          }`} style={{ transform: 'translate(50%, -50%)' }}></div>
+          <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-[#1DB954]' : 'bg-green-400'
+          }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
+        </div>
+        
+        <div className="relative z-10 text-center py-8">
+          <div className={`w-20 h-20 mx-auto mb-6 p-4 rounded-2xl transition-all duration-300 ${
+            isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+          }`}>
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg"
               alt="Spotify Logo"
-              className="w-full h-full"
+              className="w-full h-full filter brightness-0 invert"
             />
           </div>
           
-          <h3 className={`text-xl font-bold mb-2 transition-colors duration-300 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-green-500 to-emerald-600 bg-clip-text text-transparent`}>
             Spotify nicht verbunden
           </h3>
           
-          <p className={`text-sm mb-6 max-w-md mx-auto transition-colors duration-300 ${
+          <p className={`text-sm max-w-md mx-auto leading-relaxed transition-colors duration-300 ${
             isDarkMode ? 'text-gray-400' : 'text-gray-600'
           }`}>
             Ein Administrator muss zuerst ein Spotify-Konto verbinden und eine Playlist auswählen, bevor Musikwünsche möglich sind.
@@ -416,25 +428,37 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
 
   if (!selectedPlaylist) {
     return (
-      <div className={`p-6 transition-colors duration-300 ${
-        isDarkMode ? 'bg-gray-900' : 'bg-white'
+      <div className={`mx-4 my-6 p-8 rounded-3xl transition-all duration-500 relative overflow-hidden ${
+        isDarkMode 
+          ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-green-500/10' 
+          : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-green-500/10'
       }`}>
-        <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto mb-6">
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-green-500' : 'bg-green-300'
+          }`} style={{ transform: 'translate(50%, -50%)' }}></div>
+          <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-[#1DB954]' : 'bg-green-400'
+          }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
+        </div>
+        
+        <div className="relative z-10 text-center py-8">
+          <div className={`w-20 h-20 mx-auto mb-6 p-4 rounded-2xl transition-all duration-300 ${
+            isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+          }`}>
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg"
               alt="Spotify Logo"
-              className="w-full h-full"
+              className="w-full h-full filter brightness-0 invert"
             />
           </div>
           
-          <h3 className={`text-xl font-bold mb-2 transition-colors duration-300 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-green-500 to-emerald-600 bg-clip-text text-transparent`}>
             Keine Playlist ausgewählt
           </h3>
           
-          <p className={`text-sm mb-6 max-w-md mx-auto transition-colors duration-300 ${
+          <p className={`text-sm max-w-md mx-auto leading-relaxed transition-colors duration-300 ${
             isDarkMode ? 'text-gray-400' : 'text-gray-600'
           }`}>
             Ein Administrator muss zuerst eine Playlist auswählen, bevor Musikwünsche möglich sind.
@@ -445,86 +469,122 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
   }
 
   return (
-    <div className={`transition-colors duration-300 ${
-      isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
-    }`}>
-      {/* Header with gradient */}
-      <div className={`bg-gradient-to-b ${
+    <div className={`mx-4 my-6 transition-colors duration-500`}>
+      {/* Header with modern glassmorphism */}
+      <div className={`p-6 rounded-3xl mb-6 transition-all duration-500 relative overflow-hidden ${
         isDarkMode 
-          ? 'from-[#1DB954]/80 to-transparent' 
-          : 'from-[#1DB954] to-transparent'
-      } pt-6 pb-12 px-6`}>
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 shadow-lg rounded-md overflow-hidden">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg"
-                alt="Spotify Logo"
-                className="w-full h-full bg-[#1DB954] p-2"
-              />
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-white opacity-90">Playlist</p>
-              <h3 className="text-2xl font-bold text-white">
-                {selectedPlaylist.name}
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-white opacity-80">
-                  {playlistTracks.length} Songs • Hochzeits-Playlist
-                </p>
-                {/* 🚀 NEW: Enhanced sync indicator with snapshot info */}
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                  syncStatus === 'connecting' ? 'bg-yellow-500/20 text-yellow-200' :
-                  syncStatus === 'syncing' ? 'bg-blue-500/20 text-blue-200' :
-                  syncStatus === 'live' ? 'bg-green-500/20 text-green-200' :
-                  'bg-red-500/20 text-red-200'
-                }`}>
-                  <div className={`w-2 h-2 rounded-full ${
-                    syncStatus === 'connecting' ? 'bg-yellow-400 animate-pulse' :
-                    syncStatus === 'syncing' ? 'bg-blue-400 animate-pulse' :
-                    syncStatus === 'live' ? 'bg-green-400 animate-pulse' :
-                    'bg-red-400'
-                  }`}></div>
-                  <span>
-                    {syncStatus === 'connecting' ? 'Verbinde...' :
-                     syncStatus === 'syncing' ? 'Sync...' :
-                     syncStatus === 'live' ? 'Live' :
-                     'Fehler'}
-                  </span>
-                  {syncStatus === 'live' && <Activity className="w-3 h-3" />}
+          ? 'bg-gradient-to-br from-green-900/30 via-emerald-900/20 to-[#1DB954]/30 border border-green-500/30 backdrop-blur-xl shadow-2xl shadow-green-500/20' 
+          : 'bg-gradient-to-br from-green-50/80 via-emerald-50/60 to-green-100/80 border border-green-200/50 backdrop-blur-xl shadow-2xl shadow-green-500/20'
+      }`}>
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-[#1DB954]' : 'bg-green-300'
+          }`} style={{ transform: 'translate(50%, -50%)' }}></div>
+          <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-emerald-500' : 'bg-emerald-300'
+          }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
+        </div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className={`w-16 h-16 p-3 rounded-2xl transition-all duration-300 ${
+                isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+              }`}>
+                <svg
+                  viewBox="0 0 24 24"
+                  className={`w-full h-full transition-colors duration-300 ${
+                    isDarkMode ? 'fill-green-400' : 'fill-green-600'
+                  }`}
+                >
+                  <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.424c-.2.32-.623.42-.943.223-2.587-1.581-5.845-1.94-9.68-1.063-.414.094-.83-.156-.924-.57-.094-.414.156-.83.57-.924 4.195-.96 7.744-.546 10.633 1.223.32.2.42.623.223.943zm1.35-3.005c-.25.4-.781.525-1.181.275-2.96-1.82-7.473-2.349-10.98-1.285-.518.157-1.066-.132-1.223-.65-.157-.518.132-1.066.65-1.223 4.009-1.22 9.068-.643 12.459 1.477.4.25.525.781.275 1.181zm.116-3.129c-3.547-2.106-9.395-2.301-12.78-1.273-.622.189-1.278-.164-1.467-.786-.189-.622.164-1.278.786-1.467 3.876-1.178 10.44-.964 14.564 1.473.513.304.681 1.026.377 1.539-.304.513-1.026.681-1.539.377z"/>
+                </svg>
+              </div>
+              <div>
+                <p className={`text-xs font-bold uppercase tracking-wider transition-colors duration-300 ${
+                  isDarkMode ? 'text-green-400' : 'text-green-600'
+                }`}>Playlist</p>
+                <h3 className={`text-2xl font-bold bg-gradient-to-br from-green-500 to-emerald-600 bg-clip-text text-transparent`}>
+                  {selectedPlaylist.name}
+                </h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className={`text-sm transition-colors duration-300 ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    {playlistTracks.length} Songs • Hochzeits-Playlist
+                  </p>
+                  <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
+                    syncStatus === 'connecting' ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30' :
+                    syncStatus === 'syncing' ? 'bg-blue-500/20 text-blue-500 border border-blue-500/30' :
+                    syncStatus === 'live' ? 'bg-green-500/20 text-green-500 border border-green-500/30' :
+                    'bg-red-500/20 text-red-500 border border-red-500/30'
+                  }`}>
+                    <div className={`w-2 h-2 rounded-full ${
+                      syncStatus === 'connecting' ? 'bg-yellow-400 animate-pulse' :
+                      syncStatus === 'syncing' ? 'bg-blue-400 animate-pulse' :
+                      syncStatus === 'live' ? 'bg-green-400 animate-pulse' :
+                      'bg-red-400'
+                    }`}></div>
+                    <span>
+                      {syncStatus === 'connecting' ? 'Verbinde...' :
+                       syncStatus === 'syncing' ? 'Sync...' :
+                       syncStatus === 'live' ? 'Live' :
+                       'Fehler'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
+            <a
+              href={`https://open.spotify.com/playlist/${selectedPlaylist.playlistId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`p-3 rounded-xl transition-all duration-300 hover:scale-110 ${
+                isDarkMode 
+                  ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' 
+                  : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
+              }`}
+              title="In Spotify öffnen"
+            >
+              <ExternalLink className="w-5 h-5" />
+            </a>
           </div>
-          <a
-            href={`https://open.spotify.com/playlist/${selectedPlaylist.playlistId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-full bg-[#1DB954] text-white hover:bg-opacity-80 transition-colors"
-            title="In Spotify öffnen"
-          >
-            <ExternalLink className="w-5 h-5" />
-          </a>
         </div>
 
         {/* Search Section */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Suche nach Songs oder Interpreten..."
-            className="w-full pl-10 pr-10 py-3 bg-white bg-opacity-90 border border-gray-200 rounded-full text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1DB954] focus:border-transparent"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-200"
-            >
-              <X className="w-5 h-5 text-gray-500" />
-            </button>
-          )}
+        <div className={`relative p-6 rounded-3xl mb-6 transition-all duration-500 ${
+          isDarkMode 
+            ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-lg' 
+            : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-lg'
+        }`}>
+          <div className="relative">
+            <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-500'
+            }`} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Suche nach Songs oder Interpreten..."
+              className={`w-full pl-12 pr-12 py-4 rounded-2xl border-0 transition-all duration-300 focus:ring-2 focus:ring-green-500/50 outline-none ${
+                isDarkMode 
+                  ? 'bg-gray-700/50 text-white placeholder-gray-400 focus:bg-gray-700/70' 
+                  : 'bg-white/80 text-gray-900 placeholder-gray-500 focus:bg-white'
+              }`}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className={`absolute right-4 top-1/2 transform -translate-y-1/2 p-1.5 rounded-full transition-all duration-300 hover:scale-110 ${
+                  isDarkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-200'
+                }`}
+              >
+                <X className={`w-4 h-4 transition-colors duration-300 ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                }`} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
