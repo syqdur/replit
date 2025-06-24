@@ -18,7 +18,7 @@ import {
   updateDoc
 } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
-import { MediaItem, Comment, Like } from '../types';
+import { MediaItem, Comment, Like, ProfileData } from '../types';
 
 export const uploadFiles = async (
   files: FileList, 
@@ -400,5 +400,78 @@ export const toggleLike = async (
     // Remove like
     const likeDoc = likesSnapshot.docs[0];
     await deleteDoc(doc(db, 'likes', likeDoc.id));
+  }
+};
+
+// Profile management functions
+export const loadProfile = (callback: (profile: ProfileData | null) => void): () => void => {
+  const q = query(collection(db, 'profile'), orderBy('updatedAt', 'desc'));
+  
+  return onSnapshot(q, (snapshot) => {
+    if (!snapshot.empty) {
+      const profileDoc = snapshot.docs[0];
+      const profile: ProfileData = {
+        id: profileDoc.id,
+        ...profileDoc.data()
+      } as ProfileData;
+      
+      console.log('👤 Profile loaded:', profile.name);
+      callback(profile);
+    } else {
+      console.log('👤 No profile found');
+      callback(null);
+    }
+  }, (error) => {
+    console.error('❌ Error loading profile:', error);
+    callback(null);
+  });
+};
+
+export const updateProfile = async (
+  profileData: {
+    profilePicture?: File | string;
+    name: string;
+    bio: string;
+  },
+  userName: string
+): Promise<void> => {
+  try {
+    let profilePictureUrl = profileData.profilePicture;
+    
+    // Upload new profile picture if it's a File
+    if (profileData.profilePicture instanceof File) {
+      const fileName = `profile-${Date.now()}-${profileData.profilePicture.name}`;
+      const storageRef = ref(storage, `uploads/${fileName}`); // Use uploads folder like other media
+      await uploadBytes(storageRef, profileData.profilePicture);
+      profilePictureUrl = await getDownloadURL(storageRef);
+      console.log('📷 Profile picture uploaded:', fileName);
+    }
+    
+    const profilePayload = {
+      name: profileData.name,
+      bio: profileData.bio,
+      profilePicture: profilePictureUrl,
+      updatedAt: new Date().toISOString(),
+      updatedBy: userName
+    };
+    
+    // Check if profile already exists
+    const profileQuery = query(collection(db, 'profile'));
+    const profileSnapshot = await getDocs(profileQuery);
+    
+    if (!profileSnapshot.empty) {
+      // Update existing profile
+      const profileDoc = profileSnapshot.docs[0];
+      await updateDoc(doc(db, 'profile', profileDoc.id), profilePayload);
+      console.log('✅ Profile updated');
+    } else {
+      // Create new profile
+      await addDoc(collection(db, 'profile'), profilePayload);
+      console.log('✅ Profile created');
+    }
+    
+  } catch (error) {
+    console.error('❌ Error updating profile:', error);
+    throw error;
   }
 };

@@ -370,13 +370,6 @@ function App() {
     setIsAdmin(true);
     localStorage.setItem('admin_status', 'true');
     setShowAdminLogin(false);
-    
-    // Show welcome message for different admins
-    if (username === "Ehepaar") {
-      setTimeout(() => {
-        alert('🎉 Willkommen! Du hast jetzt Zugriff auf die Post-Hochzeits-Zusammenfassung.\n\n💕 Klicke auf den Sparkles-Button (✨) um loszulegen!');
-      }, 500);
-    }
   };
 
   const handleAdminLogout = () => {
@@ -525,7 +518,11 @@ function App() {
       <div className={`max-w-md mx-auto transition-colors duration-300 ${
         isDarkMode ? 'bg-gray-800' : 'bg-white'
       }`}>
-        <ProfileHeader isDarkMode={isDarkMode} />
+        <ProfileHeader 
+          isDarkMode={isDarkMode} 
+          isAdmin={isAdmin}
+          userName={userName}
+        />
         
         {/* Stories Bar */}
         <StoriesBar

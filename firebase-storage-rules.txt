@@ -1,0 +1,22 @@
+// Firebase Storage Security Rules
+// Copy these rules to your Firebase Console -> Storage -> Rules
+
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow read access to all files
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+    
+    // Allow write access to uploads folder
+    match /uploads/{allPaths=**} {
+      allow write: if true;
+    }
+    
+    // Allow write access to profile folder (for profile pictures)
+    match /profile/{allPaths=**} {
+      allow write: if true;
+    }
+  }
+}

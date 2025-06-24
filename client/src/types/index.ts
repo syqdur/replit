@@ -68,3 +68,12 @@ export interface SpotifyTrack {
   };
   uri: string;
 }
+
+export interface ProfileData {
+  id: string;
+  name: string;
+  bio: string;
+  profilePicture?: string;
+  updatedAt: string;
+  updatedBy: string;
+}

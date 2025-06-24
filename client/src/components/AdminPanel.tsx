@@ -253,59 +253,63 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         {isAdmin ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
       </button>
 
-      {/* Admin Controls - Alle Buttons in einer horizontalen Reihe */}
+      {/* Admin Controls - Vertical rectangular buttons */}
       {isAdmin && (
-        <div className="fixed bottom-16 left-4 flex gap-2">
-          {/* POST-WEDDING RECAP BUTTON - NEW */}
+        <div className="fixed bottom-16 left-4 flex flex-col gap-2 max-w-xs">
+          {/* POST-WEDDING RECAP BUTTON */}
           <button
             onClick={handleOpenPostWeddingRecap}
-            className={`p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${
+            className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
               isDarkMode
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
                 : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white'
             }`}
-            title="💕 Post-Hochzeits-Zusammenfassung - Sammle Momente und sende Dankeskarten"
+            title="Post-Hochzeits-Zusammenfassung"
           >
-            <Sparkles className="w-5 h-5" />
+            <Sparkles className="w-4 h-4" />
+            <span className="text-sm font-medium">Recap</span>
           </button>
 
           {/* USER MANAGEMENT BUTTON */}
           <button
             onClick={() => setShowUserManagement(true)}
-            className={`p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${
+            className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
               isDarkMode
                 ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
                 : 'bg-cyan-500 hover:bg-cyan-600 text-white'
             }`}
-            title="👥 User Management - Alle Benutzer und deren Status anzeigen"
+            title="User Management"
           >
-            <Users className="w-5 h-5" />
+            <Users className="w-4 h-4" />
+            <span className="text-sm font-medium">Users</span>
           </button>
 
           {/* SPOTIFY ADMIN BUTTON */}
           <button
             onClick={() => setShowSpotifyAdmin(true)}
-            className={`p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${
+            className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
               isDarkMode
                 ? 'bg-green-600 hover:bg-green-700 text-white'
                 : 'bg-green-500 hover:bg-green-600 text-white'
             }`}
-            title="🎵 Spotify Admin - Account verbinden und Playlist verwalten"
+            title="Spotify Admin"
           >
-            <Music className="w-5 h-5" />
+            <Music className="w-4 h-4" />
+            <span className="text-sm font-medium">Spotify</span>
           </button>
 
           {/* Showcase Button */}
           <button
             onClick={() => setShowShowcase(true)}
-            className={`p-2 rounded-full shadow-lg transition-all duration-300 ${
+            className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
               isDarkMode
-                ? 'bg-yellow-600 hover:bg-yellow-700 text-white hover:scale-110'
-                : 'bg-yellow-500 hover:bg-yellow-600 text-white hover:scale-110'
+                ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                : 'bg-yellow-500 hover:bg-yellow-600 text-white'
             }`}
-            title="🎯 WeddingPix Showcase by Mauro"
+            title="WeddingPix Showcase"
           >
             <Code className="w-4 h-4" />
+            <span className="text-sm font-medium">Showcase</span>
           </button>
 
           {/* Gallery Toggle */}
@@ -313,22 +317,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleGallery}
               disabled={isUpdatingFeatures}
-              className={`p-2 rounded-full shadow-lg transition-all duration-300 ${
+              className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : siteStatus.galleryEnabled
                     ? isDarkMode
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white hover:scale-110'
-                      : 'bg-blue-500 hover:bg-blue-600 text-white hover:scale-110'
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white'
                     : isDarkMode
-                      ? 'bg-gray-600 hover:bg-gray-700 text-gray-300 hover:scale-110'
-                      : 'bg-gray-400 hover:bg-gray-500 text-gray-600 hover:scale-110'
+                      ? 'bg-gray-600 hover:bg-gray-700 text-gray-300'
+                      : 'bg-gray-400 hover:bg-gray-500 text-gray-600'
               }`}
-              title={`📸 Galerie ${siteStatus.galleryEnabled ? 'deaktivieren' : 'aktivieren'}`}
+              title={`Galerie ${siteStatus.galleryEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
               <Image className="w-4 h-4" />
+              <span className="text-sm font-medium">Gallery</span>
             </button>
           )}
 
@@ -337,22 +342,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleMusicWishlist}
               disabled={isUpdatingFeatures}
-              className={`p-2 rounded-full shadow-lg transition-all duration-300 ${
+              className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : siteStatus.musicWishlistEnabled
                     ? isDarkMode
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white hover:scale-110'
-                      : 'bg-purple-500 hover:bg-purple-600 text-white hover:scale-110'
+                      ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                      : 'bg-purple-500 hover:bg-purple-600 text-white'
                     : isDarkMode
-                      ? 'bg-gray-600 hover:bg-gray-700 text-gray-300 hover:scale-110'
-                      : 'bg-gray-400 hover:bg-gray-500 text-gray-600 hover:scale-110'
+                      ? 'bg-gray-600 hover:bg-gray-700 text-gray-300'
+                      : 'bg-gray-400 hover:bg-gray-500 text-gray-600'
               }`}
-              title={`🎵 Musikwünsche ${siteStatus.musicWishlistEnabled ? 'deaktivieren' : 'aktivieren'}`}
+              title={`Musikwünsche ${siteStatus.musicWishlistEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
               <Music className="w-4 h-4" />
+              <span className="text-sm font-medium">Music</span>
             </button>
           )}
 
@@ -361,22 +367,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleStories}
               disabled={isUpdatingFeatures}
-              className={`p-2 rounded-full shadow-lg transition-all duration-300 ${
+              className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : siteStatus.storiesEnabled
                     ? isDarkMode
-                      ? 'bg-green-600 hover:bg-green-700 text-white hover:scale-110'
-                      : 'bg-green-500 hover:bg-green-600 text-white hover:scale-110'
+                      ? 'bg-green-600 hover:bg-green-700 text-white'
+                      : 'bg-green-500 hover:bg-green-600 text-white'
                     : isDarkMode
-                      ? 'bg-gray-600 hover:bg-gray-700 text-gray-300 hover:scale-110'
-                      : 'bg-gray-400 hover:bg-gray-500 text-gray-600 hover:scale-110'
+                      ? 'bg-gray-600 hover:bg-gray-700 text-gray-300'
+                      : 'bg-gray-400 hover:bg-gray-500 text-gray-600'
               }`}
-              title={`📱 Stories ${siteStatus.storiesEnabled ? 'deaktivieren' : 'aktivieren'}`}
+              title={`Stories ${siteStatus.storiesEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
               <Camera className="w-4 h-4" />
+              <span className="text-sm font-medium">Stories</span>
             </button>
           )}
 
@@ -385,18 +392,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleSiteStatus}
               disabled={isUpdatingSiteStatus}
-              className={`p-2 rounded-full shadow-lg transition-all duration-300 ${
+              className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
                 isUpdatingSiteStatus
                   ? isDarkMode
                     ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : siteStatus.isUnderConstruction
                     ? isDarkMode
-                      ? 'bg-orange-600 hover:bg-orange-700 text-white hover:scale-110'
-                      : 'bg-orange-500 hover:bg-orange-600 text-white hover:scale-110'
+                      ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                      : 'bg-orange-500 hover:bg-orange-600 text-white'
                     : isDarkMode
-                      ? 'bg-red-600 hover:bg-red-700 text-white hover:scale-110'
-                      : 'bg-red-500 hover:bg-red-600 text-white hover:scale-110'
+                      ? 'bg-red-600 hover:bg-red-700 text-white'
+                      : 'bg-red-500 hover:bg-red-600 text-white'
               }`}
               title={getSiteStatusInfo()}
             >
@@ -405,38 +412,43 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               ) : (
                 <Globe className="w-4 h-4" />
               )}
+              <span className="text-sm font-medium">
+                {siteStatus.isUnderConstruction ? 'Unlock' : 'Lock'}
+              </span>
             </button>
           )}
 
           {/* External Services Button */}
           <button
             onClick={() => setShowExternalServices(true)}
-            className={`p-2 rounded-full shadow-lg transition-all duration-300 ${
+            className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
               isDarkMode
-                ? 'bg-purple-600 hover:bg-purple-700 text-white hover:scale-110'
-                : 'bg-purple-500 hover:bg-purple-600 text-white hover:scale-110'
+                ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                : 'bg-purple-500 hover:bg-purple-600 text-white'
             }`}
             title="Deutsche Fotobuch-Services"
           >
             <Heart className="w-4 h-4" />
+            <span className="text-sm font-medium">Services</span>
           </button>
           
           {/* ZIP Download Button */}
           <button
             onClick={handleDownloadAll}
             disabled={isDownloading || mediaItems.length === 0}
-            className={`p-2 rounded-full shadow-lg transition-all duration-300 ${
+            className={`px-3 py-2 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
               isDownloading || mediaItems.length === 0
                 ? isDarkMode
                   ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 : isDarkMode
-                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white hover:scale-110'
-                  : 'bg-indigo-500 hover:bg-indigo-600 text-white hover:scale-110'
+                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                  : 'bg-indigo-500 hover:bg-indigo-600 text-white'
             }`}
             title={getDownloadButtonText()}
           >
             <Download className={`w-4 h-4 ${isDownloading ? 'animate-bounce' : ''}`} />
+            <span className="text-sm font-medium">Download</span>
           </button>
         </div>
       )}
