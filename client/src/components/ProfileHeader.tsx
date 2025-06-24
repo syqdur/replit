@@ -216,56 +216,56 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                 </p>
               </div>
               
-              {/* Countdown Cards */}
-              <div className="flex justify-center gap-6">
-                {[
-                  { value: countdown.days, label: 'Tage', icon: '📅' },
-                  { value: countdown.hours, label: 'Stunden', icon: '⏰' },
-                  { value: countdown.minutes, label: 'Minuten', icon: '⏱️' },
-                  { value: countdown.seconds, label: 'Sekunden', icon: '⚡' }
-                ].map((item, index) => (
-                  <div
-                    key={index}
-                    className={`relative w-20 h-24 rounded-2xl transition-all duration-500 transform hover:scale-105 group ${
-                      isDarkMode 
-                        ? 'bg-gray-800/60 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/80' 
-                        : 'bg-white/80 border border-gray-200/60 backdrop-blur-sm hover:bg-white/90 shadow-lg hover:shadow-xl'
-                    }`}
-                    style={{
-                      animation: 'pulse 2s ease-in-out infinite',
-                      animationDelay: `${index * 0.2}s`
-                    }}
-                  >
-                    {/* Gradient Border Effect */}
-                    <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                      isDarkMode ? 'bg-gradient-to-r from-pink-500/20 to-purple-500/20' : 'bg-gradient-to-r from-pink-100/50 to-purple-100/50'
-                    }`}></div>
-                    
-                    <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-2">
-                      {/* Icon */}
-                      <div className="text-lg mb-1 transform group-hover:scale-110 transition-transform duration-300">
-                        {item.icon}
-                      </div>
-                      
-                      {/* Value */}
-                      <div className={`text-lg font-bold mb-1 transition-all duration-300 ${
-                        isDarkMode 
-                          ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400' 
-                          : 'text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600'
-                      }`}>
-                        {item.value.toString().padStart(2, '0')}
-                      </div>
-                      
-                      {/* Label */}
-                      <div className={`text-xs uppercase tracking-wide font-medium transition-colors duration-300 leading-tight ${
-                        isDarkMode ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-700'
-                      }`}>
-                        {item.label}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+{/* Countdown Cards */}
+<div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+  {[
+    { value: countdown.days, label: 'Tage', icon: '📅' },
+    { value: countdown.hours, label: 'Stunden', icon: '⏰' },
+    { value: countdown.minutes, label: 'Minuten', icon: '⏱️' },
+    { value: countdown.seconds, label: 'Sekunden', icon: '⚡' }
+  ].map((item, index) => (
+    <div
+      key={index}
+      className={`relative w-20 h-24 sm:w-24 sm:h-28 rounded-2xl transition-all duration-500 transform hover:scale-105 group flex-shrink-0 ${
+        isDarkMode 
+          ? 'bg-gray-800/60 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/80' 
+          : 'bg-white/80 border border-gray-200/60 backdrop-blur-sm hover:bg-white/90 shadow-lg hover:shadow-xl'
+      }`}
+      style={{
+        animation: 'pulse 2s ease-in-out infinite',
+        animationDelay: `${index * 0.2}s`
+      }}
+    >
+      {/* Gradient Border Effect */}
+      <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+        isDarkMode ? 'bg-gradient-to-r from-pink-500/20 to-purple-500/20' : 'bg-gradient-to-r from-pink-100/50 to-purple-100/50'
+      }`}></div>
+
+      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-2">
+        {/* Icon */}
+        <div className="text-lg mb-1 transform group-hover:scale-110 transition-transform duration-300">
+          {item.icon}
+        </div>
+
+        {/* Value */}
+        <div className={`text-lg font-bold mb-1 transition-all duration-300 ${
+          isDarkMode 
+            ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400' 
+            : 'text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600'
+        }`}>
+          {item.value.toString().padStart(2, '0')}
+        </div>
+
+        {/* Label */}
+        <div className={`text-xs uppercase tracking-wide font-medium transition-colors duration-300 leading-tight ${
+          isDarkMode ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-700'
+        }`}>
+          {item.label}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
 
               {/* Bottom Accent */}
               <div className="mt-6 text-center">
