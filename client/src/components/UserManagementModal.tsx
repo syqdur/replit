@@ -332,6 +332,20 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
         const storiesQuery = query(collection(db, 'stories'), where('deviceId', '==', deviceId));
         const storiesSnapshot = await getDocs(storiesQuery);
         storiesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+        
+        // Delete user profile from userProfiles collection
+        const profilesQuery = query(
+          collection(db, 'userProfiles'),
+          where('userName', '==', userName),
+          where('deviceId', '==', deviceId)
+        );
+        const profilesSnapshot = await getDocs(profilesQuery);
+        console.log(`🗑️ Found ${profilesSnapshot.docs.length} profile entries for ${userName} in bulk delete`);
+        
+        profilesSnapshot.docs.forEach(doc => {
+          console.log(`🗑️ Bulk deleting profile entry: ${doc.id}`);
+          batch.delete(doc.ref);
+        });
       }
 
       if (deletedCount > 0) {
@@ -463,6 +477,20 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       );
       const storiesSnapshot = await getDocs(storiesQuery);
       storiesSnapshot.docs.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      
+      // Delete user profile from userProfiles collection
+      const profilesQuery = query(
+        collection(db, 'userProfiles'),
+        where('userName', '==', userName),
+        where('deviceId', '==', deviceId)
+      );
+      const profilesSnapshot = await getDocs(profilesQuery);
+      console.log(`🗑️ Found ${profilesSnapshot.docs.length} profile entries to delete for ${userName}`);
+      
+      profilesSnapshot.docs.forEach(doc => {
+        console.log(`🗑️ Deleting profile entry: ${doc.id}`);
         batch.delete(doc.ref);
       });
       
