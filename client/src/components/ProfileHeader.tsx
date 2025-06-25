@@ -262,7 +262,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
             <br/>
             <span className={`inline-block mt-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${
               isDarkMode 
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25' 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25' 
                 : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25'
             }`}>
               💻 coded by Mauro
@@ -292,7 +292,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                   <div className="flex items-center justify-center gap-4 mb-4">
                     <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 animate-pulse ${
                       isDarkMode 
-                        ? 'bg-gradient-to-br from-pink-600/20 to-purple-600/20 border border-pink-500/30' 
+                        ? 'bg-pink-600/20 border border-pink-500/30' 
                         : 'bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-200/50'
                     }`}>
                       <Heart className={`w-8 h-8 transition-colors duration-300 animate-heartbeat ${
@@ -370,7 +370,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                 <div className="mt-6 text-center">
                   <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-gradient-to-r from-pink-600/20 to-purple-600/20 border border-pink-500/30' 
+                      ? 'bg-pink-600/20 border border-pink-500/30' 
                       : 'bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200/50'
                   }`}>
                     <span className="text-lg">💕</span>

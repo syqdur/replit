@@ -96,7 +96,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                 <div 
                   className={`h-full transition-all duration-500 rounded-full ${
                     isDarkMode 
-                      ? 'bg-gradient-to-r from-purple-500 to-pink-500' 
+                      ? 'bg-purple-500' 
                       : 'bg-gradient-to-r from-pink-500 to-purple-500'
                   }`}
                   style={{ width: `${progress}%` }}

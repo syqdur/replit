@@ -572,7 +572,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       {/* Header with modern glassmorphism */}
       <div className={`p-6 rounded-3xl mb-6 transition-all duration-500 relative overflow-hidden ${
         isDarkMode 
-          ? 'bg-gradient-to-br from-green-900/30 via-emerald-900/20 to-[#1DB954]/30 border border-green-500/30 backdrop-blur-xl shadow-2xl shadow-green-500/20' 
+          ? 'bg-green-900/30 border border-green-500/30 backdrop-blur-xl shadow-2xl shadow-green-500/20' 
           : 'bg-gradient-to-br from-green-50/80 via-emerald-50/60 to-green-100/80 border border-green-200/50 backdrop-blur-xl shadow-2xl shadow-green-500/20'
       }`}>
         {/* Decorative background elements */}

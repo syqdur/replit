@@ -101,7 +101,7 @@ export const UnderConstructionPage: React.FC<UnderConstructionPageProps> = ({
   return (
     <div className={`min-h-screen flex flex-col transition-colors duration-500 ${
       isDarkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900' 
+        ? 'bg-gray-900' 
         : 'bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50'
     }`}>
       {/* Header */}
@@ -258,7 +258,7 @@ export const UnderConstructionPage: React.FC<UnderConstructionPageProps> = ({
               <div className="mt-10 text-center">
                 <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-300 ${
                   isDarkMode 
-                    ? 'bg-gradient-to-r from-pink-600/20 to-purple-600/20 border border-pink-500/30' 
+                    ? 'bg-pink-600/20 border border-pink-500/30' 
                     : 'bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200/50'
                 }`}>
                   <span className="text-2xl">💕</span>

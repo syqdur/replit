@@ -551,7 +551,7 @@ function App() {
   return (
     <div className={`min-h-screen transition-all duration-500 ${
       isDarkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-purple-900/10 to-pink-900/10' 
+        ? 'bg-gray-900' 
         : 'bg-gradient-to-br from-gray-50 via-pink-50/30 to-purple-50/20'
     }`}>
       {/* Modern Instagram 2.0 Header */}
