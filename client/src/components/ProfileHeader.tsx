@@ -196,14 +196,17 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
               {/* Header */}
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-4 mb-4">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 animate-pulse ${
                     isDarkMode 
                       ? 'bg-gradient-to-br from-pink-600/20 to-purple-600/20 border border-pink-500/30' 
                       : 'bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-200/50'
                   }`}>
-                    <Heart className={`w-8 h-8 transition-colors duration-300 ${
+                    <Heart className={`w-8 h-8 transition-colors duration-300 animate-heartbeat ${
                      isDarkMode ? 'text-pink-400' : 'text-pink-600'
-                    }`} />
+                    }`} 
+                    style={{
+                      animation: 'heartbeat 1.5s ease-in-out infinite'
+                    }} />
                   </div>
                 </div>
                 <h3 className={`text-2xl font-bold tracking-tight mb-2 transition-colors duration-300 ${
