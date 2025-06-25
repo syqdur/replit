@@ -543,7 +543,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
               <p className={`text-sm sm:text-base transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
-                Die wichtigsten Momente
+                <span className="hidden sm:inline">Die wichtigsten Momente unserer Beziehung</span>
+                <span className="sm:hidden">Die wichtigsten Momente</span>
               </p>
             </div>
           </div>

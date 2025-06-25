@@ -513,7 +513,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                   }`}>
                     {playlistTracks.length} Songs • Hochzeits-Playlist
                   </p>
-                  <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
+                  <div className={`flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium transition-all duration-300 w-fit ${
                     syncStatus === 'connecting' ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30' :
                     syncStatus === 'syncing' ? 'bg-blue-500/20 text-blue-500 border border-blue-500/30' :
                     syncStatus === 'live' ? 'bg-green-500/20 text-green-500 border border-green-500/30' :
@@ -565,7 +565,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Suche nach Songs oder Interpreten..."
+              placeholder="Suche nach Songs..."
               className={`w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 rounded-xl sm:rounded-2xl border-0 transition-all duration-300 focus:ring-2 focus:ring-green-500/50 outline-none text-sm sm:text-base ${
                 isDarkMode 
                   ? 'bg-gray-700/50 text-white placeholder-gray-400 focus:bg-gray-700/70' 
@@ -588,9 +588,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
         </div>
       </div>
 
-      {/* Success Message */}
+      {/* Success Message - Mobile optimized */}
       {showAddSuccess && (
-        <div className={`mx-6 mb-4 p-3 rounded-lg ${
+        <div className={`mx-4 sm:mx-6 mb-4 p-3 rounded-lg ${
           isDarkMode 
             ? 'bg-[#1DB954]/20 border border-[#1DB954]/30 text-[#1DB954]' 
             : 'bg-[#1DB954]/20 border border-[#1DB954]/30 text-[#1DB954]'
@@ -606,9 +606,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
         </div>
       )}
 
-      {/* Error Display */}
+      {/* Error Display - Mobile optimized */}
       {error && (
-        <div className={`mx-6 mb-4 p-3 rounded-lg ${
+        <div className={`mx-4 sm:mx-6 mb-4 p-3 rounded-lg ${
           isDarkMode 
             ? 'bg-red-900/20 border border-red-700/30 text-red-400' 
             : 'bg-red-100 border border-red-300 text-red-600'
