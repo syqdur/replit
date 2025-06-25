@@ -255,11 +255,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* Admin Controls - Instagram 2.0 Style */}
       {isAdmin && (
-        <div className="fixed bottom-16 left-4 flex flex-col gap-4 max-w-xs">
+        <div className="fixed bottom-16 left-4 flex flex-col gap-2 sm:gap-4 max-w-xs">
           {/* POST-WEDDING RECAP BUTTON */}
           <button
             onClick={handleOpenPostWeddingRecap}
-            className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
                 ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-purple-500/20'
                 : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-purple-500/20'
@@ -267,17 +267,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             title="Post-Hochzeits-Zusammenfassung"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            <div className="relative flex items-center gap-2 sm:gap-3">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                 isDarkMode ? 'bg-gradient-to-br from-purple-600/30 to-pink-600/30' : 'bg-gradient-to-br from-purple-500/20 to-pink-500/20'
               }`}>
-                <Sparkles className="w-5 h-5 text-purple-400" />
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
               </div>
               <div className="flex-1 text-left">
-                <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   Wedding Recap
                 </div>
-                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   Zusammenfassung
                 </div>
               </div>
@@ -287,7 +287,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {/* USER MANAGEMENT BUTTON */}
           <button
             onClick={() => setShowUserManagement(true)}
-            className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
                 ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-cyan-500/20'
                 : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-cyan-500/20'
@@ -295,17 +295,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             title="User Management"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            <div className="relative flex items-center gap-2 sm:gap-3">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                 isDarkMode ? 'bg-gradient-to-br from-cyan-600/30 to-blue-600/30' : 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20'
               }`}>
-                <Users className="w-5 h-5 text-cyan-400" />
+                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
               </div>
               <div className="flex-1 text-left">
-                <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   User Management
                 </div>
-                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   Benutzer verwalten
                 </div>
               </div>
@@ -315,7 +315,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {/* SPOTIFY ADMIN BUTTON */}
           <button
             onClick={() => setShowSpotifyAdmin(true)}
-            className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
                 ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-green-500/20'
                 : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-green-500/20'
@@ -323,17 +323,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             title="Spotify Admin"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            <div className="relative flex items-center gap-2 sm:gap-3">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                 isDarkMode ? 'bg-gradient-to-br from-green-600/30 to-emerald-600/30' : 'bg-gradient-to-br from-green-500/20 to-emerald-500/20'
               }`}>
-                <Music className="w-5 h-5 text-green-400" />
+                <Music className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
               </div>
               <div className="flex-1 text-left">
-                <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   Spotify Admin
                 </div>
-                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   Musik verwalten
                 </div>
               </div>
@@ -343,7 +343,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {/* Showcase Button */}
           <button
             onClick={() => setShowShowcase(true)}
-            className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
                 ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-yellow-500/20'
                 : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-yellow-500/20'
@@ -351,17 +351,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             title="WeddingPix Showcase"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            <div className="relative flex items-center gap-2 sm:gap-3">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                 isDarkMode ? 'bg-gradient-to-br from-yellow-600/30 to-orange-600/30' : 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20'
               }`}>
-                <Code className="w-5 h-5 text-yellow-400" />
+                <Code className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
               </div>
               <div className="flex-1 text-left">
-                <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   WeddingPix
                 </div>
-                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   Showcase
                 </div>
               </div>
@@ -373,7 +373,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleGallery}
               disabled={isUpdatingFeatures}
-              className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -387,19 +387,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className={`absolute inset-0 bg-gradient-to-r opacity-60 ${
                 siteStatus.galleryEnabled ? 'from-blue-500/20 to-indigo-500/20' : 'from-gray-500/10 to-gray-600/10'
               }`}></div>
-              <div className="relative flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              <div className="relative flex items-center gap-2 sm:gap-3">
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                   siteStatus.galleryEnabled
                     ? isDarkMode ? 'bg-gradient-to-br from-blue-600/30 to-indigo-600/30' : 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20'
                     : isDarkMode ? 'bg-gradient-to-br from-gray-600/30 to-gray-700/30' : 'bg-gradient-to-br from-gray-400/20 to-gray-500/20'
                 }`}>
-                  <Image className={`w-5 h-5 ${siteStatus.galleryEnabled ? 'text-blue-400' : 'text-gray-400'}`} />
+                  <Image className={`w-4 h-4 sm:w-5 sm:h-5 ${siteStatus.galleryEnabled ? 'text-blue-400' : 'text-gray-400'}`} />
                 </div>
                 <div className="flex-1 text-left">
-                  <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     Gallery
                   </div>
-                  <div className={`text-xs ${
+                  <div className={`text-xs hidden sm:block ${
                     siteStatus.galleryEnabled
                       ? 'text-blue-400'
                       : isDarkMode ? 'text-gray-500' : 'text-gray-600'
@@ -416,7 +416,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleMusicWishlist}
               disabled={isUpdatingFeatures}
-              className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -430,19 +430,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className={`absolute inset-0 bg-gradient-to-r opacity-60 ${
                 siteStatus.musicWishlistEnabled ? 'from-purple-500/20 to-pink-500/20' : 'from-gray-500/10 to-gray-600/10'
               }`}></div>
-              <div className="relative flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              <div className="relative flex items-center gap-2 sm:gap-3">
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                   siteStatus.musicWishlistEnabled
                     ? isDarkMode ? 'bg-gradient-to-br from-purple-600/30 to-pink-600/30' : 'bg-gradient-to-br from-purple-500/20 to-pink-500/20'
                     : isDarkMode ? 'bg-gradient-to-br from-gray-600/30 to-gray-700/30' : 'bg-gradient-to-br from-gray-400/20 to-gray-500/20'
                 }`}>
-                  <Music className={`w-5 h-5 ${siteStatus.musicWishlistEnabled ? 'text-purple-400' : 'text-gray-400'}`} />
+                  <Music className={`w-4 h-4 sm:w-5 sm:h-5 ${siteStatus.musicWishlistEnabled ? 'text-purple-400' : 'text-gray-400'}`} />
                 </div>
                 <div className="flex-1 text-left">
-                  <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     Music Wishlist
                   </div>
-                  <div className={`text-xs ${
+                  <div className={`text-xs hidden sm:block ${
                     siteStatus.musicWishlistEnabled
                       ? 'text-purple-400'
                       : isDarkMode ? 'text-gray-500' : 'text-gray-600'
@@ -459,7 +459,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleStories}
               disabled={isUpdatingFeatures}
-              className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -473,19 +473,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className={`absolute inset-0 bg-gradient-to-r opacity-60 ${
                 siteStatus.storiesEnabled ? 'from-green-500/20 to-emerald-500/20' : 'from-gray-500/10 to-gray-600/10'
               }`}></div>
-              <div className="relative flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              <div className="relative flex items-center gap-2 sm:gap-3">
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                   siteStatus.storiesEnabled
                     ? isDarkMode ? 'bg-gradient-to-br from-green-600/30 to-emerald-600/30' : 'bg-gradient-to-br from-green-500/20 to-emerald-500/20'
                     : isDarkMode ? 'bg-gradient-to-br from-gray-600/30 to-gray-700/30' : 'bg-gradient-to-br from-gray-400/20 to-gray-500/20'
                 }`}>
-                  <Camera className={`w-5 h-5 ${siteStatus.storiesEnabled ? 'text-green-400' : 'text-gray-400'}`} />
+                  <Camera className={`w-4 h-4 sm:w-5 sm:h-5 ${siteStatus.storiesEnabled ? 'text-green-400' : 'text-gray-400'}`} />
                 </div>
                 <div className="flex-1 text-left">
-                  <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     Stories
                   </div>
-                  <div className={`text-xs ${
+                  <div className={`text-xs hidden sm:block ${
                     siteStatus.storiesEnabled
                       ? 'text-green-400'
                       : isDarkMode ? 'text-gray-500' : 'text-gray-600'
@@ -502,7 +502,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleSiteStatus}
               disabled={isUpdatingSiteStatus}
-              className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
                 isUpdatingSiteStatus
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -516,23 +516,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className={`absolute inset-0 bg-gradient-to-r opacity-60 ${
                 siteStatus.isUnderConstruction ? 'from-orange-500/20 to-yellow-500/20' : 'from-red-500/20 to-pink-500/20'
               }`}></div>
-              <div className="relative flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              <div className="relative flex items-center gap-2 sm:gap-3">
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                   siteStatus.isUnderConstruction
                     ? isDarkMode ? 'bg-gradient-to-br from-orange-600/30 to-yellow-600/30' : 'bg-gradient-to-br from-orange-500/20 to-yellow-500/20'
                     : isDarkMode ? 'bg-gradient-to-br from-red-600/30 to-pink-600/30' : 'bg-gradient-to-br from-red-500/20 to-pink-500/20'
                 }`}>
                   {isUpdatingSiteStatus ? (
-                    <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <Globe className={`w-5 h-5 ${siteStatus.isUnderConstruction ? 'text-orange-400' : 'text-red-400'}`} />
+                    <Globe className={`w-4 h-4 sm:w-5 sm:h-5 ${siteStatus.isUnderConstruction ? 'text-orange-400' : 'text-red-400'}`} />
                   )}
                 </div>
                 <div className="flex-1 text-left">
-                  <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     Website Status
                   </div>
-                  <div className={`text-xs ${
+                  <div className={`text-xs hidden sm:block ${
                     siteStatus.isUnderConstruction
                       ? 'text-orange-400'
                       : 'text-red-400'
@@ -547,7 +547,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {/* External Services Button */}
           <button
             onClick={() => setShowExternalServices(true)}
-            className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
                 ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-purple-500/20'
                 : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-purple-500/20'
@@ -555,17 +555,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             title="Deutsche Fotobuch-Services"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            <div className="relative flex items-center gap-2 sm:gap-3">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                 isDarkMode ? 'bg-gradient-to-br from-purple-600/30 to-indigo-600/30' : 'bg-gradient-to-br from-purple-500/20 to-indigo-500/20'
               }`}>
-                <Heart className="w-5 h-5 text-purple-400" />
+                <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
               </div>
               <div className="flex-1 text-left">
-                <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   Fotobuch Services
                 </div>
-                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   Deutsche Anbieter
                 </div>
               </div>
@@ -576,7 +576,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <button
             onClick={handleDownloadAll}
             disabled={isDownloading || mediaItems.length === 0}
-            className={`relative p-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDownloading || mediaItems.length === 0
                 ? isDarkMode
                   ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -588,17 +588,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             title={getDownloadButtonText()}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-blue-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            <div className="relative flex items-center gap-2 sm:gap-3">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
                 isDarkMode ? 'bg-gradient-to-br from-indigo-600/30 to-blue-600/30' : 'bg-gradient-to-br from-indigo-500/20 to-blue-500/20'
               }`}>
-                <Download className={`w-5 h-5 text-indigo-400 ${isDownloading ? 'animate-bounce' : ''}`} />
+                <Download className={`w-4 h-4 sm:w-5 sm:h-5 text-indigo-400 ${isDownloading ? 'animate-bounce' : ''}`} />
               </div>
               <div className="flex-1 text-left">
-                <div className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   ZIP Download
                 </div>
-                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   {mediaItems.length === 0 ? 'Keine Medien' : `${mediaItems.length} Datei${mediaItems.length > 1 ? 'en' : ''}`}
                 </div>
               </div>
