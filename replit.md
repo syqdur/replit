@@ -88,6 +88,10 @@ This is a comprehensive wedding gallery application with the following architect
 ## Recent Changes
 
 ### January 25, 2025
+- **Profile Header Admin Controls**: Moved admin controls to profile header with profile picture and gear icon design, replacing fixed top-right admin toggle
+- **Lock/Unlock Admin Toggle**: Added lock/unlock icons in profile header for seamless admin mode switching
+- **Settings Gear Icon**: Integrated settings gear icon in profile header for profile editing access
+- **Fixed Profile Picture Button Removal**: Removed old fixed position profile picture button in favor of integrated header design
 - **Display Name Override System**: Implemented complete display name system that overrides usernames throughout the UI when users set custom display names in their profiles
 - **Selfie Camera Button**: Fixed profile edit modal selfie button to properly trigger camera capture instead of gallery picker for taking profile picture selfies
 - **Cross-Component Display Name Sync**: Updated all components (InstagramPost, NotePost, MediaModal, InstagramGallery) to consistently show display names for posts, comments, and media attribution

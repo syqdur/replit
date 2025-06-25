@@ -603,34 +603,7 @@ function App() {
         </div>
       </div>
 
-      {/* User Profile Button - Fixed to viewport */}
-      <div className="fixed top-4 right-4 z-50">
-        <button
-          onClick={() => setShowUserProfileModal(true)}
-          className={`w-12 h-12 rounded-full overflow-hidden border-2 transition-all duration-300 hover:scale-110 shadow-lg ${
-            isDarkMode 
-              ? 'border-pink-500/50 hover:border-pink-400' 
-              : 'border-pink-400/50 hover:border-pink-500'
-          }`}
-          title="Mein Profil bearbeiten"
-        >
-          {currentUserProfile?.profilePicture ? (
-            <img 
-              src={currentUserProfile.profilePicture} 
-              alt="Mein Profil" 
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className={`w-full h-full flex items-center justify-center text-sm font-bold ${
-              isDarkMode 
-                ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white' 
-                : 'bg-gradient-to-br from-pink-500 to-purple-500 text-white'
-            }`}>
-              {userName ? userName.slice(0, 2).toUpperCase() : '?'}
-            </div>
-          )}
-        </button>
-      </div>
+
 
       <div className="max-w-md mx-auto px-2 sm:px-0">
         <ProfileHeader 
@@ -638,6 +611,14 @@ function App() {
           isAdmin={isAdmin}
           userName={userName}
           mediaItems={mediaItems}
+          onToggleAdmin={(status) => {
+            if (status) {
+              setShowAdminLogin(true);
+            } else {
+              handleAdminLogout();
+            }
+          }}
+          currentUserProfile={currentUserProfile}
         />
         
         {/* Stories Bar */}
