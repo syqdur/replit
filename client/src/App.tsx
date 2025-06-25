@@ -632,6 +632,8 @@ function App() {
               onToggleLike={handleToggleLike}
               userName={userName || ''}
               isDarkMode={isDarkMode}
+              getUserAvatar={getUserAvatar}
+              getUserDisplayName={getUserDisplayName}
             />
           </>
         ) : activeTab === 'timeline' ? (
@@ -666,6 +668,8 @@ function App() {
         userName={userName || ''}
         isAdmin={isAdmin}
         isDarkMode={isDarkMode}
+        getUserAvatar={getUserAvatar}
+        getUserDisplayName={getUserDisplayName}
       />
 
       {/* Stories Viewer */}
@@ -696,6 +700,18 @@ function App() {
         onLogin={handleAdminLogin}
         isDarkMode={isDarkMode}
       />
+
+      {/* User Profile Modal */}
+      {userName && deviceId && (
+        <UserProfileModal
+          isOpen={showUserProfileModal}
+          onClose={() => setShowUserProfileModal(false)}
+          userName={userName}
+          deviceId={deviceId}
+          isDarkMode={isDarkMode}
+          onProfileUpdated={handleProfileUpdated}
+        />
+      )}
 
       <AdminPanel 
         isDarkMode={isDarkMode} 

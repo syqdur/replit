@@ -17,6 +17,8 @@ interface MediaModalProps {
   userName: string;
   isAdmin: boolean;
   isDarkMode: boolean;
+  getUserAvatar?: (userName: string, deviceId?: string) => string | null;
+  getUserDisplayName?: (userName: string, deviceId?: string) => string;
 }
 
 export const MediaModal: React.FC<MediaModalProps> = ({
@@ -33,7 +35,9 @@ export const MediaModal: React.FC<MediaModalProps> = ({
   onToggleLike,
   userName,
   isAdmin,
-  isDarkMode
+  isDarkMode,
+  getUserAvatar,
+  getUserDisplayName
 }) => {
   const [commentText, setCommentText] = useState('');
   const [imageError, setImageError] = useState(false);
@@ -107,7 +111,12 @@ export const MediaModal: React.FC<MediaModalProps> = ({
   };
 
   // Generate beautiful wedding-themed avatar based on username
-  const getAvatarUrl = (username: string) => {
+  const getAvatarUrl = (username: string, targetDeviceId?: string) => {
+    // First try to get user's custom profile picture
+    const customAvatar = getUserAvatar?.(username, targetDeviceId);
+    if (customAvatar) return customAvatar;
+    
+    // Fallback to generated avatars
     const weddingAvatars = [
       'https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
       'https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
@@ -127,6 +136,10 @@ export const MediaModal: React.FC<MediaModalProps> = ({
     }, 0);
     
     return weddingAvatars[Math.abs(hash) % weddingAvatars.length];
+  };
+
+  const getDisplayName = (username: string, targetDeviceId?: string) => {
+    return getUserDisplayName?.(username, targetDeviceId) || username;
   };
 
   return (
