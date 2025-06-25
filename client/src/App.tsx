@@ -640,13 +640,13 @@ function App() {
                     <UserPlus className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-300 ${
                       isDarkMode ? 'text-white' : 'text-white'
                     }`} />
-                    {/* Gear icon overlay for default icon */}
-                    <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+                    {/* Gear icon overlay for default icon - centered and larger */}
+                    <div className={`absolute inset-0 flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full transition-all duration-300 shadow-lg ${
                       isDarkMode 
-                        ? 'bg-gray-800 border-2 border-gray-600' 
-                        : 'bg-white border-2 border-gray-400'
+                        ? 'bg-gray-800/90 border-2 border-gray-600' 
+                        : 'bg-white/90 border-2 border-gray-400'
                     }`}>
-                      <Settings className={`w-2 h-2 sm:w-2.5 sm:h-2.5 transition-colors duration-300 ${
+                      <Settings className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-colors duration-300 ${
                         isDarkMode ? 'text-gray-200' : 'text-gray-700'
                       }`} />
                     </div>

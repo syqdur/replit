@@ -105,6 +105,9 @@ This is a comprehensive wedding gallery application with the following architect
 - **Admin State Management**: Updated MusicWishlist to properly receive and use admin state from parent App component instead of assuming all Spotify users are admins
 - **Mobile Layout Fix**: Corrected deformed song layout in MusicWishlist with proper responsive grid system for mobile, tablet, and desktop views
 - **Permission Debugging**: Added and tested permission checking logic to verify user ID matching for song deletion rights
+- **Firebase Song Ownership**: Implemented Firebase-based song tracking using wedding app user system (username + deviceId) instead of Spotify users for proper permission management
+- **Instagram 2.0 Greenish Redesign**: Applied modern glassmorphism styling to MusicWishlist with green color scheme, improved text readability, larger album artwork, and enhanced hover effects
+- **Gear Icon Enhancement**: Moved profile gear icon to center position and increased size for better visibility and accessibility
 
 ### January 25, 2025 (Migration Complete)
 - **Profile Controls Migration**: Moved profile controls (user profile button, admin toggle, and settings gear) from ProfileHeader to top navigation bar next to dark mode toggle for better accessibility

@@ -904,10 +904,10 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             <button
               onClick={handleRefresh}
               disabled={isLoading}
-              className={`p-2 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`p-3 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm hover:scale-105 ${
                 isDarkMode 
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-500/30 shadow-lg shadow-green-500/20' 
+                  : 'bg-green-50/80 text-green-700 hover:bg-green-100/90 border border-green-200/50 shadow-lg shadow-green-500/10'
               }`}
               title="Playlist manuell aktualisieren"
             >
@@ -920,8 +920,10 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           </div>
 
           {/* Table Header */}
-          <div className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto]' : 'grid-cols-[1fr_auto]'} sm:${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-2 sm:gap-4 px-2 sm:px-4 py-2 border-b text-xs font-medium uppercase ${
-            isDarkMode ? 'border-gray-700 text-gray-400' : 'border-gray-200 text-gray-500'
+          <div className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto]' : 'grid-cols-[1fr_auto]'} sm:${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-2 sm:gap-4 px-4 py-3 border-b text-xs font-semibold uppercase tracking-wider ${
+            isDarkMode 
+              ? 'border-green-500/20 text-green-300 bg-gradient-to-r from-green-500/10 to-emerald-500/10' 
+              : 'border-green-200/40 text-green-800 bg-gradient-to-r from-green-50/50 to-emerald-50/50'
           }`}>
             {bulkDeleteMode && <div className="hidden sm:block"></div>}
             {!bulkDeleteMode && <div className="hidden sm:block">#</div>}
@@ -934,7 +936,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
 
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="w-8 h-8 border-4 border-[#1DB954] border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : playlistTracks.length > 0 ? (
             <div className="max-h-[300px] sm:max-h-[400px] overflow-y-auto">
@@ -947,10 +949,10 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                   return (
                     <div
                       key={`${item.track.id}-${item.added_at}`}
-                      className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto]' : 'grid-cols-[1fr_auto]'} sm:${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-2 sm:gap-4 px-2 sm:px-4 py-2 rounded-md items-center group ${
+                      className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto]' : 'grid-cols-[1fr_auto]'} sm:${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-3 sm:gap-4 px-4 py-3 rounded-xl items-center group transition-all duration-300 backdrop-blur-sm ${
                         isDarkMode 
-                          ? `hover:bg-gray-800 text-white ${isSelected ? 'bg-gray-800 ring-1 ring-[#1DB954]' : ''}` 
-                          : `hover:bg-gray-100 text-gray-800 ${isSelected ? 'bg-gray-100 ring-1 ring-[#1DB954]' : ''}`
+                          ? `hover:bg-green-500/10 text-white border border-transparent hover:border-green-500/20 ${isSelected ? 'bg-green-500/20 ring-2 ring-green-500/40 border-green-500/30' : ''}` 
+                          : `hover:bg-green-50/60 text-gray-900 border border-transparent hover:border-green-200/30 ${isSelected ? 'bg-green-100/60 ring-2 ring-green-400/40 border-green-300/30' : ''}`
                       }`}
                     >
                       {bulkDeleteMode && (
@@ -958,10 +960,10 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                           {showCheckbox && (
                             <button
                               onClick={() => toggleTrackSelection(item.track.id)}
-                              className={`p-1 rounded transition-colors ${
+                              className={`p-1.5 rounded-lg transition-all duration-200 ${
                                 isSelected
-                                  ? 'text-[#1DB954]'
-                                  : isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
+                                  ? 'text-green-400 bg-green-500/20 scale-110'
+                                  : isDarkMode ? 'text-green-300 hover:text-green-200 hover:bg-green-500/10' : 'text-green-600 hover:text-green-700 hover:bg-green-100/50'
                               }`}
                             >
                               {isSelected ? <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5" /> : <Square className="w-4 h-4 sm:w-5 sm:h-5" />}
@@ -970,8 +972,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                         </div>
                       )}
                       {!bulkDeleteMode && (
-                        <div className={`text-sm hidden sm:block ${
-                          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                        <div className={`text-sm hidden sm:block font-medium ${
+                          isDarkMode ? 'text-green-300' : 'text-green-700'
                         }`}>{index + 1}</div>
                       )}
                       
@@ -979,16 +981,16 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                         {bulkDeleteMode && showCheckbox && (
                           <button
                             onClick={() => toggleTrackSelection(item.track.id)}
-                            className={`p-1 rounded transition-colors sm:hidden ${
+                            className={`p-1.5 rounded-lg transition-all duration-200 sm:hidden ${
                               isSelected
-                                ? 'text-[#1DB954]'
-                                : isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
+                                ? 'text-green-400 bg-green-500/20 scale-110'
+                                : isDarkMode ? 'text-green-300 hover:text-green-200 hover:bg-green-500/10' : 'text-green-600 hover:text-green-700 hover:bg-green-100/50'
                             }`}
                           >
                             {isSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                           </button>
                         )}
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-gradient-to-br from-green-100 to-emerald-100 flex-shrink-0 shadow-sm">
                           {item.track.album?.images?.[0] ? (
                             <img 
                               src={item.track.album.images[0].url} 
@@ -996,30 +998,32 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Music className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-200 to-emerald-200">
+                              <Music className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                             </div>
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h5 className="font-medium truncate text-sm sm:text-base">
+                          <h5 className={`font-semibold truncate text-sm sm:text-base ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>
                             {item.track.name}
                           </h5>
-                          <p className={`text-xs truncate ${
-                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                          <p className={`text-xs truncate font-medium ${
+                            isDarkMode ? 'text-green-300/80' : 'text-green-700/80'
                           }`}>
                             {item.track.artists.map(a => a.name).join(', ')}
                           </p>
                         </div>
                       </div>
-                      <div className={`text-xs hidden sm:block ${
-                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                      <div className={`text-xs hidden sm:block font-medium ${
+                        isDarkMode ? 'text-green-300/70' : 'text-green-700/70'
                       }`}>
                         {formatDate(item.added_at)}
                       </div>
                       <div className="flex items-center justify-end gap-1 sm:gap-2">
-                        <span className={`text-xs ${
-                          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                        <span className={`text-xs font-medium ${
+                          isDarkMode ? 'text-green-300/70' : 'text-green-700/70'
                         }`}>
                           {formatDuration(item.track.duration_ms)}
                         </span>
@@ -1029,10 +1033,10 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                               <button
                                 onClick={() => handleRemoveTrack(item)}
                                 disabled={isRemovingTrack === item.track.id}
-                                className={`p-1 sm:p-1.5 rounded-full transition-colors ${
+                                className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
                                   isDarkMode 
-                                    ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' 
-                                    : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
+                                    ? 'hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-transparent hover:border-red-500/30' 
+                                    : 'hover:bg-red-50 text-red-600 hover:text-red-700 border border-transparent hover:border-red-200'
                                 }`}
                                 title="Sofort aus Playlist entfernen"
                               >
@@ -1047,10 +1051,10 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                               href={item.track.external_urls.spotify}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className={`p-1 sm:p-1.5 rounded-full transition-colors ${
+                              className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
                                 isDarkMode 
-                                  ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' 
-                                  : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
+                                  ? 'hover:bg-green-500/20 text-green-400 hover:text-green-300 border border-transparent hover:border-green-500/30' 
+                                  : 'hover:bg-green-50 text-green-600 hover:text-green-700 border border-transparent hover:border-green-200'
                               }`}
                               title="In Spotify öffnen"
                             >
@@ -1065,19 +1069,25 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
               </div>
             </div>
           ) : (
-            <div className={`text-center py-12 rounded-lg mt-4 ${
-              isDarkMode ? 'bg-gray-800' : 'bg-white shadow-sm'
+            <div className={`text-center py-16 rounded-2xl mt-6 backdrop-blur-sm border ${
+              isDarkMode 
+                ? 'bg-green-500/10 border-green-500/20 shadow-2xl shadow-green-500/10' 
+                : 'bg-green-50/60 border-green-200/30 shadow-2xl shadow-green-500/5'
             }`}>
-              <Music className={`w-12 h-12 mx-auto mb-3 ${
-                isDarkMode ? 'text-gray-600' : 'text-gray-400'
-              }`} />
-              <p className={`font-medium ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center ${
+                isDarkMode ? 'bg-green-500/20' : 'bg-green-100/80'
+              }`}>
+                <Music className={`w-8 h-8 ${
+                  isDarkMode ? 'text-green-400' : 'text-green-600'
+                }`} />
+              </div>
+              <p className={`font-semibold text-lg mb-2 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
                 Keine Songs in der Playlist
               </p>
-              <p className={`text-sm mt-2 ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+              <p className={`text-sm ${
+                isDarkMode ? 'text-green-300/80' : 'text-green-700/80'
               }`}>
                 Suche nach Songs und füge sie zur Playlist hinzu
               </p>
