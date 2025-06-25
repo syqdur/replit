@@ -321,38 +321,46 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     setShowBulkConfirm(false);
 
     try {
-      console.log(`🗑️ Testing simple delete of ${selectedUsers.size} users`);
+      console.log(`🗑️ Bulk deleting ${selectedUsers.size} users...`);
       
-      // Just delete from live_users collection first to test
       const batch = writeBatch(db);
       let deletedCount = 0;
 
       for (const userKey of selectedUsers) {
         console.log(`🗑️ Processing: ${userKey}`);
         
-        // Device IDs are 36 characters long with hyphens (UUID format)
-        // So we take the last 36 characters as deviceId, everything before as userName
+        // Extract userName and deviceId from userKey
         const deviceId = userKey.slice(-36);
-        const userName = userKey.slice(0, -37); // -36 for deviceId, -1 for the dash
+        const userName = userKey.slice(0, -37);
         
         console.log(`  👤 User: "${userName}", Device: "${deviceId}"`);
+        deletedCount++;
         
-        // Get all live_users docs to find the right one
-        const liveUsersSnapshot = await getDocs(collection(db, 'live_users'));
-        console.log(`  📊 Total live_users docs: ${liveUsersSnapshot.docs.length}`);
-        
+        // Delete from live_users collection
+        const liveUsersQuery = query(
+          collection(db, 'live_users'),
+          where('deviceId', '==', deviceId)
+        );
+        const liveUsersSnapshot = await getDocs(liveUsersQuery);
         liveUsersSnapshot.docs.forEach(doc => {
-          const data = doc.data();
-          console.log(`    🔍 Checking: ${data.userName} (${data.deviceId?.substring(0, 8)}...)`);
-          
-          if (data.deviceId === deviceId) {
-            console.log(`    ✅ MATCH! Marking ${data.userName} for deletion`);
-            batch.delete(doc.ref);
-            deletedCount++;
-          }
+          console.log(`🗑️ Deleting live_users entry: ${doc.id}`);
+          batch.delete(doc.ref);
         });
         
-        // Also delete media, comments, likes, and stories for this user
+        // Delete from userProfiles collection
+        const profilesQuery = query(
+          collection(db, 'userProfiles'),
+          where('userName', '==', userName),
+          where('deviceId', '==', deviceId)
+        );
+        const profilesSnapshot = await getDocs(profilesQuery);
+        console.log(`🗑️ Found ${profilesSnapshot.docs.length} profile entries for ${userName}`);
+        profilesSnapshot.docs.forEach(doc => {
+          console.log(`🗑️ Deleting profile entry: ${doc.id}`);
+          batch.delete(doc.ref);
+        });
+        
+        // Delete all user content
         const mediaQuery = query(collection(db, 'media'), where('deviceId', '==', deviceId));
         const mediaSnapshot = await getDocs(mediaQuery);
         mediaSnapshot.docs.forEach(doc => batch.delete(doc.ref));
@@ -368,28 +376,14 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
         const storiesQuery = query(collection(db, 'stories'), where('deviceId', '==', deviceId));
         const storiesSnapshot = await getDocs(storiesQuery);
         storiesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
-        
-        // Delete user profile from userProfiles collection
-        const profilesQuery = query(
-          collection(db, 'userProfiles'),
-          where('userName', '==', userName),
-          where('deviceId', '==', deviceId)
-        );
-        const profilesSnapshot = await getDocs(profilesQuery);
-        console.log(`🗑️ Found ${profilesSnapshot.docs.length} profile entries for ${userName} in bulk delete`);
-        
-        profilesSnapshot.docs.forEach(doc => {
-          console.log(`🗑️ Bulk deleting profile entry: ${doc.id}`);
-          batch.delete(doc.ref);
-        });
       }
 
       if (deletedCount > 0) {
-        console.log(`🗑️ Committing deletion of ${deletedCount} users...`);
+        console.log(`🗑️ Committing bulk deletion of ${deletedCount} users...`);
         await batch.commit();
-        console.log(`✅ Successfully deleted ${deletedCount} users`);
+        console.log(`✅ Successfully bulk deleted ${deletedCount} users`);
         
-        // Check if current user was deleted and clear localStorage
+        // Check if current user was deleted
         const currentUserName = localStorage.getItem('userName');
         const currentDeviceId = localStorage.getItem('deviceId');
         
@@ -398,20 +392,15 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
           const userName = userKey.slice(0, -37);
           
           if (currentUserName === userName && currentDeviceId === deviceId) {
-            console.log(`🧹 Current user was bulk deleted - stopping all processes and reloading`);
-            // Stop all presence updates immediately
+            console.log(`🧹 Current user was bulk deleted - reloading`);
             localStorage.setItem('userDeleted', 'true');
-            // Clear user data completely and reload page
             setTimeout(() => {
               localStorage.clear();
-              // Force full page refresh to restart with clean state
               window.location.href = window.location.href;
             }, 200);
-            return; // Exit early since page will reload
+            return;
           }
         }
-      } else {
-        console.log(`⚠️ No users found to delete`);
       }
       
       // Clear selection and reload data
