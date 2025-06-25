@@ -34,19 +34,19 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center p-4 z-50 transition-colors duration-300 ${
-      isDarkMode ? 'bg-slate-900' : 'bg-slate-100'
+      isDarkMode ? 'bg-neutral-900' : 'bg-gray-100'
     }`}>
       <div className={`max-w-md w-full p-8 rounded-2xl shadow-2xl transition-colors duration-300 ${
-        isDarkMode ? 'bg-slate-800 text-slate-50' : 'bg-white text-slate-900'
+        isDarkMode ? 'bg-neutral-800 text-white' : 'bg-white text-gray-900'
       }`}>
         <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center shadow-lg">
             <Heart className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-2xl font-bold mb-2">
             Willkommen zur Hochzeit! 💕
           </h1>
-          <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+          <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-gray-600'}`}>
             Bitte gib deinen Namen ein, um deine Erinnerungen zu teilen
           </p>
         </div>
@@ -54,7 +54,7 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Profile Picture Upload Section */}
           <div className="space-y-4">
-            <h3 className={`text-lg font-semibold text-center ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+            <h3 className={`text-lg font-semibold text-center ${isDarkMode ? 'text-neutral-200' : 'text-gray-800'}`}>
               Profilbild hinzufügen (optional)
             </h3>
             
@@ -62,8 +62,8 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
               {/* Upload Photo Button */}
               <label className={`cursor-pointer p-3 rounded-xl border-2 border-dashed transition-all duration-300 hover:scale-105 ${
                 isDarkMode 
-                  ? 'border-slate-600 hover:border-red-500 hover:bg-red-500/10' 
-                  : 'border-slate-300 hover:border-red-500 hover:bg-red-500/10'
+                  ? 'border-neutral-600 hover:border-pink-500 hover:bg-pink-500/10' 
+                  : 'border-gray-300 hover:border-pink-500 hover:bg-pink-500/10'
               }`}>
                 <input
                   type="file"
@@ -72,8 +72,8 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
                   className="hidden"
                 />
                 <div className="flex flex-col items-center gap-2">
-                  <Image className={`w-6 h-6 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`} />
-                  <span className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <Image className={`w-6 h-6 ${isDarkMode ? 'text-neutral-400' : 'text-gray-600'}`} />
+                  <span className={`text-xs font-medium ${isDarkMode ? 'text-neutral-400' : 'text-gray-600'}`}>
                     Foto
                   </span>
                 </div>
@@ -85,13 +85,13 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
                 onClick={() => setShowCamera(true)}
                 className={`p-3 rounded-xl border-2 border-dashed transition-all duration-300 hover:scale-105 ${
                   isDarkMode 
-                    ? 'border-slate-600 hover:border-red-500 hover:bg-red-500/10' 
-                    : 'border-slate-300 hover:border-red-500 hover:bg-red-500/10'
+                    ? 'border-neutral-600 hover:border-pink-500 hover:bg-pink-500/10' 
+                    : 'border-gray-300 hover:border-pink-500 hover:bg-pink-500/10'
                 }`}
               >
                 <div className="flex flex-col items-center gap-2">
-                  <Camera className={`w-6 h-6 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`} />
-                  <span className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <Camera className={`w-6 h-6 ${isDarkMode ? 'text-neutral-400' : 'text-gray-600'}`} />
+                  <span className={`text-xs font-medium ${isDarkMode ? 'text-neutral-400' : 'text-gray-600'}`}>
                     Selfie
                   </span>
                 </div>
@@ -105,13 +105,13 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
                   <img
                     src={URL.createObjectURL(profilePicture)}
                     alt="Profilbild Vorschau"
-                    className="w-20 h-20 rounded-full object-cover border-4 border-red-500"
+                    className="w-20 h-20 rounded-full object-cover border-4 border-pink-500"
                   />
                   <button
                     type="button"
                     onClick={() => setProfilePicture(null)}
                     className={`absolute -top-1 -right-1 w-6 h-6 rounded-full transition-colors duration-300 ${
-                      isDarkMode ? 'bg-slate-700 hover:bg-slate-600 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                      isDarkMode ? 'bg-neutral-700 hover:bg-neutral-600 text-neutral-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
                     }`}
                   >
                     <X className="w-3 h-3 mx-auto" />
@@ -128,8 +128,8 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
             placeholder="Dein Name"
             className={`w-full p-4 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors duration-300 ${
               isDarkMode 
-                ? 'bg-slate-700 border-slate-600 text-slate-50 placeholder-slate-400 focus:border-red-500 focus:ring-red-500/20' 
-                : 'bg-white border-slate-300 text-slate-900 placeholder-slate-500 focus:border-red-500 focus:ring-red-500/20'
+                ? 'bg-neutral-700 border-neutral-600 text-white placeholder-neutral-400 focus:border-pink-500 focus:ring-pink-500/20' 
+                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-pink-500 focus:ring-pink-500/20'
             }`}
             maxLength={50}
             required
@@ -139,8 +139,8 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
             disabled={!name.trim()}
             className={`w-full p-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
               name.trim()
-                ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                : isDarkMode ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
+                ? 'bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                : isDarkMode ? 'bg-neutral-700 text-neutral-400' : 'bg-gray-200 text-gray-500'
             }`}
           >
             Weitermachen

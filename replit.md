@@ -170,6 +170,8 @@ This is a comprehensive wedding gallery application with the following architect
 - Admin panel buttons should be rectangular and arranged vertically (top to bottom)
 - Buttons should include both icons and text labels for clarity
 - Prefer structured, organized layouts over cramped horizontal arrangements
+- Dark mode should use neutral colors (neutral-900/800/700) instead of slate colors for better visual appeal
+- Avoid excessive gradients in dark mode, prefer flat colors with good contrast
 
 ### UI Components
 - **Radix UI**: Unstyled, accessible UI primitives
