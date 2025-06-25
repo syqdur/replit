@@ -374,6 +374,13 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
 
   // Check if user can delete a track
   const canDeleteTrack = (track: SpotifyApi.PlaylistTrackObject) => {
+    console.log('🔍 Permission check:', {
+      isAdmin,
+      currentUserId: currentUser?.id,
+      trackAddedBy: track.added_by?.id,
+      trackName: track.track.name,
+      canDelete: isAdmin || (currentUser && track.added_by.id === currentUser.id)
+    });
     return isAdmin || (currentUser && track.added_by.id === currentUser.id);
   };
 
