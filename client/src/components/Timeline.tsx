@@ -518,32 +518,32 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
         </div>
       )}
       {/* Header */}
-      <div className={`p-6 backdrop-blur-xl border-b transition-all duration-300 ${
+      <div className={`p-4 sm:p-6 backdrop-blur-xl border-b transition-all duration-300 ${
         isDarkMode 
           ? 'bg-white/5 border-white/10' 
           : 'bg-white/70 border-white/20'
       }`}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className={`p-4 rounded-2xl transition-all duration-300 ${
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 ${
               isDarkMode 
                 ? 'bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/25' 
                 : 'bg-gradient-to-br from-pink-400 to-purple-500 shadow-lg shadow-pink-400/25'
             }`}>
-              <Heart className="w-7 h-7 text-white animate-pulse" style={{
+              <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-white animate-pulse" style={{
                 animation: 'heartbeat 3s ease-in-out infinite'
               }} />
             </div>
             <div>
-              <h2 className={`text-3xl font-bold mb-1 transition-colors duration-300 ${
+              <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-1 transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
                 💕 Unsere Geschichte
               </h2>
-              <p className={`text-base transition-colors duration-300 ${
+              <p className={`text-sm sm:text-base transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
-                Die wichtigsten Momente unserer Beziehung
+                Die wichtigsten Momente
               </p>
             </div>
           </div>
@@ -551,14 +551,14 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
           {isAdmin && (
             <button
               onClick={() => setShowAddForm(true)}
-              className={`flex items-center gap-3 px-6 py-3 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 ${
+              className={`flex items-center justify-center sm:justify-start gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 ${
                 isDarkMode 
                   ? 'bg-gradient-to-r from-pink-500/80 to-purple-600/80 hover:from-pink-500 hover:to-purple-600 text-white border border-white/20 shadow-lg shadow-pink-500/25' 
                   : 'bg-gradient-to-r from-pink-400/80 to-purple-500/80 hover:from-pink-400 hover:to-purple-500 text-white border border-white/30 shadow-lg shadow-pink-400/25'
               }`}
             >
-              <Plus className="w-5 h-5" />
-              <span className="font-medium">Event hinzufügen</span>
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="font-medium text-sm sm:text-base">Event hinzufügen</span>
             </button>
           )}
         </div>
@@ -891,7 +891,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
       )}
 
       {/* Timeline Content */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {events.length === 0 ? (
           <div className="text-center py-12">
             <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center transition-colors duration-300 ${
@@ -927,22 +927,22 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
         ) : (
           <div className="relative">
             {/* Timeline Line */}
-            <div className={`absolute left-10 top-0 bottom-0 w-1 transition-all duration-300 ${
+            <div className={`absolute left-6 sm:left-8 lg:left-10 top-0 bottom-0 w-0.5 sm:w-1 transition-all duration-300 ${
               isDarkMode 
                 ? 'bg-gradient-to-b from-pink-500/30 via-purple-500/30 to-pink-500/30' 
                 : 'bg-gradient-to-b from-pink-400/40 via-purple-400/40 to-pink-400/40'
             }`}></div>
 
             {/* Timeline Events */}
-            <div className="space-y-12">
+            <div className="space-y-8 sm:space-y-12">
               {events.map((event, index) => {
                 const eventType = getEventTypeInfo(event.type, event.customEventName);
                 const canEdit = isAdmin || event.createdBy === userName;
 
                 return (
-                  <div key={event.id} className="relative flex items-start gap-8">
+                  <div key={event.id} className="relative flex items-start gap-4 sm:gap-6 lg:gap-8">
                     {/* Timeline Dot */}
-                    <div className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-xl border-2 ${
+                    <div className={`relative z-10 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-xl border-2 flex-shrink-0 ${
                       eventType.color === 'pink' ? 'bg-gradient-to-br from-pink-400 to-pink-600 border-pink-200/30 shadow-lg shadow-pink-500/25' :
                       eventType.color === 'red' ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-200/30 shadow-lg shadow-red-500/25' :
                       eventType.color === 'blue' ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-200/30 shadow-lg shadow-blue-500/25' :
@@ -952,72 +952,72 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                       eventType.color === 'indigo' ? 'bg-gradient-to-br from-indigo-400 to-indigo-600 border-indigo-200/30 shadow-lg shadow-indigo-500/25' :
                       isDarkMode ? 'bg-gradient-to-br from-gray-600 to-gray-800 border-gray-400/30 shadow-lg shadow-gray-500/25' : 'bg-gradient-to-br from-gray-400 to-gray-600 border-gray-300/30 shadow-lg shadow-gray-400/25'
                     }`}>
-                      <span className="text-3xl leading-none w-10 h-10 flex items-center justify-center">
+                      <span className="text-lg sm:text-2xl lg:text-3xl leading-none w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 flex items-center justify-center">
                         {eventType.icon}
                       </span>
                     </div>
 
                     {/* Event Content */}
-                    <div className={`flex-1 p-8 rounded-3xl backdrop-blur-xl transition-all duration-300 border ${
+                    <div className={`flex-1 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl backdrop-blur-xl transition-all duration-300 border min-w-0 ${
                       isDarkMode 
                         ? 'bg-white/5 border-white/10 hover:bg-white/10 shadow-xl shadow-black/20' 
                         : 'bg-white/70 border-white/40 hover:bg-white/90 shadow-xl shadow-pink-100/50'
                     }`}>
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h3 className={`text-2xl font-bold mb-2 transition-colors duration-300 ${
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className={`text-lg sm:text-xl lg:text-2xl font-bold mb-2 transition-colors duration-300 ${
                             isDarkMode ? 'text-white' : 'text-gray-900'
                           }`}>
                             {event.title}
                           </h3>
-                          <div className="flex items-center gap-6 text-base">
-                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 ${
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm sm:text-base">
+                            <div className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 w-fit ${
                               isDarkMode ? 'bg-white/10 text-gray-300' : 'bg-white/60 text-gray-700'
                             }`}>
-                              <Calendar className="w-5 h-5" />
+                              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                               <span className="font-medium">{formatDate(event.date)}</span>
                             </div>
                             {event.location && (
-                              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 ${
+                              <div className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 w-fit ${
                                 isDarkMode ? 'bg-white/10 text-gray-300' : 'bg-white/60 text-gray-700'
                               }`}>
-                                <MapPin className="w-5 h-5" />
-                                <span className="font-medium">{event.location}</span>
+                                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                                <span className="font-medium truncate">{event.location}</span>
                               </div>
                             )}
                           </div>
                         </div>
 
                         {canEdit && (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-shrink-0">
                             <button
                               onClick={() => handleEdit(event)}
-                              className={`p-3 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:scale-105 ${
+                              className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl backdrop-blur-sm transition-all duration-300 hover:scale-105 ${
                                 isDarkMode 
                                   ? 'bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white' 
                                   : 'bg-white/60 hover:bg-white/90 text-gray-600 hover:text-gray-900'
                               }`}
                               title="Event bearbeiten"
                             >
-                              <Edit3 className="w-5 h-5" />
+                              <Edit3 className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
                             <button
                               onClick={() => handleDelete(event)}
-                              className={`p-3 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:scale-105 ${
+                              className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl backdrop-blur-sm transition-all duration-300 hover:scale-105 ${
                                 isDarkMode 
                                   ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300' 
                                   : 'bg-red-50/80 hover:bg-red-100 text-red-600 hover:text-red-700'
                               }`}
                               title="Event löschen"
                             >
-                              <Trash2 className="w-5 h-5" />
+                              <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
                           </div>
                         )}
                       </div>
 
                       {event.description && (
-                        <p className={`text-base leading-relaxed mb-6 transition-colors duration-300 ${
+                        <p className={`text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 transition-colors duration-300 ${
                           isDarkMode ? 'text-gray-200' : 'text-gray-700'
                         }`}>
                           {event.description}
@@ -1026,11 +1026,11 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
 
                       {/* Media Gallery */}
                       {event.mediaUrls && event.mediaUrls.length > 0 && (
-                        <div className="mb-6">
-                          <div className={`grid gap-3 ${
+                        <div className="mb-4 sm:mb-6">
+                          <div className={`grid gap-2 sm:gap-3 ${
                             event.mediaUrls.length === 1 ? 'grid-cols-1' :
                             event.mediaUrls.length === 2 ? 'grid-cols-2' :
-                            'grid-cols-2 md:grid-cols-3'
+                            'grid-cols-2 sm:grid-cols-3'
                           }`}>
                             {event.mediaUrls.map((url, mediaIndex) => {
                               const mediaType = event.mediaTypes?.[mediaIndex] || 'image';
@@ -1038,7 +1038,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                               return (
                                 <div 
                                   key={mediaIndex} 
-                                  className="relative aspect-square rounded-2xl overflow-hidden group backdrop-blur-sm border border-white/20 cursor-pointer"
+                                  className="relative aspect-square rounded-xl sm:rounded-2xl overflow-hidden group backdrop-blur-sm border border-white/20 cursor-pointer"
                                   onClick={() => setModalMedia({ url, type: mediaType, title: event.title })}
                                 >
                                   {mediaType === 'video' ? (
@@ -1058,19 +1058,19 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                                   {/* Video Play Button - Always visible for videos */}
                                   {mediaType === 'video' && (
                                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                      <div className="bg-black/60 backdrop-blur-sm rounded-full p-4 transition-all duration-300 group-hover:scale-110 group-hover:bg-black/80">
-                                        <Play className="w-8 h-8 text-white fill-white" />
+                                      <div className="bg-black/60 backdrop-blur-sm rounded-full p-2 sm:p-4 transition-all duration-300 group-hover:scale-110 group-hover:bg-black/80">
+                                        <Play className="w-6 h-6 sm:w-8 sm:h-8 text-white fill-white" />
                                       </div>
                                     </div>
                                   )}
                                   
                                   {/* Media type indicator */}
-                                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                                    <div className="bg-black/60 backdrop-blur-sm rounded-full p-2">
+                                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                    <div className="bg-black/60 backdrop-blur-sm rounded-full p-1.5 sm:p-2">
                                       {mediaType === 'video' ? (
-                                        <Video className="w-4 h-4 text-white" />
+                                        <Video className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                       ) : (
-                                        <Camera className="w-4 h-4 text-white" />
+                                        <Camera className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                       )}
                                     </div>
                                   </div>

@@ -552,13 +552,13 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
         </div>
 
         {/* Search Section */}
-        <div className={`relative p-6 rounded-3xl mb-6 transition-all duration-500 ${
+        <div className={`relative p-4 sm:p-6 rounded-2xl sm:rounded-3xl mb-4 sm:mb-6 transition-all duration-500 ${
           isDarkMode 
             ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-lg' 
             : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-lg'
         }`}>
           <div className="relative">
-            <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+            <Search className={`absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${
               isDarkMode ? 'text-gray-400' : 'text-gray-500'
             }`} />
             <input
@@ -566,7 +566,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Suche nach Songs oder Interpreten..."
-              className={`w-full pl-12 pr-12 py-4 rounded-2xl border-0 transition-all duration-300 focus:ring-2 focus:ring-green-500/50 outline-none ${
+              className={`w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 rounded-xl sm:rounded-2xl border-0 transition-all duration-300 focus:ring-2 focus:ring-green-500/50 outline-none text-sm sm:text-base ${
                 isDarkMode 
                   ? 'bg-gray-700/50 text-white placeholder-gray-400 focus:bg-gray-700/70' 
                   : 'bg-white/80 text-gray-900 placeholder-gray-500 focus:bg-white'
@@ -575,11 +575,11 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className={`absolute right-4 top-1/2 transform -translate-y-1/2 p-1.5 rounded-full transition-all duration-300 hover:scale-110 ${
+                className={`absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 p-1 sm:p-1.5 rounded-full transition-all duration-300 hover:scale-110 ${
                   isDarkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-200'
                 }`}
               >
-                <X className={`w-4 h-4 transition-colors duration-300 ${
+                <X className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-400' : 'text-gray-500'
                 }`} />
               </button>
@@ -623,15 +623,15 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
       )}
 
       {/* Content Area */}
-      <div className="px-6 -mt-6">
+      <div className="px-4 sm:px-6 -mt-4 sm:-mt-6">
         {/* Search Results */}
         {isSearching ? (
           <div className="flex items-center justify-center py-8">
             <div className="w-8 h-8 border-4 border-[#1DB954] border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : searchResults.length > 0 ? (
-          <div className="mb-8">
-            <h4 className={`text-lg font-bold mb-4 ${
+          <div className="mb-6 sm:mb-8">
+            <h4 className={`text-base sm:text-lg font-bold mb-3 sm:mb-4 ${
               isDarkMode ? 'text-white' : 'text-gray-800'
             }`}>
               Suchergebnisse
@@ -640,11 +640,11 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
               {searchResults.map((track) => (
                 <div
                   key={track.id}
-                  className={`p-3 rounded-md shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-3 ${
+                  className={`p-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-3 ${
                     isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
                   }`}
                 >
-                  <div className="w-12 h-12 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-100 flex-shrink-0">
                     {track.album?.images?.[0] ? (
                       <img 
                         src={track.album.images[0].url} 
@@ -653,12 +653,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Music className="w-5 h-5 text-gray-400" />
+                        <Music className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                       </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h5 className={`font-medium truncate ${
+                    <h5 className={`font-medium truncate text-sm sm:text-base ${
                       isDarkMode ? 'text-white' : 'text-gray-800'
                     }`}>
                       {track.name}
@@ -673,13 +673,13 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                   <button
                     onClick={() => handleAddTrack(track)}
                     disabled={isAddingTrack === track.id}
-                    className="p-2 rounded-full bg-[#1DB954] text-white hover:bg-opacity-80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-full bg-[#1DB954] text-white hover:bg-opacity-80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                     title="Sofort zur Playlist hinzufügen"
                   >
                     {isAddingTrack === track.id ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     ) : (
-                      <Plus className="w-5 h-5" />
+                      <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </button>
                 </div>
@@ -698,10 +698,10 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
         ) : null}
 
         {/* Playlist Tracks */}
-        <div className="pb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <h4 className={`text-lg font-bold ${
+        <div className="pb-6 sm:pb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <h4 className={`text-base sm:text-lg font-bold ${
                 isDarkMode ? 'text-white' : 'text-gray-800'
               }`}>
                 Playlist Songs
@@ -741,7 +741,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
               
               {/* Bulk Delete Controls */}
               {getDeletableTracksCount() > 0 && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     onClick={() => setBulkDeleteMode(!bulkDeleteMode)}
                     className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
@@ -760,7 +760,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                       <span className={`text-xs ${
                         isDarkMode ? 'text-gray-400' : 'text-gray-600'
                       }`}>
-                        {selectedTracks.size} von {getDeletableTracksCount()} ausgewählt
+                        {selectedTracks.size} von {getDeletableTracksCount()}
                       </span>
                       
                       <button
@@ -788,11 +788,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                           className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-red-500 hover:bg-red-600 text-white transition-colors"
                         >
                           {isBulkDeleting ? (
-                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1"></div>
+                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                           ) : (
-                            <Trash2 className="w-3 h-3 mr-1" />
+                            <Trash2 className="w-3 h-3" />
                           )}
-                          {selectedTracks.size} sofort löschen
+                          <span className="hidden sm:inline">{selectedTracks.size} sofort löschen</span>
+                          <span className="sm:hidden">Löschen</span>
                         </button>
                       )}
                     </>
@@ -820,14 +821,14 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
           </div>
 
           {/* Table Header */}
-          <div className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-4 px-4 py-2 border-b text-xs font-medium uppercase ${
+          <div className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-2 sm:gap-4 px-2 sm:px-4 py-2 border-b text-xs font-medium uppercase ${
             isDarkMode ? 'border-gray-700 text-gray-400' : 'border-gray-200 text-gray-500'
           }`}>
-            {bulkDeleteMode ? <div></div> : <div>#</div>}
+            {bulkDeleteMode ? <div></div> : <div className="hidden sm:block">#</div>}
             <div>Titel</div>
-            <div>Hinzugefügt am</div>
+            <div className="hidden sm:block">Hinzugefügt am</div>
             <div className="flex justify-center">
-              <Clock className="w-4 h-4" />
+              <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
             </div>
           </div>
 
@@ -836,7 +837,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
               <div className="w-8 h-8 border-4 border-[#1DB954] border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : playlistTracks.length > 0 ? (
-            <div className="max-h-[400px] overflow-y-auto">
+            <div className="max-h-[300px] sm:max-h-[400px] overflow-y-auto">
               <div className="space-y-1 mt-2">
                 {playlistTracks.map((item, index) => {
                   const isSelected = selectedTracks.has(item.track.id);
@@ -846,7 +847,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                   return (
                     <div
                       key={`${item.track.id}-${item.added_at}`}
-                      className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-4 px-4 py-2 rounded-md items-center group ${
+                      className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-2 sm:gap-4 px-2 sm:px-4 py-2 rounded-md items-center group ${
                         isDarkMode 
                           ? `hover:bg-gray-800 text-white ${isSelected ? 'bg-gray-800 ring-1 ring-[#1DB954]' : ''}` 
                           : `hover:bg-gray-100 text-gray-800 ${isSelected ? 'bg-gray-100 ring-1 ring-[#1DB954]' : ''}`
@@ -863,18 +864,18 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                                   : isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
                               }`}
                             >
-                              {isSelected ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5" />}
+                              {isSelected ? <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5" /> : <Square className="w-4 h-4 sm:w-5 sm:h-5" />}
                             </button>
                           )}
                         </div>
                       ) : (
-                        <div className={`text-sm ${
+                        <div className={`text-sm hidden sm:block ${
                           isDarkMode ? 'text-gray-400' : 'text-gray-500'
                         }`}>{index + 1}</div>
                       )}
                       
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded overflow-hidden bg-gray-100 flex-shrink-0">
                           {item.track.album?.images?.[0] ? (
                             <img 
                               src={item.track.album.images[0].url} 
@@ -883,12 +884,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <Music className="w-4 h-4 text-gray-400" />
+                              <Music className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
                             </div>
                           )}
                         </div>
                         <div className="min-w-0">
-                          <h5 className="font-medium truncate">
+                          <h5 className="font-medium truncate text-sm sm:text-base">
                             {item.track.name}
                           </h5>
                           <p className={`text-xs truncate ${
@@ -898,12 +899,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                           </p>
                         </div>
                       </div>
-                      <div className={`text-xs ${
+                      <div className={`text-xs hidden sm:block ${
                         isDarkMode ? 'text-gray-400' : 'text-gray-500'
                       }`}>
                         {formatDate(item.added_at)}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 sm:gap-2">
                         <span className={`text-xs ${
                           isDarkMode ? 'text-gray-400' : 'text-gray-500'
                         }`}>
@@ -915,7 +916,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                               <button
                                 onClick={() => handleRemoveTrack(item)}
                                 disabled={isRemovingTrack === item.track.id}
-                                className={`p-1.5 rounded-full transition-colors ${
+                                className={`p-1 sm:p-1.5 rounded-full transition-colors ${
                                   isDarkMode 
                                     ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' 
                                     : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
@@ -923,9 +924,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                                 title="Sofort aus Playlist entfernen"
                               >
                                 {isRemovingTrack === item.track.id ? (
-                                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                  <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                                 ) : (
-                                  <Trash2 className="w-4 h-4" />
+                                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                 )}
                               </button>
                             )}
@@ -933,14 +934,14 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
                               href={item.track.external_urls.spotify}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className={`p-1.5 rounded-full transition-colors ${
+                              className={`p-1 sm:p-1.5 rounded-full transition-colors ${
                                 isDarkMode 
                                   ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' 
                                   : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
                               }`}
                               title="In Spotify öffnen"
                             >
-                              <ExternalLink className="w-4 h-4" />
+                              <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                             </a>
                           </div>
                         )}
