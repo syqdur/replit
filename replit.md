@@ -51,6 +51,40 @@ The application follows a modern full-stack architecture with clear separation b
 - **Firebase**: Cloud storage and real-time database
 - **Tailwind CSS**: Utility-first CSS framework
 
+## Project Analysis Summary
+
+This is a comprehensive wedding gallery application with the following architecture:
+
+### Core Technologies
+- **Frontend**: React 18 with TypeScript, Vite for development
+- **Backend**: Express.js with TypeScript, minimal API routes
+- **Database**: PostgreSQL with Drizzle ORM (for user management)
+- **Real-time Data**: Firebase Firestore for media, comments, likes, stories
+- **File Storage**: Firebase Storage for images and videos
+- **Authentication**: Simple username-based system with admin controls
+
+### Key Features
+1. **Instagram-style Gallery**: Photo/video sharing with likes and comments
+2. **Stories System**: 24-hour expiring stories like Instagram  
+3. **Live User Tracking**: Real-time presence indicators
+4. **Admin Panel**: Content moderation and site controls
+5. **Timeline**: Wedding milestone tracking
+6. **Music Wishlist**: Spotify integration for song requests
+7. **User Profiles**: Custom avatars and display names
+8. **Mobile Responsive**: Optimized for wedding guests on phones
+
+### Data Flow
+- Media files → Firebase Storage
+- Metadata → Firebase Firestore (real-time sync)
+- User accounts → PostgreSQL via Drizzle ORM
+- Live features → Firebase real-time listeners
+
+### Security Architecture
+- Client/server properly separated
+- Firebase security rules control access
+- Admin authentication with session management
+- Media deletion with proper permission checks
+
 ## Recent Changes
 
 ### January 25, 2025
