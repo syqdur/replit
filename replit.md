@@ -100,6 +100,12 @@ This is a comprehensive wedding gallery application with the following architect
 ### January 25, 2025 (Later)
 - **Profile Edit Security Fix**: Fixed profile editing gear icon to only show in admin mode, preventing unauthorized access to profile editing functionality
 
+### January 25, 2025 (Permission System Fixed)
+- **Song Deletion Permissions**: Fixed MusicWishlist permission system so users can only delete songs they personally added to the playlist, while admins can delete all songs
+- **Admin State Management**: Updated MusicWishlist to properly receive and use admin state from parent App component instead of assuming all Spotify users are admins
+- **Mobile Layout Fix**: Corrected deformed song layout in MusicWishlist with proper responsive grid system for mobile, tablet, and desktop views
+- **Permission Debugging**: Added and tested permission checking logic to verify user ID matching for song deletion rights
+
 ### January 25, 2025 (Migration Complete)
 - **Profile Controls Migration**: Moved profile controls (user profile button, admin toggle, and settings gear) from ProfileHeader to top navigation bar next to dark mode toggle for better accessibility
 - **Top Bar Control Integration**: Integrated profile management controls into the main header with proper state management and responsive sizing for mobile and desktop
