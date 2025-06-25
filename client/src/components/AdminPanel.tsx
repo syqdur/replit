@@ -240,22 +240,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   return (
     <>
-      {/* Main Admin Toggle Button */}
-      <button
-        onClick={handleAdminToggle}
-        className={`fixed bottom-4 left-4 p-2 rounded-full shadow-lg transition-colors duration-300 ${
-          isDarkMode
-            ? isAdmin
-              ? 'bg-green-600 hover:bg-green-700 text-white'
-              : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-            : isAdmin
-              ? 'bg-green-500 hover:bg-green-600 text-white'
-              : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
-        }`}
-        title={isAdmin ? "Admin-Modus verlassen" : "Admin-Modus"}
-      >
-        {isAdmin ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
-      </button>
+      
 
       {/* Admin Controls - Instagram 2.0 Style */}
       {isAdmin && (
