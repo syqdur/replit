@@ -321,6 +321,25 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
         console.log(`🗑️ Committing deletion of ${deletedCount} users...`);
         await batch.commit();
         console.log(`✅ Successfully deleted ${deletedCount} users`);
+        
+        // Check if current user was deleted and clear localStorage
+        const currentUserName = localStorage.getItem('userName');
+        const currentDeviceId = localStorage.getItem('deviceId');
+        
+        for (const userKey of selectedUsers) {
+          const deviceId = userKey.slice(-36);
+          const userName = userKey.slice(0, -37);
+          
+          if (currentUserName === userName && currentDeviceId === deviceId) {
+            console.log(`🧹 Current user was deleted, clearing localStorage and reloading`);
+            localStorage.removeItem('userName');
+            localStorage.removeItem('deviceId');
+            localStorage.removeItem('admin_status');
+            // Force page reload to reset user state
+            window.location.reload();
+            return; // Exit early since page will reload
+          }
+        }
       } else {
         console.log(`⚠️ No users found to delete`);
       }
@@ -426,6 +445,19 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       });
       
       await batch.commit();
+      
+      // Clear localStorage if the deleted user is the current user
+      const currentUserName = localStorage.getItem('userName');
+      const currentDeviceId = localStorage.getItem('deviceId');
+      
+      if (currentUserName === userName && currentDeviceId === deviceId) {
+        console.log(`🧹 Clearing localStorage for current user: ${userName}`);
+        localStorage.removeItem('userName');
+        localStorage.removeItem('deviceId');
+        localStorage.removeItem('admin_status');
+        // Force page reload to reset user state
+        window.location.reload();
+      }
       
       console.log(`✅ Successfully deleted user: ${userName}`);
       
