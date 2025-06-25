@@ -1,79 +1,161 @@
 import React, { useState } from 'react';
-import { Heart, Camera } from 'lucide-react';
+import { Heart, Camera, Image, X } from 'lucide-react';
+import { CameraCapture } from './CameraCapture';
 
 interface UserNamePromptProps {
-  onSubmit: (name: string) => void;
+  onSubmit: (name: string, profilePicture?: File) => void;
   isDarkMode: boolean;
 }
 
 export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDarkMode }) => {
   const [name, setName] = useState('');
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
-      onSubmit(name.trim());
+      onSubmit(name.trim(), profilePicture || undefined);
     }
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setProfilePicture(file);
+    }
+  };
+
+  const handleCameraCapture = (blob: Blob) => {
+    const file = new File([blob], `profile-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    setProfilePicture(file);
+    setShowCamera(false);
   };
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center p-4 z-50 transition-colors duration-300 ${
-      isDarkMode ? 'bg-gray-900' : 'bg-white'
+      isDarkMode ? 'bg-slate-900' : 'bg-slate-100'
     }`}>
-      <div className="max-w-md w-full text-center">
-        <div className="mb-8">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-200">
-            <img 
-              src="https://i.ibb.co/PvXjwss4/profil.jpg" 
-              alt="Kristin & Maurizio"
-              className="w-full h-full object-cover"
-            />
+      <div className={`max-w-md w-full p-8 rounded-2xl shadow-2xl transition-colors duration-300 ${
+        isDarkMode ? 'bg-slate-800 text-slate-50' : 'bg-white text-slate-900'
+      }`}>
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center">
+            <Heart className="w-10 h-10 text-white" />
           </div>
-          <h1 className={`text-2xl font-light mb-2 transition-colors duration-300 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            kristinundmauro.de
+          <h1 className="text-2xl font-bold mb-2">
+            Willkommen zur Hochzeit! 💕
           </h1>
-          <p className={`text-sm mb-6 transition-colors duration-300 ${
-            isDarkMode ? 'text-gray-300' : 'text-gray-600'
-          }`}>
-            Willkommen zu unserer Hochzeitsgalerie! 💕<br/>
-            Teile deine schönsten Momente mit uns.
+          <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+            Bitte gib deinen Namen ein, um deine Erinnerungen zu teilen
           </p>
         </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Wie heißt du?"
-              className={`w-full px-4 py-3 border rounded-lg text-center focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-colors duration-300 ${
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Profile Picture Upload Section */}
+          <div className="space-y-4">
+            <h3 className={`text-lg font-semibold text-center ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+              Profilbild hinzufügen (optional)
+            </h3>
+            
+            <div className="flex justify-center gap-4">
+              {/* Upload Photo Button */}
+              <label className={`cursor-pointer p-3 rounded-xl border-2 border-dashed transition-all duration-300 hover:scale-105 ${
                 isDarkMode 
-                  ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
-                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-              }`}
-              autoFocus
-              required
-            />
+                  ? 'border-slate-600 hover:border-red-500 hover:bg-red-500/10' 
+                  : 'border-slate-300 hover:border-red-500 hover:bg-red-500/10'
+              }`}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+                <div className="flex flex-col items-center gap-2">
+                  <Image className={`w-6 h-6 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`} />
+                  <span className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                    Foto
+                  </span>
+                </div>
+              </label>
+
+              {/* Take Selfie Button */}
+              <button
+                type="button"
+                onClick={() => setShowCamera(true)}
+                className={`p-3 rounded-xl border-2 border-dashed transition-all duration-300 hover:scale-105 ${
+                  isDarkMode 
+                    ? 'border-slate-600 hover:border-red-500 hover:bg-red-500/10' 
+                    : 'border-slate-300 hover:border-red-500 hover:bg-red-500/10'
+                }`}
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <Camera className={`w-6 h-6 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`} />
+                  <span className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                    Selfie
+                  </span>
+                </div>
+              </button>
+            </div>
+
+            {/* Profile Picture Preview */}
+            {profilePicture && (
+              <div className="flex justify-center">
+                <div className="relative">
+                  <img
+                    src={URL.createObjectURL(profilePicture)}
+                    alt="Profilbild Vorschau"
+                    className="w-20 h-20 rounded-full object-cover border-4 border-red-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setProfilePicture(null)}
+                    className={`absolute -top-1 -right-1 w-6 h-6 rounded-full transition-colors duration-300 ${
+                      isDarkMode ? 'bg-slate-700 hover:bg-slate-600 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                    }`}
+                  >
+                    <X className="w-3 h-3 mx-auto" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
+
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Dein Name"
+            className={`w-full p-4 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors duration-300 ${
+              isDarkMode 
+                ? 'bg-slate-700 border-slate-600 text-slate-50 placeholder-slate-400 focus:border-red-500 focus:ring-red-500/20' 
+                : 'bg-white border-slate-300 text-slate-900 placeholder-slate-500 focus:border-red-500 focus:ring-red-500/20'
+            }`}
+            maxLength={50}
+            required
+          />
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+            disabled={!name.trim()}
+            className={`w-full p-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+              name.trim()
+                ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                : isDarkMode ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
+            }`}
           >
-            Weiter
+            Weitermachen
           </button>
         </form>
-        
-        <div className={`mt-8 flex items-center justify-center gap-2 transition-colors duration-300 ${
-          isDarkMode ? 'text-gray-500' : 'text-gray-400'
-        }`}>
-          <Heart className="w-4 h-4" />
-          <span className="text-xs">Kristin & Maurizio • 12.07.2025</span>
-          <Heart className="w-4 h-4" />
-        </div>
       </div>
+
+      {/* Camera Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+          isDarkMode={isDarkMode}
+        />
+      )}
     </div>
   );
 };
