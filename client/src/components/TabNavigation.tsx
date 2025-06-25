@@ -44,7 +44,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   const tabs = allTabs.filter(tab => tab.enabled);
 
   return (
-    <div className={`mx-4 mb-4 p-1 rounded-2xl transition-all duration-500 ${
+    <div className={`mx-2 sm:mx-4 mb-3 sm:mb-4 p-1 rounded-2xl transition-all duration-500 ${
       isDarkMode 
         ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl' 
         : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl'
@@ -54,7 +54,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`flex-1 py-3 px-4 text-sm font-bold transition-all duration-300 relative rounded-xl ${
+            className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-bold transition-all duration-300 relative rounded-xl touch-manipulation ${
               activeTab === tab.id
                 ? isDarkMode
                   ? 'text-white bg-gray-700/50 shadow-lg'
@@ -64,9 +64,9 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
                   : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/50'
             }`}
           >
-            <div className="flex items-center justify-center space-x-2">
-              <span className="text-lg">{tab.emoji}</span>
-              <span className="tracking-tight hidden sm:inline">{tab.label}</span>
+            <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+              <span className="text-base sm:text-lg">{tab.emoji}</span>
+              <span className="tracking-tight text-xs sm:text-sm hidden xs:inline">{tab.label}</span>
             </div>
             {activeTab === tab.id && (
               <div className={`absolute inset-0 rounded-xl ring-2 transition-all duration-300 ${

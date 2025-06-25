@@ -81,17 +81,19 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
     }, userName);
   };
   return (
-    <div className={`mx-4 my-6 p-6 rounded-3xl transition-all duration-500 ${
+    <div className={`mx-2 sm:mx-4 my-4 sm:my-6 p-4 sm:p-6 rounded-3xl transition-all duration-500 ${
       isDarkMode 
         ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-purple-500/10' 
         : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-pink-500/10'
     }`}>
-      <div className="flex items-center gap-6 mb-6">
-        <div className={`w-24 h-24 rounded-full overflow-hidden relative ring-4 transition-all duration-300 ${
+      <div className="flex items-center gap-4 sm:gap-6 mb-4 sm:mb-6">
+        <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden relative ring-4 transition-all duration-300 animate-pulse ${
           isDarkMode 
             ? 'ring-gradient-to-r from-purple-600 to-pink-600 ring-purple-500/30' 
             : 'ring-gradient-to-r from-pink-500 to-purple-500 ring-pink-500/30'
-        }`}>
+        }`} style={{
+          animation: 'pulse 2s ease-in-out infinite, ring-glow 3s ease-in-out infinite'
+        }}>
           {profileData?.profilePicture ? (
             <img 
               src={profileData.profilePicture} 
@@ -99,7 +101,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className={`w-full h-full flex items-center justify-center text-2xl font-bold ${
+            <div className={`w-full h-full flex items-center justify-center text-xl sm:text-2xl font-bold ${
               isDarkMode 
                 ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white' 
                 : 'bg-gradient-to-br from-pink-500 to-purple-500 text-white'
@@ -109,12 +111,12 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
           )}
         </div>
         <div className="flex-1">
-          <h2 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
+          <h2 className={`text-lg sm:text-xl font-bold tracking-tight transition-colors duration-300 ${
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}>
             kristinundmauro.de
           </h2>
-          <div className={`flex gap-8 mt-3 text-sm font-medium transition-colors duration-300 ${
+          <div className={`flex gap-6 sm:gap-8 mt-2 sm:mt-3 text-sm font-medium transition-colors duration-300 ${
             isDarkMode ? 'text-gray-300' : 'text-gray-700'
           }`}>
             <span className="flex flex-col items-center">
@@ -212,7 +214,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                 <p className={`text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-400' : 'text-gray-600'
                 }`}>
-                  Jeden Moment zählt ✨
+                  Jeder Moment zählt ✨
                 </p>
               </div>
               

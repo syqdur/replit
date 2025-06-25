@@ -58,7 +58,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
   return (
     <div>
       {/* Modern View Toggle */}
-      <div className={`mx-4 mb-6 p-2 rounded-3xl transition-all duration-500 overflow-hidden ${
+      <div className={`mx-2 sm:mx-4 mb-4 sm:mb-6 p-2 rounded-3xl transition-all duration-500 overflow-hidden ${
         isDarkMode 
           ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-purple-500/10' 
           : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-pink-500/10'
@@ -78,7 +78,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
           }`}>
             <button
               onClick={() => setViewMode('feed')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+              className={`flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 touch-manipulation ${
                 viewMode === 'feed'
                   ? isDarkMode
                     ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/25'
@@ -89,11 +89,11 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
               }`}
             >
               <List className="w-4 h-4" />
-              <span className="text-sm font-medium">Feed</span>
+              <span className="text-xs sm:text-sm font-medium">Feed</span>
             </button>
             <button
               onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+              className={`flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 touch-manipulation ${
                 viewMode === 'grid'
                   ? isDarkMode
                     ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/25'
@@ -104,7 +104,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
               }`}
             >
               <Grid className="w-4 h-4" />
-              <span className="text-sm font-medium">Grid</span>
+              <span className="text-xs sm:text-sm font-medium">Grid</span>
             </button>
           </div>
         </div>

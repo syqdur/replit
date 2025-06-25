@@ -482,23 +482,49 @@ function App() {
           ? 'bg-gray-900/70 border-gray-700/30 backdrop-blur-xl shadow-xl shadow-purple-500/5' 
           : 'bg-white/70 border-gray-200/30 backdrop-blur-xl shadow-xl shadow-pink-500/5'
       } border-b`}>
-        <div className="max-w-md mx-auto px-6 py-4">
+        <div className="max-w-md mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center relative ${
                 isDarkMode 
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600' 
                   : 'bg-gradient-to-r from-pink-500 to-purple-500'
               }`}>
-                <span className="text-white text-sm font-bold">K&M</span>
+                {/* Animated Wedding Rings */}
+                <div className="relative w-full h-full flex items-center justify-center">
+                  {/* Ring 1 */}
+                  <div className={`absolute w-4 h-4 rounded-full border-2 transition-all duration-1000 ${
+                    isDarkMode ? 'border-yellow-300' : 'border-yellow-400'
+                  }`} style={{
+                    animation: 'ring-float-1 4s ease-in-out infinite',
+                    transform: 'translateX(-2px)'
+                  }}></div>
+                  
+                  {/* Ring 2 */}
+                  <div className={`absolute w-4 h-4 rounded-full border-2 transition-all duration-1000 ${
+                    isDarkMode ? 'border-yellow-300' : 'border-yellow-400'
+                  }`} style={{
+                    animation: 'ring-float-2 4s ease-in-out infinite',
+                    transform: 'translateX(2px)'
+                  }}></div>
+                  
+                  {/* Diamond sparkle effect */}
+                  <div className={`absolute w-1 h-1 rounded-full transition-all duration-500 ${
+                    isDarkMode ? 'bg-yellow-200' : 'bg-yellow-300'
+                  }`} style={{
+                    animation: 'sparkle 2s ease-in-out infinite',
+                    top: '20%',
+                    right: '20%'
+                  }}></div>
+                </div>
               </div>
-              <h1 className={`text-lg font-bold tracking-tight transition-colors duration-300 ${
+              <h1 className={`text-base sm:text-lg font-bold tracking-tight transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
                 kristinundmauro
               </h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {/* Live User Indicator */}
               <LiveUserIndicator 
                 currentUser={userName || ''}
@@ -507,13 +533,13 @@ function App() {
               
               <button
                 onClick={toggleDarkMode}
-                className={`p-2.5 rounded-full transition-all duration-300 ${
+                className={`p-2 sm:p-2.5 rounded-full transition-all duration-300 touch-manipulation ${
                   isDarkMode 
                     ? 'text-yellow-400 hover:bg-gray-800/50 hover:scale-110' 
                     : 'text-gray-600 hover:bg-gray-100/50 hover:scale-110'
                 }`}
               >
-                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                {isDarkMode ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
               </button>
               
             </div>
@@ -521,7 +547,7 @@ function App() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md mx-auto px-2 sm:px-0">
         <ProfileHeader 
           isDarkMode={isDarkMode} 
           isAdmin={isAdmin}
