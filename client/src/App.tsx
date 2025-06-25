@@ -418,6 +418,22 @@ function App() {
     });
   };
 
+  // Load current user profile when user changes
+  useEffect(() => {
+    const loadCurrentUserProfile = async () => {
+      if (userName && deviceId) {
+        try {
+          const userProfile = await getUserProfile(userName, deviceId);
+          setCurrentUserProfile(userProfile);
+        } catch (error) {
+          console.error('Error loading current user profile:', error);
+        }
+      }
+    };
+
+    loadCurrentUserProfile();
+  }, [userName, deviceId]);
+
   // Function to get user's profile picture or fallback to generated avatar
   const getUserAvatar = (targetUserName: string, targetDeviceId?: string) => {
     const userProfile = userProfiles.find(p => 
@@ -607,14 +623,14 @@ function App() {
                       alt="My Profile"
                       className="w-full h-full object-cover"
                     />
-                    {/* Small gear icon overlay */}
-                    <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    {/* Gear icon overlay for profile picture */}
+                    <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                       isDarkMode 
-                        ? 'bg-gray-700 border border-gray-600' 
-                        : 'bg-white border border-gray-300'
+                        ? 'bg-gray-800 border-2 border-gray-600' 
+                        : 'bg-white border-2 border-gray-400'
                     }`}>
-                      <Settings className={`w-1.5 h-1.5 sm:w-2 sm:h-2 transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                      <Settings className={`w-2 h-2 sm:w-2.5 sm:h-2.5 transition-colors duration-300 ${
+                        isDarkMode ? 'text-gray-200' : 'text-gray-700'
                       }`} />
                     </div>
                   </div>
@@ -623,14 +639,14 @@ function App() {
                     <UserPlus className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-300 ${
                       isDarkMode ? 'text-white' : 'text-white'
                     }`} />
-                    {/* Small gear icon overlay */}
-                    <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    {/* Gear icon overlay for default icon */}
+                    <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                       isDarkMode 
-                        ? 'bg-gray-700 border border-gray-600' 
-                        : 'bg-white border border-gray-300'
+                        ? 'bg-gray-800 border-2 border-gray-600' 
+                        : 'bg-white border-2 border-gray-400'
                     }`}>
-                      <Settings className={`w-1.5 h-1.5 sm:w-2 sm:h-2 transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                      <Settings className={`w-2 h-2 sm:w-2.5 sm:h-2.5 transition-colors duration-300 ${
+                        isDarkMode ? 'text-gray-200' : 'text-gray-700'
                       }`} />
                     </div>
                   </div>
