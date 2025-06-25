@@ -104,7 +104,7 @@ This is a comprehensive wedding gallery application with the following architect
 - **Replit Environment Migration**: Successfully migrated project from Replit Agent to Replit environment with all core functionality preserved
 - **Profile Security Fix**: Fixed profile editing controls to only be visible in admin mode, preventing unauthorized access to profile settings
 - **Firebase Error Resolution**: Fixed Firebase updateDoc() error by removing undefined values from profile updates
-- **User Profile System**: Added separate visitor profile editing with dedicated blue gear button, allowing users to set custom display names and profile pictures without affecting the main gallery owner profile
+- **User Profile System**: Added separate visitor profile editing with dedicated blue UserPlus icon button, allowing users to set custom display names and profile pictures while keeping the main gallery owner profile (Kristin & Maurizio) completely separate and unmodifiable
 - **Database Migration**: Successfully migrated backend from in-memory storage to PostgreSQL with Drizzle ORM for persistent data storage
 - **Camera Functionality**: Added camera capture component for profile picture selfies with front/rear camera switching and photo preview
 - **Profile Enhancement**: Enhanced profile editing with both gallery upload and camera capture options for profile pictures

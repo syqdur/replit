@@ -98,9 +98,9 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                 animation: 'pulse 2s ease-in-out infinite, ring-glow 3s ease-in-out infinite'
               }}
             >
-              {currentUserProfile?.profilePicture || profileData?.profilePicture ? (
+              {profileData?.profilePicture ? (
                 <img 
-                  src={currentUserProfile?.profilePicture || profileData?.profilePicture} 
+                  src={profileData?.profilePicture} 
                   alt={profileData?.name || "Profile"}
                   className="w-full h-full object-cover"
                 />
@@ -110,7 +110,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                     ? 'from-purple-600 to-pink-600 text-white' 
                     : 'from-pink-500 to-purple-500 text-white'
                 }`}>
-                  {(profileData?.name || userName || '?').charAt(0).toUpperCase()}
+                  K&M
                 </div>
               )}
             </div>
