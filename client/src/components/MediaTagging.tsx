@@ -136,7 +136,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                 <button
                   onClick={() => handleRemoveTag(tag)}
                   disabled={isLoading}
-                  className={`ml-1 hover:opacity-70 transition-opacity ${
+                  className={`ml-1 hover:opacity-70 transition-all duration-300 transform hover:scale-110 ${
                     isLoading ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
@@ -152,75 +152,53 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
       {!showTagInput ? (
         <button
           onClick={() => setShowTagInput(true)}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-            isDarkMode
-              ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-          }`}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/20 dark:bg-gray-800/20 text-gray-700 dark:text-gray-300 backdrop-blur-lg border border-white/30 dark:border-gray-600/30 hover:bg-white/30 dark:hover:bg-gray-700/30 shadow-lg hover:shadow-xl"
         >
           <UserPlus className="w-4 h-4" />
           Person markieren
         </button>
       ) : (
-        <div className={`p-3 rounded-lg border transition-colors ${
-          isDarkMode
-            ? 'bg-gray-800 border-gray-600'
-            : 'bg-white border-gray-200'
-        }`}>
+        <div className="p-4 rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-xl">
           {/* Search Input */}
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Nach Person suchen..."
-            className={`w-full px-3 py-2 rounded-lg border transition-colors mb-3 ${
-              isDarkMode
-                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
-                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white transition-all duration-300 mb-4"
             autoFocus
           />
 
           {/* User List */}
-          <div className="max-h-40 overflow-y-auto space-y-1">
+          <div className="max-h-40 overflow-y-auto space-y-2">
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
                 <button
                   key={`${user.userName}_${user.deviceId}`}
                   onClick={() => handleAddTag(user)}
                   disabled={isLoading}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
                     isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                  } ${
-                    isDarkMode
-                      ? 'hover:bg-gray-700 text-gray-300'
-                      : 'hover:bg-gray-100 text-gray-700'
-                  }`}
+                  } bg-white/40 dark:bg-gray-800/40 hover:bg-white/60 dark:hover:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 border border-white/20 dark:border-gray-600/20 hover:border-purple-300 dark:hover:border-purple-600 shadow-sm hover:shadow-md`}
                 >
                   {user.displayName || user.userName}
                 </button>
               ))
             ) : (
-              <p className={`text-sm text-center py-2 ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-500'
-              }`}>
+              <p className="text-sm text-center py-4 text-gray-500 dark:text-gray-400 bg-white/30 dark:bg-gray-800/30 rounded-xl backdrop-blur-sm border border-white/20 dark:border-gray-600/20">
                 {searchTerm ? 'Keine Personen gefunden' : 'Alle Personen bereits markiert'}
               </p>
             )}
           </div>
 
           {/* Cancel Button */}
-          <div className="flex justify-end mt-3">
+          <div className="flex justify-end mt-4">
             <button
               onClick={() => {
                 setShowTagInput(false);
                 setSearchTerm('');
               }}
-              className={`px-3 py-1 text-sm rounded-lg transition-colors ${
-                isDarkMode
-                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-              }`}
+              className="px-4 py-2 text-sm rounded-xl font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-300 backdrop-blur-lg border border-white/30 dark:border-gray-600/30 shadow-lg"
             >
               Abbrechen
             </button>
