@@ -142,8 +142,15 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
               <h2 className={`text-lg sm:text-xl font-bold tracking-tight transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
-                kristinundmauro.de
+                {profileData?.name || 'kristinundmauro.de'}
               </h2>
+              {profileData?.bio && (
+                <p className={`text-sm mt-1 mb-2 transition-colors duration-300 ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  {profileData.bio}
+                </p>
+              )}
               <div className={`flex gap-6 sm:gap-8 mt-2 sm:mt-3 text-sm font-medium transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
