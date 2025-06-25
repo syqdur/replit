@@ -950,7 +950,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                       eventType.color === 'indigo' ? 'bg-gradient-to-br from-indigo-400 to-indigo-600 border-indigo-200/30 shadow-lg shadow-indigo-500/25' :
                       isDarkMode ? 'bg-gradient-to-br from-gray-600 to-gray-800 border-gray-400/30 shadow-lg shadow-gray-500/25' : 'bg-gradient-to-br from-gray-400 to-gray-600 border-gray-300/30 shadow-lg shadow-gray-400/25'
                     }`}>
-                      <span className="text-2xl leading-none w-8 h-8 flex items-center justify-center">
+                      <span className="text-3xl leading-none w-10 h-10 flex items-center justify-center">
                         {eventType.icon}
                       </span>
                     </div>

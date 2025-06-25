@@ -108,6 +108,7 @@ This is a comprehensive wedding gallery application with the following architect
 - **Admin UI Enhancement**: Improved admin control buttons with consistent circular design, proper spacing, and glassmorphism effects matching the overall design system
 - **Profile Text Consistency**: Fixed admin profile editing to display the same name and bio on both the front page header and editing modal, ensuring text consistency throughout the interface
 - **Timeline Video Indicators**: Added prominent play button overlay to videos in Timeline component for clear visual distinction between images and videos
+- **Timeline Icon Standardization**: Fixed timeline event icons to uniform size with consistent dimensions and proper centering
 - **Database Migration**: Successfully migrated backend from in-memory storage to PostgreSQL with Drizzle ORM for persistent data storage
 - **Camera Functionality**: Added camera capture component for profile picture selfies with front/rear camera switching and photo preview
 - **Profile Enhancement**: Enhanced profile editing with both gallery upload and camera capture options for profile pictures
