@@ -485,11 +485,7 @@ function App() {
         <div className="max-w-md mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center relative ${
-                isDarkMode 
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600' 
-                  : 'bg-gradient-to-r from-pink-500 to-purple-500'
-              }`}>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center relative bg-transparent">
                 {/* Animated Wedding Rings */}
                 <div className="relative w-full h-full flex items-center justify-center">
                   {/* Ring 1 */}
