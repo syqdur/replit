@@ -180,11 +180,12 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={prevNote}
-                      className={`p-2 rounded-full transition-colors duration-300 ${
+                      className={`p-2 sm:p-3 rounded-full transition-colors duration-300 touch-manipulation ${
                         isDarkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                       }`}
+                      style={{ minWidth: '44px', minHeight: '44px' }}
                     >
-                      <ChevronLeft className="w-4 h-4" />
+                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                     
                     {/* Dots Indicator */}
@@ -193,22 +194,24 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                         <button
                           key={index}
                           onClick={() => goToNote(index)}
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          className={`w-3 h-3 sm:w-2 sm:h-2 rounded-full transition-all duration-300 touch-manipulation ${
                             index === notesSliderIndex
-                              ? 'bg-pink-500 w-4'
+                              ? 'bg-pink-500 w-6 sm:w-4'
                               : isDarkMode ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-300 hover:bg-gray-400'
                           }`}
+                          style={{ minWidth: '24px', minHeight: '24px' }}
                         />
                       ))}
                     </div>
                     
                     <button
                       onClick={nextNote}
-                      className={`p-2 rounded-full transition-colors duration-300 ${
+                      className={`p-2 sm:p-3 rounded-full transition-colors duration-300 touch-manipulation ${
                         isDarkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                       }`}
+                      style={{ minWidth: '44px', minHeight: '44px' }}
                     >
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   </div>
                 )}

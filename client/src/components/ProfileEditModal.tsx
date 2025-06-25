@@ -108,12 +108,14 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className={`rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto transition-colors duration-300 ${
-        isDarkMode ? 'bg-gray-800' : 'bg-white'
+      <div className={`rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-sm sm:max-w-md w-full max-h-[90vh] overflow-y-auto backdrop-blur-xl border transition-all duration-300 ${
+        isDarkMode 
+          ? 'bg-gray-900/95 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+          : 'bg-white/95 border-gray-200/30 shadow-2xl shadow-pink-500/10'
       }`}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h3 className={`text-xl font-semibold transition-colors duration-300 ${
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h3 className={`text-lg sm:text-xl font-semibold transition-colors duration-300 ${
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}>
             Profil bearbeiten
@@ -121,15 +123,16 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
           <button
             onClick={handleClose}
             disabled={isSaving}
-            className={`p-2 rounded-full transition-colors duration-300 ${
+            className={`p-2 sm:p-3 rounded-full backdrop-blur-sm transition-all duration-300 touch-manipulation ${
               isSaving 
                 ? 'cursor-not-allowed opacity-50'
                 : isDarkMode 
-                  ? 'hover:bg-gray-700 text-gray-400' 
-                  : 'hover:bg-gray-100 text-gray-600'
+                  ? 'hover:bg-white/10 text-gray-400 hover:text-white' 
+                  : 'hover:bg-gray-100/80 text-gray-600 hover:text-gray-900'
             }`}
+            style={{ minWidth: '48px', minHeight: '48px' }}
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 

@@ -143,13 +143,14 @@ export const MediaModal: React.FC<MediaModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-40 flex items-center justify-center p-2 sm:p-4">
       {/* Close button */}
       <button 
         onClick={onClose}
-        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300"
+        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 p-2 sm:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300 touch-manipulation"
+        style={{ minWidth: '48px', minHeight: '48px' }}
       >
-        <X className="w-6 h-6" />
+        <X className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
 
       {/* Navigation buttons */}
@@ -157,29 +158,31 @@ export const MediaModal: React.FC<MediaModalProps> = ({
         <>
           <button
             onClick={onPrev}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300"
+            className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-20 p-2 sm:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300 touch-manipulation"
+            style={{ minWidth: '48px', minHeight: '48px' }}
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
           <button
             onClick={onNext}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300"
+            className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-20 p-2 sm:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300 touch-manipulation"
+            style={{ minWidth: '48px', minHeight: '48px' }}
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </>
       )}
 
       {/* Main content area */}
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="max-w-7xl max-h-full w-full h-full flex items-center justify-center">
-          {/* Media container */}
+      <div className="w-full h-full flex flex-col lg:flex-row items-center justify-center max-w-7xl mx-auto">
+        {/* Media container */}
+        <div className="flex-1 lg:w-2/3 h-full flex items-center justify-center p-2 sm:p-4">
           <div className="relative max-w-full max-h-full flex items-center justify-center">
             {currentItem.type === 'video' ? (
               <video
                 src={currentItem.url}
                 controls
-                className="max-w-full max-h-full"
+                className="max-w-full max-h-full rounded-lg shadow-2xl"
                 preload="metadata"
                 onLoadStart={() => setImageLoading(true)}
                 onLoadedData={() => setImageLoading(false)}
