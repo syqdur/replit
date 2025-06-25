@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Calendar, MapPin, Camera, Plus, Edit3, Trash2, Save, X, Image, Video, Upload } from 'lucide-react';
+import { Heart, Calendar, MapPin, Camera, Plus, Edit3, Trash2, Save, X, Image, Video, Upload, Play } from 'lucide-react';
 import { 
   collection, 
   addDoc, 
@@ -1049,6 +1049,15 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                                       className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-110"
                                       onClick={() => setModalMedia({ url, type: 'image', title: event.title })}
                                     />
+                                  )}
+                                  
+                                  {/* Video Play Button - Always visible for videos */}
+                                  {mediaType === 'video' && (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <div className="bg-black/60 backdrop-blur-sm rounded-full p-4 transition-all duration-300 group-hover:scale-110 group-hover:bg-black/80">
+                                        <Play className="w-8 h-8 text-white fill-white" />
+                                      </div>
+                                    </div>
                                   )}
                                   
                                   {/* Media type indicator */}
