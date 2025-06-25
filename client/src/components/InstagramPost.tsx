@@ -300,6 +300,25 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
           )}
         </div>
 
+        {/* Media Tags - positioned below media */}
+        <div className={`px-4 py-2 border-b transition-colors duration-300 ${
+          isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'
+        }`}>
+          <MediaTagging
+            mediaId={item.id}
+            tags={tags}
+            currentUser={userName}
+            currentDeviceId={getUserDeviceId ? getUserDeviceId() : ''}
+            isAdmin={isAdmin}
+            isDarkMode={isDarkMode}
+            onTagsUpdated={() => {
+              // Trigger a fresh subscription to reload tags
+            }}
+            getUserDisplayName={getUserDisplayName || ((name) => name)}
+            mediaUploader={item.uploadedBy}
+          />
+        </div>
+
         {/* Action Buttons */}
         <div className="px-6 pb-6">
           <div className="flex items-center justify-between mb-4">

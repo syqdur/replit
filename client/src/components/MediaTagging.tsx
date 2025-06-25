@@ -124,11 +124,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
           {tags.map((tag) => (
             <div
               key={tag.id}
-              className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-colors ${
-                isDarkMode
-                  ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30'
-                  : 'bg-blue-100 text-blue-800 border border-blue-200'
-              }`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-700 dark:text-purple-300 backdrop-blur-sm border border-purple-200/30 dark:border-purple-600/30 shadow-lg hover:shadow-xl"
             >
               <Tag className="w-3 h-3" />
               <span>{getUserDisplayName(tag.userName, tag.deviceId)}</span>
