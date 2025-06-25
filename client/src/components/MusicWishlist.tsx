@@ -17,9 +17,10 @@ import { SpotifyTrack } from '../types';
 
 interface MusicWishlistProps {
   isDarkMode: boolean;
+  isAdmin?: boolean;
 }
 
-export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
+export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmin: adminProp = false }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SpotifyTrack[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -105,9 +106,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode }) => {
           const user = await getCurrentUser();
           setCurrentUser(user);
           
-          // Check if user is admin (simplified check - in a real app, you'd have a proper admin check)
-          // For now, we'll assume any authenticated user is an admin
-          setIsAdmin(!!user);
+          // Use the admin prop from parent component instead of assuming all users are admins
+          setIsAdmin(adminProp);
           
           // Get selected playlist
           const playlist = await getSelectedPlaylist();

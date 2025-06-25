@@ -802,7 +802,7 @@ function App() {
             isAdmin={isAdmin}
           />
         ) : activeTab === 'music' && siteStatus?.musicWishlistEnabled ? (
-          <MusicWishlist isDarkMode={isDarkMode} />
+          <MusicWishlist isDarkMode={isDarkMode} isAdmin={isAdmin} />
         ) : (
           <div className={`p-8 text-center transition-colors duration-300 ${
             isDarkMode ? 'text-gray-400' : 'text-gray-600'
