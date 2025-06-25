@@ -349,11 +349,8 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
           
           if (currentUserName === userName && currentDeviceId === deviceId) {
             console.log(`🧹 Current user was bulk deleted - clearing all data and reloading`);
-            // Mark user as deleted to prevent presence updates
-            localStorage.setItem('userDeleted', 'true');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('deviceId');
-            localStorage.removeItem('admin_status');
+            // Clear all localStorage data to force new device ID generation
+            localStorage.clear();
             // Small delay to ensure Firebase operations complete
             setTimeout(() => {
               window.location.reload();
@@ -475,11 +472,8 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       
       if (currentUserName === userName && currentDeviceId === deviceId) {
         console.log(`🧹 Current user deleted themselves - clearing all data and reloading`);
-        // Mark user as deleted to prevent presence updates
-        localStorage.setItem('userDeleted', 'true');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('deviceId');
-        localStorage.removeItem('admin_status');
+        // Clear all localStorage data to force new device ID generation
+        localStorage.clear();
         // Small delay to ensure Firebase operations complete
         setTimeout(() => {
           window.location.reload();
