@@ -137,28 +137,40 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
 
           {/* Controls - User Profile and Admin */}
           <div className="flex items-center gap-2">
-            {/* User Profile Edit Button - Always visible for visitors */}
+            {/* User Profile Edit Button - Shows user's profile picture or default icon */}
             <button
               onClick={() => onOpenUserProfile?.()}
-              className={`p-2 rounded-full transition-all duration-300 hover:scale-110 ${
-                isDarkMode 
-                  ? 'bg-blue-600/50 hover:bg-blue-500/50 backdrop-blur-sm' 
-                  : 'bg-blue-500/50 hover:bg-blue-600/50 backdrop-blur-sm'
+              className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 overflow-hidden ring-2 ${
+                currentUserProfile?.profilePicture
+                  ? 'ring-blue-400/50 hover:ring-blue-400/70'
+                  : isDarkMode 
+                    ? 'bg-blue-600/50 hover:bg-blue-500/50 backdrop-blur-sm ring-blue-500/50' 
+                    : 'bg-blue-500/50 hover:bg-blue-600/50 backdrop-blur-sm ring-blue-400/50'
               }`}
               title="Mein Profil bearbeiten"
             >
-              <UserPlus className={`w-4 h-4 transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-white'
-              }`} />
+              {currentUserProfile?.profilePicture ? (
+                <img 
+                  src={currentUserProfile.profilePicture} 
+                  alt="My Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <UserPlus className={`w-4 h-4 transition-colors duration-300 ${
+                    isDarkMode ? 'text-white' : 'text-white'
+                  }`} />
+                </div>
+              )}
             </button>
             
             {/* Admin Toggle */}
             <button
               onClick={() => onToggleAdmin?.(!isAdmin)}
-              className={`p-2 rounded-full transition-all duration-300 hover:scale-110 ${
+              className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center ring-2 ${
                 isDarkMode 
-                  ? 'bg-gray-700/50 hover:bg-gray-600/50 backdrop-blur-sm' 
-                  : 'bg-gray-100/50 hover:bg-gray-200/50 backdrop-blur-sm'
+                  ? 'bg-gray-800/60 hover:bg-gray-700/70 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
+                  : 'bg-white/60 hover:bg-gray-50/70 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
               }`}
               title={isAdmin ? "Admin-Modus verlassen" : "Admin-Modus"}
             >
@@ -177,10 +189,10 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
             {isAdmin && (
               <button
                 onClick={() => setShowEditModal(true)}
-                className={`p-2 rounded-full transition-all duration-300 hover:scale-110 ${
+                className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center ring-2 ${
                   isDarkMode 
-                    ? 'bg-gray-700/50 hover:bg-gray-600/50 backdrop-blur-sm' 
-                    : 'bg-gray-100/50 hover:bg-gray-200/50 backdrop-blur-sm'
+                    ? 'bg-gray-800/60 hover:bg-gray-700/70 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
+                    : 'bg-white/60 hover:bg-gray-50/70 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
                 }`}
                 title="Website-Profil bearbeiten"
               >
