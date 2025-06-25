@@ -440,6 +440,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
                 // Trigger a fresh subscription to reload tags
               }}
               getUserDisplayName={getUserDisplayName || ((name) => name)}
+              mediaUploader={item.uploadedBy}
             />
           </div>
 

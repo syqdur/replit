@@ -12,6 +12,7 @@ interface MediaTaggingProps {
   isDarkMode: boolean;
   onTagsUpdated: () => void;
   getUserDisplayName: (userName: string, deviceId?: string) => string;
+  mediaUploader?: string; // The user who uploaded this media
 }
 
 interface User {
@@ -28,7 +29,8 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
   isAdmin,
   isDarkMode,
   onTagsUpdated,
-  getUserDisplayName
+  getUserDisplayName,
+  mediaUploader
 }) => {
   const [showTagInput, setShowTagInput] = useState(false);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
@@ -91,9 +93,14 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
   const handleRemoveTag = async (tag: MediaTag) => {
     if (isLoading) return;
     
-    // Only allow removing own tags or admin can remove any tag
-    if (tag.taggedBy !== currentUser && !isAdmin) {
-      alert('Sie können nur Ihre eigenen Tags entfernen.');
+    // Allow removing tags if:
+    // 1. User created the tag themselves
+    // 2. User is admin (can remove any tag)
+    // 3. User uploaded the media (can remove tags from their own media)
+    const canRemove = tag.taggedBy === currentUser || isAdmin || (mediaUploader && mediaUploader === currentUser);
+    
+    if (!canRemove) {
+      alert('Sie können nur Ihre eigenen Tags oder Tags von Ihren eigenen Medien entfernen.');
       return;
     }
 
@@ -125,7 +132,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
             >
               <Tag className="w-3 h-3" />
               <span>{getUserDisplayName(tag.userName, tag.deviceId)}</span>
-              {(tag.taggedBy === currentUser || isAdmin) && (
+              {(tag.taggedBy === currentUser || isAdmin || (mediaUploader && mediaUploader === currentUser)) && (
                 <button
                   onClick={() => handleRemoveTag(tag)}
                   disabled={isLoading}
