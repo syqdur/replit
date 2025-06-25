@@ -52,74 +52,77 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
   };
 
   return (
-    <div className={`mx-4 mb-4 p-6 rounded-3xl transition-all duration-500 ${
-      isDarkMode 
-        ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-purple-500/10' 
-        : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-pink-500/10'
-    }`}>
-      <div className="flex items-center gap-6">
-        {/* Modern Upload Button */}
-        <div className={`w-16 h-16 border-2 border-dashed rounded-2xl flex items-center justify-center relative overflow-hidden transition-all duration-300 group hover:scale-105 ${
-          isDarkMode 
-            ? 'border-purple-500/50 bg-gray-700/30 hover:bg-purple-600/20 hover:border-purple-400' 
-            : 'border-pink-400/50 bg-pink-50/30 hover:bg-pink-100/50 hover:border-pink-500'
-        }`}>
-          <button
-            onClick={() => setShowUploadOptions(true)}
-            className="absolute inset-0 w-full h-full flex items-center justify-center cursor-pointer"
-          >
-            <Plus className={`w-6 h-6 transition-all duration-300 ${
-              isDarkMode 
-                ? 'text-purple-400 group-hover:text-purple-300' 
-                : 'text-pink-500 group-hover:text-pink-600'
-            }`} />
-          </button>
-        </div>
+    <>
+      <div className={`mx-4 mb-4 p-6 rounded-3xl transition-all duration-500 ${
+        isDarkMode 
+          ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-purple-500/10' 
+          : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-pink-500/10'
+      }`}>
+        <div className="flex items-center gap-6">
+          {/* Modern Upload Button */}
+          <div className={`w-16 h-16 border-2 border-dashed rounded-2xl flex items-center justify-center relative overflow-hidden transition-all duration-300 group hover:scale-105 ${
+            isDarkMode 
+              ? 'border-purple-500/50 bg-gray-700/30 hover:bg-purple-600/20 hover:border-purple-400' 
+              : 'border-pink-400/50 bg-pink-50/30 hover:bg-pink-100/50 hover:border-pink-500'
+          }`}>
+            <button
+              onClick={() => setShowUploadOptions(true)}
+              className="absolute inset-0 w-full h-full flex items-center justify-center cursor-pointer"
+            >
+              <Plus className={`w-6 h-6 transition-all duration-300 ${
+                isDarkMode 
+                  ? 'text-purple-400 group-hover:text-purple-300' 
+                  : 'text-pink-500 group-hover:text-pink-600'
+              }`} />
+            </button>
+          </div>
 
-        {/* Modern Content Info */}
-        <div className="flex-1">
-          <h3 className={`font-bold text-lg tracking-tight mb-2 transition-colors duration-300 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            Neuer Beitrag
-          </h3>
-          <p className={`text-sm transition-colors duration-300 ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            Teile deine schönsten Momente von der Hochzeit
-          </p>
-          {progress > 0 && (
-            <div className={`w-full h-2 rounded-full mt-3 overflow-hidden transition-colors duration-300 ${
-              isDarkMode ? 'bg-gray-700/50' : 'bg-gray-200/50'
+          {/* Modern Content Info */}
+          <div className="flex-1">
+            <h3 className={`font-bold text-lg tracking-tight mb-2 transition-colors duration-300 ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
             }`}>
-              <div 
-                className={`h-full transition-all duration-500 rounded-full ${
-                  isDarkMode 
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500' 
-                    : 'bg-gradient-to-r from-pink-500 to-purple-500'
-                }`}
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          )}
-        </div>
+              Neuer Beitrag
+            </h3>
+            <p className={`text-sm transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Teile deine schönsten Momente von der Hochzeit
+            </p>
+            {progress > 0 && (
+              <div className={`w-full h-2 rounded-full mt-3 overflow-hidden transition-colors duration-300 ${
+                isDarkMode ? 'bg-gray-700/50' : 'bg-gray-200/50'
+              }`}>
+                <div 
+                  className={`h-full transition-all duration-500 rounded-full ${
+                    isDarkMode 
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500' 
+                      : 'bg-gradient-to-r from-pink-500 to-purple-500'
+                  }`}
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            )}
+          </div>
 
-        {/* Camera Icon */}
-        <div className="flex items-center gap-2">
-          <Camera className={`w-5 h-5 transition-colors duration-300 ${
-            isDarkMode ? 'text-gray-500' : 'text-gray-400'
-          }`} />
+          {/* Camera Icon */}
+          <div className="flex items-center gap-2">
+            <Camera className={`w-5 h-5 transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-500' : 'text-gray-400'
+            }`} />
+          </div>
         </div>
       </div>
       
-      {/* Upload Options Modal */}
+      {/* Upload Options Modal - Jetzt außerhalb des Containers */}
       {showUploadOptions && (
         <div 
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
+          className="fixed inset-0 flex items-center justify-center p-4"
           style={{ 
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)'
+            WebkitBackdropFilter: 'blur(12px)',
+            zIndex: 2147483647 // Maximaler z-index Wert
           }}
           onClick={() => setShowUploadOptions(false)}
         >
@@ -130,6 +133,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                 ? 'bg-gray-800 border border-gray-600 shadow-2xl' 
                 : 'bg-white border border-gray-200 shadow-2xl'
             }`}
+            style={{ zIndex: 2147483647 }}
           >
             {/* Header */}
             <div className="text-center mb-6">
@@ -309,14 +313,15 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
         </div>
       )}
 
-      {/* Note Input Modal */}
+      {/* Note Input Modal - Auch außerhalb */}
       {showNoteInput && (
         <div 
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
+          className="fixed inset-0 flex items-center justify-center p-4"
           style={{ 
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)'
+            WebkitBackdropFilter: 'blur(12px)',
+            zIndex: 2147483647
           }}
           onClick={() => {
             setShowNoteInput(false);
@@ -330,6 +335,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                 ? 'bg-gray-800 border border-gray-600 shadow-2xl' 
                 : 'bg-white border border-gray-200 shadow-2xl'
             }`}
+            style={{ zIndex: 2147483647 }}
           >
             <div className="text-center mb-6">
               <div className={`w-16 h-16 mx-auto mb-4 p-4 rounded-2xl ${
@@ -417,6 +423,6 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
           isDarkMode={isDarkMode}
         />
       )}
-    </div>
+    </>
   );
 };
