@@ -158,17 +158,15 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                 )}
               </div>
               <button
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => setShowCamera(true)}
                 disabled={isSaving}
                 className={`absolute -bottom-1 -right-1 p-1.5 rounded-full shadow-lg transition-colors duration-300 ${
                   isSaving
                     ? 'cursor-not-allowed opacity-50'
-                    : isDarkMode
-                      ? 'bg-gray-700 hover:bg-gray-600 text-white'
-                      : 'bg-white hover:bg-gray-50 text-gray-600'
+                    : 'bg-pink-600 hover:bg-pink-700 text-white'
                 }`}
               >
-                <Camera className="w-4 h-4" />
+                <Smartphone className="w-4 h-4" />
               </button>
             </div>
             <div className="flex-1 space-y-2">

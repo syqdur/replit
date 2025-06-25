@@ -36,6 +36,7 @@ import {
   editNote,
   loadUserProfiles,
   getUserProfile,
+  createOrUpdateUserProfile,
   UserProfile
 } from './services/firebaseService';
 import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
@@ -146,11 +147,13 @@ function App() {
     const unsubscribeGallery = loadGallery(setMediaItems);
     const unsubscribeComments = loadComments(setComments);
     const unsubscribeLikes = loadLikes(setLikes);
+    const unsubscribeUserProfiles = loadUserProfiles(setUserProfiles);
 
     return () => {
       unsubscribeGallery();
       unsubscribeComments();
       unsubscribeLikes();
+      unsubscribeUserProfiles();
     };
   }, [userName, siteStatus]);
 
@@ -184,6 +187,10 @@ function App() {
 
     try {
       await uploadFiles(files, userName, deviceId, setUploadProgress);
+      
+      // Ensure user profile exists for proper display name sync
+      await createOrUpdateUserProfile(userName, deviceId, {});
+      
       setStatus('✅ Bilder erfolgreich hochgeladen!');
       setTimeout(() => setStatus(''), 3000);
     } catch (error) {
@@ -205,6 +212,10 @@ function App() {
 
     try {
       await uploadVideoBlob(videoBlob, userName, deviceId, setUploadProgress);
+      
+      // Ensure user profile exists for proper display name sync
+      await createOrUpdateUserProfile(userName, deviceId, {});
+      
       setStatus('✅ Video erfolgreich hochgeladen!');
       setTimeout(() => setStatus(''), 3000);
     } catch (error) {
@@ -225,6 +236,10 @@ function App() {
 
     try {
       await addNote(noteText, userName, deviceId);
+      
+      // Ensure user profile exists for proper display name sync
+      await createOrUpdateUserProfile(userName, deviceId, {});
+      
       setStatus('✅ Notiz erfolgreich hinterlassen!');
       setTimeout(() => setStatus(''), 3000);
     } catch (error) {
@@ -288,6 +303,9 @@ function App() {
     
     try {
       await addComment(mediaId, text, userName, deviceId);
+      
+      // Ensure user profile exists for proper display name sync
+      await createOrUpdateUserProfile(userName, deviceId, {});
     } catch (error) {
       console.error('Error adding comment:', error);
     }
@@ -386,6 +404,17 @@ function App() {
 
   const handleProfileUpdated = (profile: UserProfile) => {
     setCurrentUserProfile(profile);
+    // Update the userProfiles array to sync display names
+    setUserProfiles(prev => {
+      const index = prev.findIndex(p => p.id === profile.id);
+      if (index >= 0) {
+        const updated = [...prev];
+        updated[index] = profile;
+        return updated;
+      } else {
+        return [...prev, profile];
+      }
+    });
   };
 
   // Function to get user's profile picture or fallback to generated avatar
