@@ -619,6 +619,7 @@ function App() {
             }
           }}
           currentUserProfile={currentUserProfile}
+          onOpenUserProfile={() => setShowUserProfileModal(true)}
         />
         
         {/* Stories Bar */}

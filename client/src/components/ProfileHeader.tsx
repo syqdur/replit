@@ -11,9 +11,10 @@ interface ProfileHeaderProps {
   mediaItems?: any[];
   onToggleAdmin?: (isAdmin: boolean) => void;
   currentUserProfile?: any;
+  onOpenUserProfile?: () => void;
 }
 
-export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmin, userName, mediaItems = [], onToggleAdmin, currentUserProfile }) => {
+export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmin, userName, mediaItems = [], onToggleAdmin, currentUserProfile, onOpenUserProfile }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [countdown, setCountdown] = useState<{
@@ -88,13 +89,17 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
       }`}>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="flex items-center gap-4 sm:gap-6">
-            <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden relative ring-4 transition-all duration-300 animate-pulse ${
-              isDarkMode 
-                ? 'ring-gradient-to-r from-purple-600 to-pink-600 ring-purple-500/30' 
-                : 'ring-gradient-to-r from-pink-500 to-purple-500 ring-pink-500/30'
-            }`} style={{
-              animation: 'pulse 2s ease-in-out infinite, ring-glow 3s ease-in-out infinite'
-            }}>
+            <button
+              onClick={() => onOpenUserProfile?.()}
+              className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden relative ring-4 transition-all duration-300 animate-pulse hover:scale-105 ${
+                isDarkMode 
+                  ? 'ring-gradient-to-r from-purple-600 to-pink-600 ring-purple-500/30' 
+                  : 'ring-gradient-to-r from-pink-500 to-purple-500 ring-pink-500/30'
+              }`} style={{
+                animation: 'pulse 2s ease-in-out infinite, ring-glow 3s ease-in-out infinite'
+              }}
+              title="Profil bearbeiten"
+            >
               {currentUserProfile?.profilePicture || profileData?.profilePicture ? (
                 <img 
                   src={currentUserProfile?.profilePicture || profileData?.profilePicture} 
@@ -110,7 +115,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                   {(profileData?.name || userName || '?').charAt(0).toUpperCase()}
                 </div>
               )}
-            </div>
+            </button>
             <div className="flex-1">
               <h2 className={`text-lg sm:text-xl font-bold tracking-tight transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
