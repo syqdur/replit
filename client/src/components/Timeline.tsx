@@ -578,8 +578,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
       {/* Add/Edit Form */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-40">
-          <div className={`rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto transition-colors duration-300 ${
-            isDarkMode ? 'bg-gray-800' : 'bg-white'
+          <div className={`rounded-3xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto backdrop-blur-xl border transition-all duration-300 ${
+            isDarkMode 
+              ? 'bg-gray-900/90 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+              : 'bg-white/90 border-gray-200/30 shadow-2xl shadow-pink-500/10'
           }`}>
             <div className="flex items-center justify-between mb-6">
               <h3 className={`text-lg font-semibold transition-colors duration-300 ${
@@ -590,10 +592,12 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
               <button
                 onClick={resetForm}
                 disabled={isUploading}
-                className={`p-2 rounded-full transition-colors duration-300 ${
+                className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
                   isUploading 
                     ? 'cursor-not-allowed opacity-50'
-                    : isDarkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                    : isDarkMode 
+                      ? 'hover:bg-white/10 text-gray-400 hover:text-white' 
+                      : 'hover:bg-gray-100/80 text-gray-600 hover:text-gray-900'
                 }`}
               >
                 <X className="w-5 h-5" />
@@ -602,8 +606,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
 
             {/* Error Display */}
             {error && (
-              <div className={`mb-4 p-3 rounded-lg border transition-colors duration-300 ${
-                isDarkMode ? 'bg-red-900/20 border-red-700/30 text-red-300' : 'bg-red-50 border-red-200 text-red-700'
+              <div className={`mb-4 p-4 rounded-xl backdrop-blur-sm border transition-all duration-300 ${
+                isDarkMode ? 'bg-red-500/10 border-red-500/30 text-red-300' : 'bg-red-50/80 border-red-200/60 text-red-700'
               }`}>
                 {error}
               </div>
@@ -621,10 +625,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value as TimelineEvent['type'] })}
                   disabled={isUploading}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-colors duration-300 ${
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 outline-none backdrop-blur-sm transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                      ? 'bg-white/5 border-white/20 text-white' 
+                      : 'bg-white/60 border-gray-200/40 text-gray-900'
                   }`}
                 >
                   {eventTypes.map(type => (
@@ -672,10 +676,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="z.B. Unser erstes Date"
                   disabled={isUploading}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-colors duration-300 ${
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 outline-none backdrop-blur-sm transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                      ? 'bg-white/5 border-white/20 text-white placeholder-gray-400' 
+                      : 'bg-white/60 border-gray-200/40 text-gray-900 placeholder-gray-500'
                   }`}
                   required
                 />
@@ -693,10 +697,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   disabled={isUploading}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-colors duration-300 ${
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 outline-none backdrop-blur-sm transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                      ? 'bg-white/5 border-white/20 text-white' 
+                      : 'bg-white/60 border-gray-200/40 text-gray-900'
                   }`}
                   required
                 />
@@ -715,10 +719,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="z.B. Restaurant Zur Sonne"
                   disabled={isUploading}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-colors duration-300 ${
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 outline-none backdrop-blur-sm transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                      ? 'bg-white/5 border-white/20 text-white placeholder-gray-400' 
+                      : 'bg-white/60 border-gray-200/40 text-gray-900 placeholder-gray-500'
                   }`}
                 />
               </div>
