@@ -107,6 +107,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           setCurrentUser(user);
           
           // Use the admin prop from parent component instead of assuming all users are admins
+          console.log('🔧 Setting admin state:', { adminProp, currentUser: user });
           setIsAdmin(adminProp);
           
           // Get selected playlist
@@ -374,14 +375,18 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
 
   // Check if user can delete a track
   const canDeleteTrack = (track: SpotifyApi.PlaylistTrackObject) => {
-    console.log('🔍 Permission check:', {
-      isAdmin,
+    const canDelete = isAdmin || (currentUser && track.added_by.id === currentUser.id);
+    console.log('🔍 Permission check for track:', track.track.name, {
+      isAdmin: isAdmin,
+      hasCurrentUser: !!currentUser,
       currentUserId: currentUser?.id,
-      trackAddedBy: track.added_by?.id,
-      trackName: track.track.name,
-      canDelete: isAdmin || (currentUser && track.added_by.id === currentUser.id)
+      currentUserDisplayName: currentUser?.display_name,
+      trackAddedById: track.added_by?.id,
+      trackAddedByDisplayName: track.added_by?.display_name,
+      idsMatch: currentUser?.id === track.added_by?.id,
+      finalCanDelete: canDelete
     });
-    return isAdmin || (currentUser && track.added_by.id === currentUser.id);
+    return canDelete;
   };
 
   // Count deletable tracks
