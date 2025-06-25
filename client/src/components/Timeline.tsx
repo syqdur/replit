@@ -528,7 +528,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
         </div>
       )}
       {/* Header */}
-      <div className={`sticky top-0 z-40 p-4 sm:p-6 backdrop-blur-xl border-b transition-all duration-300 ${
+      <div className={`sticky top-0 z-40 mx-4 sm:mx-6 mt-4 sm:mt-6 mb-6 p-4 sm:p-6 backdrop-blur-xl border transition-all duration-300 rounded-2xl sm:rounded-3xl ${
         isDarkMode 
           ? 'bg-gray-900/70 border-gray-700/30 shadow-xl shadow-purple-500/5' 
           : 'bg-white/70 border-gray-200/30 shadow-xl shadow-pink-500/5'
@@ -906,7 +906,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
       )}
 
       {/* Timeline Content */}
-      <div className="p-4 sm:p-6">
+      <div className="px-4 sm:px-6 pb-4 sm:pb-6">
         {events.length === 0 ? (
           <div className="text-center py-12">
             <div className={`w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center backdrop-blur-xl border transition-all duration-300 ${
