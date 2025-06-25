@@ -19,6 +19,7 @@ import { PostWeddingRecap } from './components/PostWeddingRecap';
 import { PublicRecapPage } from './components/PublicRecapPage';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { UserProfileModal } from './components/UserProfileModal';
+import { BackToTopButton } from './components/BackToTopButton';
 import { useUser } from './hooks/useUser';
 import { useDarkMode } from './hooks/useDarkMode';
 import { MediaItem, Comment, Like } from './types';
@@ -885,6 +886,9 @@ function App() {
         getUserAvatar={getUserAvatar}
         getUserDisplayName={getUserDisplayName}
       />
+
+      {/* Back to Top Button */}
+      <BackToTopButton isDarkMode={isDarkMode} />
     </div>
   );
 }
