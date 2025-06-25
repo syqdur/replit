@@ -537,6 +537,13 @@ export const createOrUpdateUserProfile = async (
         ...profileData,
         updatedAt: new Date().toISOString()
       };
+      // Remove undefined values to prevent Firebase errors
+      Object.keys(updatedData).forEach(key => {
+        if (updatedData[key as keyof typeof updatedData] === undefined) {
+          delete updatedData[key as keyof typeof updatedData];
+        }
+      });
+      
       await updateDoc(profileRef, updatedData);
       return { ...existingProfile, ...updatedData };
     } else {
@@ -545,10 +552,17 @@ export const createOrUpdateUserProfile = async (
         userName,
         deviceId,
         displayName: profileData.displayName || userName,
-        profilePicture: profileData.profilePicture,
+        profilePicture: profileData.profilePicture || '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
+      
+      // Remove undefined values to prevent Firebase errors
+      Object.keys(newProfile).forEach(key => {
+        if (newProfile[key as keyof typeof newProfile] === undefined) {
+          delete newProfile[key as keyof typeof newProfile];
+        }
+      });
       
       const docRef = await addDoc(collection(db, 'userProfiles'), newProfile);
       return { id: docRef.id, ...newProfile };
@@ -581,6 +595,32 @@ export const uploadUserProfilePicture = async (
   } catch (error) {
     console.error('Error uploading profile picture:', error);
     throw error;
+  }
+};
+
+export const getAllUserProfiles = async (): Promise<UserProfile[]> => {
+  try {
+    console.log('📊 Loading all user profiles from Firebase...');
+    const profilesRef = collection(db, 'userProfiles');
+    const querySnapshot = await getDocs(profilesRef);
+    
+    const profiles: UserProfile[] = [];
+    querySnapshot.forEach((doc) => {
+      profiles.push({
+        id: doc.id,
+        ...doc.data()
+      } as UserProfile);
+    });
+    
+    console.log(`👤 Found ${profiles.length} user profiles in database`);
+    profiles.forEach(profile => {
+      console.log(`  - ${profile.displayName || profile.userName} (${profile.userName}) [${profile.deviceId?.slice(0, 8)}...]`);
+    });
+    
+    return profiles;
+  } catch (error) {
+    console.error('Error getting all user profiles:', error);
+    return [];
   }
 };
 

@@ -37,6 +37,7 @@ import {
   editNote,
   loadUserProfiles,
   getUserProfile,
+  getAllUserProfiles,
   createOrUpdateUserProfile,
   UserProfile
 } from './services/firebaseService';
@@ -427,8 +428,59 @@ function App() {
     const loadCurrentUserProfile = async () => {
       if (userName && deviceId) {
         try {
+          console.log(`🔍 Looking for profile: ${userName} with deviceId ${deviceId}`);
           const userProfile = await getUserProfile(userName, deviceId);
           setCurrentUserProfile(userProfile);
+          
+          if (userProfile) {
+            console.log(`✅ Found profile for ${userName}: ${userProfile.displayName || 'No display name'}`);
+          } else {
+            console.log(`❌ No profile found for ${userName} (${deviceId})`);
+            
+            // Try to find any existing profile for this username or similar usernames
+            console.log(`🔍 Checking for existing profiles for username: ${userName}`);
+            const allProfiles = await getAllUserProfiles();
+            
+            // First try exact match
+            let existingUserProfile = allProfiles.find(p => p.userName === userName);
+            
+            // If no exact match, try fuzzy matching for similar names (e.g., Maurizio -> Mauro)
+            if (!existingUserProfile) {
+              const lowerUserName = userName.toLowerCase();
+              existingUserProfile = allProfiles.find(p => {
+                const lowerProfileName = p.userName.toLowerCase();
+                return lowerProfileName.includes(lowerUserName.slice(0, 4)) || 
+                       lowerUserName.includes(lowerProfileName.slice(0, 4));
+              });
+              
+              if (existingUserProfile) {
+                console.log(`🔗 Found similar profile: ${existingUserProfile.userName} for ${userName}`);
+              }
+            }
+            
+            if (existingUserProfile) {
+              console.log(`🔗 Found existing profile for ${userName}, linking to current device`);
+              try {
+                // Create a new profile entry for this device but use existing display name/picture
+                await createOrUpdateUserProfile(userName, deviceId, {
+                  displayName: existingUserProfile.displayName || userName,
+                  profilePicture: existingUserProfile.profilePicture
+                });
+                
+                const linkedProfile = await getUserProfile(userName, deviceId);
+                setCurrentUserProfile(linkedProfile);
+                console.log(`✅ Linked existing profile data to current device for ${userName}`);
+              } catch (error) {
+                console.error('Error linking profile:', error);
+                // Fallback to basic profile
+                setCurrentUserProfile(null);
+              }
+            } else {
+              console.log(`🔧 No existing profile found, user will need to create one manually`);
+              // Don't auto-create profile to avoid Firebase errors
+              setCurrentUserProfile(null);
+            }
+          }
         } catch (error) {
           console.error('Error loading current user profile:', error);
         }
@@ -437,6 +489,39 @@ function App() {
 
     loadCurrentUserProfile();
   }, [userName, deviceId]);
+
+  // Sync all user profiles when app loads and when new users connect
+  useEffect(() => {
+    const syncAllUserProfiles = async () => {
+      try {
+        console.log('🔄 Syncing all user profiles for display name consistency...');
+        const allProfiles = await getAllUserProfiles();
+        setUserProfiles(allProfiles);
+        console.log(`✅ Synced ${allProfiles.length} user profiles`);
+      } catch (error) {
+        console.error('Error syncing user profiles:', error);
+      }
+    };
+
+    // Initial sync when app loads
+    syncAllUserProfiles();
+
+    // Listen for new user connections and resync profiles
+    const handleUserConnected = (event: CustomEvent) => {
+      const { userName, deviceId } = event.detail;
+      console.log(`🔄 New user connected (${userName}), resyncing all profiles...`);
+      // Delay the sync to ensure profile creation has completed
+      setTimeout(() => {
+        syncAllUserProfiles();
+      }, 1000);
+    };
+
+    window.addEventListener('userConnected', handleUserConnected as EventListener);
+    
+    return () => {
+      window.removeEventListener('userConnected', handleUserConnected as EventListener);
+    };
+  }, []);
 
   // Function to get user's profile picture or fallback to generated avatar
   const getUserAvatar = (targetUserName: string, targetDeviceId?: string) => {
@@ -548,7 +633,9 @@ function App() {
   }
 
   if (showNamePrompt) {
-    return <UserNamePrompt onSubmit={setUserName} isDarkMode={isDarkMode} />;
+    return <UserNamePrompt onSubmit={(name: string, profilePicture?: File) => {
+      setUserName(name, profilePicture);
+    }} isDarkMode={isDarkMode} />;
   }
 
   return (

@@ -21,10 +21,18 @@ export const useUser = () => {
     }
   }, []);
 
-  const handleSetUserName = (name: string) => {
+  const handleSetUserName = async (name: string) => {
     setUserName(name);
     setUserNameState(name);
     setShowNamePrompt(false);
+    
+    // Log new visitor connection for profile sync
+    console.log(`👋 New visitor connected: ${name} (${getDeviceId()})`);
+    
+    // Trigger a window event to notify App component to resync profiles
+    window.dispatchEvent(new CustomEvent('userConnected', { 
+      detail: { userName: name, deviceId: getDeviceId() } 
+    }));
   };
 
   return {
