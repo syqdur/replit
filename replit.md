@@ -172,6 +172,7 @@ This is a comprehensive wedding gallery application with the following architect
 - Prefer structured, organized layouts over cramped horizontal arrangements
 - Dark mode should use neutral colors (neutral-900/800/700) instead of slate colors for better visual appeal
 - Avoid excessive gradients in dark mode, prefer flat colors with good contrast
+- Remove all gradient effects (gradient-to-r, from-, to-) in dark mode for cleaner appearance
 
 ### UI Components
 - **Radix UI**: Unstyled, accessible UI primitives

@@ -87,8 +87,8 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
               className={`flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 touch-manipulation ${
                 viewMode === 'feed'
                   ? isDarkMode
-                    ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/25'
-                    : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg shadow-pink-500/25'
+                    ? 'bg-pink-600 text-white shadow-lg'
+                    : 'bg-pink-500 text-white shadow-lg'
                 : isDarkMode
                   ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
@@ -102,8 +102,8 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
               className={`flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 touch-manipulation ${
                 viewMode === 'grid'
                   ? isDarkMode
-                    ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/25'
-                    : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg shadow-pink-500/25'
+                    ? 'bg-pink-600 text-white shadow-lg'
+                    : 'bg-pink-500 text-white shadow-lg'
                   : isDarkMode
                     ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'

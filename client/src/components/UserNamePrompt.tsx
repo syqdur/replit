@@ -40,7 +40,7 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
         isDarkMode ? 'bg-neutral-800 text-white' : 'bg-white text-gray-900'
       }`}>
         <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center shadow-lg">
+          <div className="w-20 h-20 mx-auto mb-4 bg-pink-500 rounded-full flex items-center justify-center shadow-lg">
             <Heart className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-2xl font-bold mb-2">
@@ -139,7 +139,7 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
             disabled={!name.trim()}
             className={`w-full p-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
               name.trim()
-                ? 'bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                ? 'bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                 : isDarkMode ? 'bg-neutral-700 text-neutral-400' : 'bg-gray-200 text-gray-500'
             }`}
           >
