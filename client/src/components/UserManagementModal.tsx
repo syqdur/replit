@@ -255,14 +255,17 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
         }
       });
       
-      // Then add contribution counts from media
-      mediaSnapshot.docs.forEach(doc => {
+      // Then add contribution counts from media and find users who only exist in media
+      console.log(`📸 Processing ${mediaSnapshot.docs.length} media items for user discovery...`);
+      mediaSnapshot.docs.forEach((doc, index) => {
         try {
           const data = doc.data();
           if (data && data.userName && data.deviceId && data.uploadedAt) {
             const key = `${data.userName}-${data.deviceId}`;
             
             if (!userMap.has(key)) {
+              // User exists in media but not in live_users or userProfiles
+              console.log(`📸 Found media-only user: ${data.userName} (from media ${index + 1})`);
               userMap.set(key, {
                 userName: data.userName,
                 deviceId: data.deviceId,
@@ -283,6 +286,43 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
           }
         } catch (docError) {
           console.warn('Error processing media document:', docError);
+        }
+      });
+      
+      // Also check comments for additional users
+      console.log(`💬 Checking comments for additional users...`);
+      const commentsQuery = query(collection(db, 'comments'));
+      const commentsSnapshot = await getDocs(commentsQuery);
+      console.log(`💬 Processing ${commentsSnapshot.docs.length} comments for user discovery...`);
+      
+      commentsSnapshot.docs.forEach((doc, index) => {
+        try {
+          const data = doc.data();
+          if (data && data.userName && data.deviceId && data.createdAt) {
+            const key = `${data.userName}-${data.deviceId}`;
+            
+            if (!userMap.has(key)) {
+              console.log(`💬 Found comment-only user: ${data.userName} (from comment ${index + 1})`);
+              userMap.set(key, {
+                userName: data.userName,
+                deviceId: data.deviceId,
+                lastSeen: data.createdAt,
+                isOnline: false,
+                contributionCount: 0,
+                lastActivity: data.createdAt
+              });
+            }
+            
+            const user = userMap.get(key)!;
+            user.contributionCount++;
+            
+            // Update last activity if this is more recent
+            if (new Date(data.createdAt) > new Date(user.lastActivity)) {
+              user.lastActivity = data.createdAt;
+            }
+          }
+        } catch (docError) {
+          console.warn('Error processing comment document:', docError);
         }
       });
       
@@ -339,7 +379,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       const batch = writeBatch(db);
       let deletedCount = 0;
 
-      for (const userKey of selectedUsers) {
+      for (const userKey of Array.from(selectedUsers)) {
         console.log(`🗑️ Processing: ${userKey}`);
         
         // Extract userName and deviceId from userKey
@@ -400,7 +440,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
         const currentUserName = localStorage.getItem('userName');
         const currentDeviceId = localStorage.getItem('deviceId');
         
-        for (const userKey of selectedUsers) {
+        for (const userKey of Array.from(selectedUsers)) {
           const deviceId = userKey.slice(-36);
           const userName = userKey.slice(0, -37);
           
