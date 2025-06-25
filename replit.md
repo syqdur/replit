@@ -101,6 +101,8 @@ This is a comprehensive wedding gallery application with the following architect
 - **Profile Edit Security Fix**: Fixed profile editing gear icon to only show in admin mode, preventing unauthorized access to profile editing functionality
 
 ### January 25, 2025 (Migration Complete)
+- **Profile Controls Migration**: Moved profile controls (user profile button, admin toggle, and settings gear) from ProfileHeader to top navigation bar next to dark mode toggle for better accessibility
+- **Top Bar Control Integration**: Integrated profile management controls into the main header with proper state management and responsive sizing for mobile and desktop
 - **Replit Environment Migration**: Successfully migrated project from Replit Agent to Replit environment with all core functionality preserved
 - **Profile Security Fix**: Fixed profile editing controls to only be visible in admin mode, preventing unauthorized access to profile settings
 - **Firebase Error Resolution**: Fixed Firebase updateDoc() error by removing undefined values from profile updates
