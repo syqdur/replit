@@ -13,6 +13,8 @@ interface AdminPanelProps {
   onToggleAdmin: (isAdmin: boolean) => void;
   mediaItems?: MediaItem[];
   siteStatus?: SiteStatus;
+  getUserAvatar?: (userName: string, deviceId?: string) => string | null;
+  getUserDisplayName?: (userName: string, deviceId?: string) => string;
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ 
@@ -20,7 +22,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   isAdmin, 
   onToggleAdmin,
   mediaItems = [],
-  siteStatus
+  siteStatus,
+  getUserAvatar,
+  getUserDisplayName
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [showDownloadWarning, setShowDownloadWarning] = useState(false);
@@ -612,6 +616,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         isOpen={showUserManagement}
         onClose={() => setShowUserManagement(false)}
         isDarkMode={isDarkMode}
+        getUserAvatar={getUserAvatar}
+        getUserDisplayName={getUserDisplayName}
       />
 
       {/* SPOTIFY ADMIN MODAL */}

@@ -17,6 +17,8 @@ interface UserManagementModalProps {
   isOpen: boolean;
   onClose: () => void;
   isDarkMode: boolean;
+  getUserAvatar?: (userName: string, deviceId?: string) => string | null;
+  getUserDisplayName?: (userName: string, deviceId?: string) => string;
 }
 
 interface LiveUser {
@@ -39,7 +41,9 @@ interface UserInfo {
 export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   isOpen,
   onClose,
-  isDarkMode
+  isDarkMode,
+  getUserAvatar,
+  getUserDisplayName
 }) => {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [liveUsers, setLiveUsers] = useState<LiveUser[]>([]);
@@ -51,6 +55,22 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+
+  // Generate avatar URL with custom profile picture support
+  const getAvatarUrl = (username: string, deviceId?: string) => {
+    // Try to get custom avatar first
+    const customAvatar = getUserAvatar?.(username, deviceId);
+    if (customAvatar) return customAvatar;
+    
+    // Fallback to generated avatar
+    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(username)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+  };
+
+  // Get display name with fallback to username
+  const getDisplayName = (username: string, deviceId?: string) => {
+    const displayName = getUserDisplayName?.(username, deviceId);
+    return (displayName && displayName !== username) ? displayName : username;
+  };
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -782,13 +802,17 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
                                   ? isDarkMode ? 'bg-green-600 text-white' : 'bg-green-500 text-white'
                                   : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
                               }`}>
-                                {user.userName.charAt(0).toUpperCase()}
+                                <img 
+                                  src={getAvatarUrl(user.userName, user.deviceId)}
+                                  alt={user.userName}
+                                  className="w-full h-full object-cover"
+                                />
                               </div>
                               <div>
                                 <div className={`font-medium transition-colors duration-300 ${
                                   isDarkMode ? 'text-white' : 'text-gray-900'
                                 }`}>
-                                  {user.userName}
+                                  {getDisplayName(user.userName, user.deviceId)}
                                 </div>
                                 <div className={`text-xs font-mono transition-colors duration-300 ${
                                   isDarkMode ? 'text-gray-400' : 'text-gray-500'

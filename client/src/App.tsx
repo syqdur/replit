@@ -787,6 +787,8 @@ function App() {
         }}
         mediaItems={mediaItems}
         siteStatus={siteStatus}
+        getUserAvatar={getUserAvatar}
+        getUserDisplayName={getUserDisplayName}
       />
     </div>
   );
