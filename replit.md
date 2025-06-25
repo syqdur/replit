@@ -106,6 +106,7 @@ This is a comprehensive wedding gallery application with the following architect
 - **Enhanced Gear Icon Visibility**: Improved gear icon overlay on profile button with larger size (3.5/4 units), shadow effects, and better contrast borders to clearly indicate profile editing capability
 - **Timeline Heart Animation**: Added soft heartbeat animation to Timeline header Heart icon with 3-second duration for enhanced romantic visual appeal
 - **Back to Top Button**: Implemented floating back-to-top button that appears after scrolling 300px with smooth scroll animation and gradient styling
+- **Profile Security Enhancement**: Fixed critical security issue preventing admins from editing visitor profiles - users can now only edit their own profiles, with disabled form inputs and clear messaging for unauthorized access attempts
 - **Replit Environment Migration**: Successfully migrated project from Replit Agent to Replit environment with all core functionality preserved
 - **Profile Security Fix**: Fixed profile editing controls to only be visible in admin mode, preventing unauthorized access to profile settings
 - **Firebase Error Resolution**: Fixed Firebase updateDoc() error by removing undefined values from profile updates

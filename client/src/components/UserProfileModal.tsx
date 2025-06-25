@@ -9,6 +9,9 @@ interface UserProfileModalProps {
   deviceId: string;
   isDarkMode: boolean;
   onProfileUpdated?: (profile: UserProfile) => void;
+  isAdmin?: boolean;
+  currentUserName?: string;
+  currentDeviceId?: string;
 }
 
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({
@@ -17,8 +20,16 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   userName,
   deviceId,
   isDarkMode,
-  onProfileUpdated
+  onProfileUpdated,
+  isAdmin = false,
+  currentUserName,
+  currentDeviceId
 }) => {
+  // Check if current user is trying to edit their own profile
+  const isOwnProfile = userName === currentUserName && deviceId === currentDeviceId;
+  
+  // Only allow editing if it's the user's own profile (not admin editing others)
+  const canEdit = isOwnProfile;
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [displayName, setDisplayName] = useState('');
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -49,6 +60,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!canEdit) {
+      alert('Sie können nur Ihr eigenes Profil bearbeiten.');
+      return;
+    }
+
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -77,6 +93,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   };
 
   const handleSave = async () => {
+    if (!canEdit) {
+      alert('Sie können nur Ihr eigenes Profil bearbeiten.');
+      return;
+    }
+
     if (!displayName.trim()) {
       alert('Bitte geben Sie einen Anzeigenamen ein.');
       return;
@@ -154,12 +175,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             {/* Upload Button */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
+              disabled={isUploading || !canEdit}
               className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
                 isDarkMode 
                   ? 'bg-pink-600 hover:bg-pink-700 text-white' 
                   : 'bg-pink-500 hover:bg-pink-600 text-white'
-              } ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}`}
+              } ${(isUploading || !canEdit) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}`}
             >
               {isUploading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -200,7 +221,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Wie möchten Sie genannt werden?"
+              disabled={!canEdit}
               className={`w-full pl-10 pr-4 py-3 rounded-xl border transition-colors duration-300 ${
+                !canEdit ? 'opacity-50 cursor-not-allowed' : ''
+              } ${
                 isDarkMode 
                   ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-pink-500' 
                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-pink-500'
@@ -210,7 +234,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           <p className={`text-xs mt-1 transition-colors duration-300 ${
             isDarkMode ? 'text-gray-500' : 'text-gray-600'
           }`}>
-            Dieser Name wird bei Ihren Beiträgen und Kommentaren angezeigt
+            {canEdit ? 'Dieser Name wird bei Ihren Beiträgen und Kommentaren angezeigt' : 'Sie können nur Ihr eigenes Profil bearbeiten.'}
           </p>
         </div>
 
@@ -240,9 +264,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           
           <button
             onClick={handleSave}
-            disabled={isSaving || !displayName.trim()}
+            disabled={isSaving || !displayName.trim() || !canEdit}
             className={`flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 ${
-              isSaving || !displayName.trim()
+              (isSaving || !displayName.trim() || !canEdit)
                 ? isDarkMode 
                   ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'

@@ -868,6 +868,9 @@ function App() {
           deviceId={deviceId}
           isDarkMode={isDarkMode}
           onProfileUpdated={handleProfileUpdated}
+          isAdmin={isAdmin}
+          currentUserName={userName}
+          currentDeviceId={deviceId}
         />
       )}
 
