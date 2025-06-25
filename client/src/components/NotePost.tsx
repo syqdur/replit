@@ -98,7 +98,12 @@ export const NotePost: React.FC<NotePostProps> = ({
   const displayComments = showAllComments ? comments : comments.slice(0, 2);
 
   // Generate beautiful wedding-themed avatar based on username
-  const getAvatarUrl = (username: string) => {
+  const getAvatarUrl = (username: string, deviceId?: string) => {
+    // Try to get custom avatar first
+    const customAvatar = getUserAvatar?.(username, deviceId);
+    if (customAvatar) return customAvatar;
+    
+    // Fallback to wedding-themed avatars
     const weddingAvatars = [
       'https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
       'https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
@@ -147,7 +152,7 @@ export const NotePost: React.FC<NotePostProps> = ({
             }`}>
               <div className="w-full h-full rounded-full overflow-hidden">
                 <img 
-                  src={getAvatarUrl(item.uploadedBy)}
+                  src={getAvatarUrl(item.uploadedBy, item.deviceId)}
                   alt={item.uploadedBy}
                   className="w-full h-full object-cover"
                 />
@@ -374,7 +379,7 @@ export const NotePost: React.FC<NotePostProps> = ({
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 rounded-full overflow-hidden">
                 <img 
-                  src={getAvatarUrl(userName)}
+                  src={getAvatarUrl(userName, undefined)}
                   alt={userName}
                   className="w-full h-full object-cover"
                 />

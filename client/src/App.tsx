@@ -422,6 +422,7 @@ function App() {
     const userProfile = userProfiles.find(p => 
       p.userName === targetUserName && (!targetDeviceId || p.deviceId === targetDeviceId)
     );
+    // Return custom profile picture if available, otherwise return null for generated avatar fallback
     return userProfile?.profilePicture || null;
   };
 

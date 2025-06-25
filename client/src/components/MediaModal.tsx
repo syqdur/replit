@@ -272,7 +272,7 @@ export const MediaModal: React.FC<MediaModalProps> = ({
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 rounded-full overflow-hidden">
               <img 
-                src={getAvatarUrl(currentItem.uploadedBy)}
+                src={getAvatarUrl(currentItem.uploadedBy, currentItem.deviceId)}
                 alt={currentItem.uploadedBy}
                 className="w-full h-full object-cover"
               />
