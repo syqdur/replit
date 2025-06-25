@@ -530,7 +530,9 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                 ? 'bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/25' 
                 : 'bg-gradient-to-br from-pink-400 to-purple-500 shadow-lg shadow-pink-400/25'
             }`}>
-              <Heart className="w-7 h-7 text-white" />
+              <Heart className="w-7 h-7 text-white animate-pulse" style={{
+                animation: 'heartbeat 3s ease-in-out infinite'
+              }} />
             </div>
             <div>
               <h2 className={`text-3xl font-bold mb-1 transition-colors duration-300 ${
