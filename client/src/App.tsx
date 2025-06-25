@@ -710,7 +710,7 @@ function App() {
                 {currentUserProfile?.profilePicture ? (
                   <div className="relative w-full h-full">
                     <img 
-                      src={currentUserProfile.profilePicture} 
+                      src={currentUserProfile?.profilePicture || ''} 
                       alt="My Profile"
                       className="w-full h-full object-cover"
                     />
