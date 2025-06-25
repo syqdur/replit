@@ -88,6 +88,9 @@ This is a comprehensive wedding gallery application with the following architect
 ## Recent Changes
 
 ### January 25, 2025
+- **Database Migration**: Successfully migrated backend from in-memory storage to PostgreSQL with Drizzle ORM for persistent data storage
+- **Camera Functionality**: Added camera capture component for profile picture selfies with front/rear camera switching and photo preview
+- **Profile Enhancement**: Enhanced profile editing with both gallery upload and camera capture options for profile pictures
 - **Mobile Optimization**: Enhanced mobile responsiveness with responsive breakpoints, improved touch targets, better spacing on small screens, and mobile-specific CSS optimizations
 - **Profile Picture Ring Animation**: Added animated ring glow effect to profile pictures with smooth pulsing animation
 - **German Text Fix**: Corrected "Jeden Moment zählt" to "Jeder Moment zählt" in countdown component

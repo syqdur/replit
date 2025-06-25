@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { X, Camera, Save, Loader2 } from 'lucide-react';
+import { X, Camera, Save, Loader2, Smartphone } from 'lucide-react';
+import { CameraCapture } from './CameraCapture';
 
 interface ProfileEditModalProps {
   isOpen: boolean;
@@ -40,6 +41,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
     currentProfileData.profilePicture || null
   );
   const [isSaving, setIsSaving] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +54,19 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCameraCapture = (blob: Blob) => {
+    // Convert blob to file
+    const file = new File([blob], 'selfie.jpg', { type: 'image/jpeg' });
+    setProfilePicture(file);
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      setProfilePicturePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    setShowCamera(false);
   };
 
   const handleSave = async () => {
@@ -84,6 +99,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       setResetMessageVisibility(false);
       setProfilePicture(null);
       setProfilePicturePreview(currentProfileData.profilePicture || null);
+      setShowCamera(false);
       onClose();
     }
   };
@@ -155,7 +171,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                 <Camera className="w-4 h-4" />
               </button>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 space-y-2">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -164,10 +180,38 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                 className="hidden"
                 disabled={isSaving}
               />
-              <p className={`text-sm transition-colors duration-300 ${
+              <div className="flex gap-2">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isSaving}
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors duration-300 ${
+                    isSaving
+                      ? 'cursor-not-allowed opacity-50'
+                      : isDarkMode
+                        ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
+                  }`}
+                >
+                  <Camera className="w-4 h-4 inline mr-2" />
+                  Galerie
+                </button>
+                <button
+                  onClick={() => setShowCamera(true)}
+                  disabled={isSaving}
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors duration-300 ${
+                    isSaving
+                      ? 'cursor-not-allowed opacity-50'
+                      : 'bg-pink-600 hover:bg-pink-700 text-white'
+                  }`}
+                >
+                  <Smartphone className="w-4 h-4 inline mr-2" />
+                  Selfie
+                </button>
+              </div>
+              <p className={`text-xs transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-400' : 'text-gray-600'
               }`}>
-                Klicke auf das Kamera-Symbol um ein neues Bild auszuwählen
+                Wähle ein Bild aus der Galerie oder nimm ein Selfie auf
               </p>
             </div>
           </div>
@@ -347,6 +391,15 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Camera Capture Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+          isDarkMode={isDarkMode}
+        />
+      )}
     </div>
   );
 };

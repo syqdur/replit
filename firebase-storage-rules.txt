@@ -18,5 +18,10 @@ service firebase.storage {
     match /profile/{allPaths=**} {
       allow write: if true;
     }
+    
+    // Allow write access to user-profiles folder (for user profile pictures)
+    match /user-profiles/{allPaths=**} {
+      allow write: if true;
+    }
   }
 }
