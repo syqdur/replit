@@ -20,6 +20,16 @@ import {
 import { storage, db } from '../config/firebase';
 import { MediaItem, Comment, Like, ProfileData } from '../types';
 
+export interface UserProfile {
+  id: string;
+  userName: string;
+  deviceId: string;
+  profilePicture?: string;
+  displayName?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export const uploadFiles = async (
   files: FileList, 
   userName: string, 
@@ -480,4 +490,99 @@ export const updateProfile = async (
     console.error('❌ Error updating profile:', error);
     throw error;
   }
+};
+
+// User Profile Functions
+export const getUserProfile = async (userName: string, deviceId: string): Promise<UserProfile | null> => {
+  try {
+    const profilesRef = collection(db, 'userProfiles');
+    const q = query(profilesRef, where('userName', '==', userName), where('deviceId', '==', deviceId));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return { id: doc.id, ...doc.data() } as UserProfile;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    return null;
+  }
+};
+
+export const createOrUpdateUserProfile = async (
+  userName: string, 
+  deviceId: string, 
+  profileData: Partial<UserProfile>
+): Promise<UserProfile> => {
+  try {
+    const existingProfile = await getUserProfile(userName, deviceId);
+    
+    if (existingProfile) {
+      // Update existing profile
+      const profileRef = doc(db, 'userProfiles', existingProfile.id);
+      const updatedData = {
+        ...profileData,
+        updatedAt: new Date().toISOString()
+      };
+      await updateDoc(profileRef, updatedData);
+      return { ...existingProfile, ...updatedData };
+    } else {
+      // Create new profile
+      const newProfile: Omit<UserProfile, 'id'> = {
+        userName,
+        deviceId,
+        displayName: profileData.displayName || userName,
+        profilePicture: profileData.profilePicture,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      const docRef = await addDoc(collection(db, 'userProfiles'), newProfile);
+      return { id: docRef.id, ...newProfile };
+    }
+  } catch (error) {
+    console.error('Error creating/updating user profile:', error);
+    throw error;
+  }
+};
+
+export const uploadUserProfilePicture = async (
+  file: File,
+  userName: string,
+  deviceId: string
+): Promise<string> => {
+  try {
+    const fileName = `user-profiles/${userName}-${deviceId}-${Date.now()}-${file.name}`;
+    const storageRef = ref(storage, fileName);
+    
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    
+    // Update user profile with new picture
+    await createOrUpdateUserProfile(userName, deviceId, {
+      profilePicture: downloadURL
+    });
+    
+    return downloadURL;
+  } catch (error) {
+    console.error('Error uploading profile picture:', error);
+    throw error;
+  }
+};
+
+export const loadUserProfiles = (callback: (profiles: UserProfile[]) => void): () => void => {
+  const profilesRef = collection(db, 'userProfiles');
+  const q = query(profilesRef, orderBy('updatedAt', 'desc'));
+  
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const profiles: UserProfile[] = [];
+    snapshot.forEach((doc) => {
+      profiles.push({ id: doc.id, ...doc.data() } as UserProfile);
+    });
+    callback(profiles);
+  });
+  
+  return unsubscribe;
 };

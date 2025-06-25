@@ -18,6 +18,7 @@ import { Timeline } from './components/Timeline';
 import { PostWeddingRecap } from './components/PostWeddingRecap';
 import { PublicRecapPage } from './components/PublicRecapPage';
 import { AdminLoginModal } from './components/AdminLoginModal';
+import { UserProfileModal } from './components/UserProfileModal';
 import { useUser } from './hooks/useUser';
 import { useDarkMode } from './hooks/useDarkMode';
 import { MediaItem, Comment, Like } from './types';
@@ -32,7 +33,10 @@ import {
   loadLikes,
   toggleLike,
   addNote,
-  editNote
+  editNote,
+  loadUserProfiles,
+  getUserProfile,
+  UserProfile
 } from './services/firebaseService';
 import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
 import {
@@ -54,6 +58,9 @@ function App() {
   const [stories, setStories] = useState<Story[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showUserProfileModal, setShowUserProfileModal] = useState(false);
+  const [userProfiles, setUserProfiles] = useState<UserProfile[]>([]);
+  const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [status, setStatus] = useState('');
@@ -375,6 +382,26 @@ function App() {
   const handleAdminLogout = () => {
     setIsAdmin(false);
     localStorage.removeItem('admin_status');
+  };
+
+  const handleProfileUpdated = (profile: UserProfile) => {
+    setCurrentUserProfile(profile);
+  };
+
+  // Function to get user's profile picture or fallback to generated avatar
+  const getUserAvatar = (targetUserName: string, targetDeviceId?: string) => {
+    const userProfile = userProfiles.find(p => 
+      p.userName === targetUserName && (!targetDeviceId || p.deviceId === targetDeviceId)
+    );
+    return userProfile?.profilePicture || null;
+  };
+
+  // Function to get user's display name
+  const getUserDisplayName = (targetUserName: string, targetDeviceId?: string) => {
+    const userProfile = userProfiles.find(p => 
+      p.userName === targetUserName && (!targetDeviceId || p.deviceId === targetDeviceId)
+    );
+    return userProfile?.displayName || targetUserName;
   };
 
   // Show Spotify callback handler if on callback page
