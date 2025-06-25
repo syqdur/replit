@@ -299,7 +299,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                        isDarkMode ? 'text-pink-400' : 'text-pink-600'
                       }`} 
                       style={{
-                        animation: 'heartbeat 6s ease-in-out infinite'
+                        animation: 'heartbeat 12s ease-in-out infinite'
                       }} />
                     </div>
                   </div>
@@ -331,8 +331,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                           : 'bg-white/80 border border-gray-200/60 backdrop-blur-sm hover:bg-white/90 shadow-lg hover:shadow-xl'
                       }`}
                       style={{
-                        animation: 'pulse 4s ease-in-out infinite',
-                        animationDelay: `${index * 0.3}s`
+                        animation: 'pulse 8s ease-in-out infinite',
+                        animationDelay: `${index * 0.5}s`
                       }}
                     >
                       {/* Gradient Border Effect */}
