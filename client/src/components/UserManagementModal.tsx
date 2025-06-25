@@ -348,13 +348,15 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
           const userName = userKey.slice(0, -37);
           
           if (currentUserName === userName && currentDeviceId === deviceId) {
-            console.log(`🧹 Current user was bulk deleted - clearing all data and reloading`);
-            // Clear all localStorage data to force new device ID generation
-            localStorage.clear();
-            // Small delay to ensure Firebase operations complete
+            console.log(`🧹 Current user was bulk deleted - stopping all processes and reloading`);
+            // Stop all presence updates immediately
+            localStorage.setItem('userDeleted', 'true');
+            // Clear user data completely and reload page
             setTimeout(() => {
-              window.location.reload();
-            }, 500);
+              localStorage.clear();
+              // Force full page refresh to restart with clean state
+              window.location.href = window.location.href;
+            }, 200);
             return; // Exit early since page will reload
           }
         }
@@ -471,13 +473,15 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       const currentDeviceId = localStorage.getItem('deviceId');
       
       if (currentUserName === userName && currentDeviceId === deviceId) {
-        console.log(`🧹 Current user deleted themselves - clearing all data and reloading`);
-        // Clear all localStorage data to force new device ID generation
-        localStorage.clear();
-        // Small delay to ensure Firebase operations complete
+        console.log(`🧹 Current user deleted themselves - stopping all processes and reloading`);
+        // Stop all presence updates immediately
+        localStorage.setItem('userDeleted', 'true');
+        // Clear user data completely and reload page
         setTimeout(() => {
-          window.location.reload();
-        }, 500);
+          localStorage.clear();
+          // Force full page refresh to restart with clean state
+          window.location.href = window.location.href;
+        }, 200);
         return; // Exit early
       }
       

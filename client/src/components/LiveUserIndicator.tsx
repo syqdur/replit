@@ -43,7 +43,13 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
       return;
     }
 
-    const deviceId = localStorage.getItem('wedding_device_id') || 'unknown';
+    // Check if user was deleted at the start
+    if (localStorage.getItem('userDeleted') === 'true') {
+      console.log(`🚫 User marked as deleted - completely skipping LiveUserIndicator setup`);
+      return;
+    }
+
+    const deviceId = localStorage.getItem('deviceId') || localStorage.getItem('wedding_device_id') || 'unknown';
     console.log(`🔄 === INITIALIZING LIVE USER TRACKING ===`);
     console.log(`👤 User: ${currentUser}`);
     console.log(`📱 Device ID: ${deviceId}`);
@@ -123,6 +129,11 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
 
     // Initialize: cleanup duplicates then set presence
     const initialize = async () => {
+      // Check if user was deleted before initializing
+      if (localStorage.getItem('userDeleted') === 'true') {
+        console.log(`🚫 User marked as deleted - skipping initialization`);
+        return;
+      }
       await cleanupDuplicates();
       await updatePresence();
     };
@@ -209,6 +220,12 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
     };
 
     const handleVisibilityChange = () => {
+      // Check if user was deleted
+      if (localStorage.getItem('userDeleted') === 'true') {
+        console.log(`🚫 User deleted - skipping visibility change handlers`);
+        return;
+      }
+      
       if (document.hidden) {
         console.log(`👁️ Page hidden - setting ${currentUser} offline`);
         setOffline();

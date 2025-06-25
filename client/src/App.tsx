@@ -52,6 +52,9 @@ import {
 } from './services/liveService';
 
 function App() {
+  // Check if user was deleted and prevent app initialization
+  const isUserDeleted = localStorage.getItem('userDeleted') === 'true';
+  
   const { userName, deviceId, showNamePrompt, setUserName } = useUser();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
