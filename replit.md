@@ -118,6 +118,7 @@ This is a comprehensive wedding gallery application with the following architect
 - **Tested and Verified**: Confirmed Sprint 3 working correctly with users getting new device IDs after deletion, preventing reappearance in User Management panel
 - **Profile Synchronization System**: Implemented automatic profile sync for new visitors - when users connect they immediately see existing profile pictures and display names from all 9+ registered users, ensuring consistent user identification across posts, comments, and live indicators through Firebase profile collection sync
 - **Complete Database Cleanup**: Enhanced User Management deletion to remove users from both live_users collection and userProfiles database, ensuring complete data cleanup with no orphaned profile entries when visitors are deleted
+- **Unified User Management**: Updated User Management panel to display users from both live_users collection AND userProfiles database, providing complete visibility of all 12+ users (active and profile-only) for comprehensive user deletion management
 
 ### January 25, 2025 (Migration Complete)
 - **Profile Controls Migration**: Moved profile controls (user profile button, admin toggle, and settings gear) from ProfileHeader to top navigation bar next to dark mode toggle for better accessibility

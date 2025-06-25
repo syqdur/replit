@@ -206,6 +206,42 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
         }
       });
       
+      // Also get users from userProfiles database
+      console.log('👤 Loading users from userProfiles database...');
+      const profilesQuery = query(collection(db, 'userProfiles'));
+      const profilesSnapshot = await getDocs(profilesQuery);
+      
+      console.log(`📊 Found ${profilesSnapshot.docs.length} profiles in userProfiles database`);
+      
+      profilesSnapshot.docs.forEach((doc) => {
+        try {
+          const data = doc.data();
+          
+          if (data && data.userName && data.deviceId) {
+            const key = `${data.userName}-${data.deviceId}`;
+            
+            if (!userMap.has(key)) {
+              // Add profile-only user (not in live_users)
+              userMap.set(key, {
+                userName: data.userName,
+                deviceId: data.deviceId,
+                lastSeen: data.updatedAt || data.createdAt || new Date().toISOString(),
+                isOnline: false, // Profile-only users are offline
+                contributionCount: 0,
+                lastActivity: data.updatedAt || data.createdAt || new Date().toISOString()
+              });
+              console.log(`👤 Added profile-only user: ${data.userName} (${data.displayName || 'no display name'})`);
+            } else {
+              // User exists in live_users, just mark they have a profile
+              const user = userMap.get(key)!;
+              user.contributionCount = Math.max(user.contributionCount, 1);
+            }
+          }
+        } catch (docError) {
+          console.warn('Error processing profile document:', docError);
+        }
+      });
+      
       // Then add contribution counts from media
       mediaSnapshot.docs.forEach(doc => {
         try {
@@ -262,7 +298,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
         return new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime();
       });
       
-      console.log(`👥 Loaded ${allUsers.length} total users from live_users collection`);
+      console.log(`👥 Loaded ${allUsers.length} total users from both live_users and userProfiles`);
       console.log(`🟢 ${allUsers.filter(u => u.isOnline).length} currently online`);
       
       setUsers(allUsers);
