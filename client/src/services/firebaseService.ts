@@ -554,8 +554,9 @@ export const uploadUserProfilePicture = async (
   deviceId: string
 ): Promise<string> => {
   try {
-    const fileName = `user-profiles/${userName}-${deviceId}-${Date.now()}-${file.name}`;
-    const storageRef = ref(storage, fileName);
+    const fileName = `profile-${userName}-${deviceId}-${Date.now()}-${file.name}`;
+    // Use uploads folder which has proper permissions
+    const storageRef = ref(storage, `uploads/${fileName}`);
     
     await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(storageRef);
