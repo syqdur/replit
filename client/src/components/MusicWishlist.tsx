@@ -14,10 +14,23 @@ import {
   getPendingOperationsCount
 } from '../services/spotifyService';
 import { SpotifyTrack } from '../types';
+import { getUserName, getDeviceId } from '../utils/deviceId';
+import { collection, addDoc, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 interface MusicWishlistProps {
   isDarkMode: boolean;
   isAdmin?: boolean;
+}
+
+interface SongOwnership {
+  id: string;
+  trackId: string;
+  spotifyTrackUri: string;
+  addedByUser: string;
+  addedByDeviceId: string;
+  addedAt: string;
+  playlistId: string;
 }
 
 export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmin: adminProp = false }) => {
@@ -33,6 +46,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
   const [isRemovingTrack, setIsRemovingTrack] = useState<string | null>(null);
   const [showAddSuccess, setShowAddSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState<SpotifyApi.CurrentUsersProfileResponse | null>(null);
+  const [songOwnerships, setSongOwnerships] = useState<SongOwnership[]>([]);
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
   const [isAdmin, setIsAdmin] = useState(false);
@@ -124,6 +138,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
               const currentSnapshot = getCurrentSnapshotId();
               setSnapshotId(currentSnapshot);
               
+              // Load song ownerships for permission checking
+              await loadSongOwnerships();
+              
               console.log('✅ Initial playlist loaded with snapshot tracking');
               
             } catch (playlistError) {
@@ -185,6 +202,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       // Add track to playlist (optimistic update + snapshot tracking happens inside the service)
       await addTrackToPlaylist(track.uri);
       
+      // Track ownership for permission checking
+      await trackSongOwnership(track.id, track.uri);
+      
       // Show success message
       setShowAddSuccess(true);
       setTimeout(() => setShowAddSuccess(false), 2000);
@@ -225,6 +245,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       // Remove track from playlist (optimistic update + snapshot tracking happens inside the service)
       await removeTrackFromPlaylist(track.track.uri);
       
+      // Remove ownership tracking
+      await removeSongOwnership(track.track.id);
+      
       console.log('✅ Track removed with instant UI update and snapshot tracking');
       
     } catch (error) {
@@ -255,7 +278,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     // If admin, select all tracks
     // If regular user, only select tracks added by the user
     const trackIds = playlistTracks
-      .filter(item => isAdmin || (currentUser && item.added_by.id === currentUser.id))
+      .filter(item => canDeleteTrack(item))
       .map(item => item.track.id);
     
     setSelectedTracks(new Set(trackIds));
@@ -275,8 +298,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     
     // Filter tracks that can be deleted
     const tracksToDelete = playlistTracks.filter(item => 
-      selectedTracks.has(item.track.id) && 
-      (isAdmin || (currentUser && item.added_by.id === currentUser.id))
+      selectedTracks.has(item.track.id) && canDeleteTrack(item)
     );
     
     if (tracksToDelete.length === 0) {
@@ -304,6 +326,11 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       
       // Bulk delete with instant UI updates and snapshot tracking (happens inside the service)
       await bulkRemoveTracksFromPlaylist(trackUris);
+      
+      // Remove ownership tracking for all deleted tracks
+      for (const track of tracksToDelete) {
+        await removeSongOwnership(track.track.id);
+      }
       
       // Reset selection
       setSelectedTracks(new Set());
@@ -344,6 +371,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       const currentSnapshot = getCurrentSnapshotId();
       setSnapshotId(currentSnapshot);
       
+      // Reload song ownerships
+      await loadSongOwnerships();
+      
       setSyncStatus('live');
       
       console.log('✅ Manual refresh completed with snapshot tracking');
@@ -372,16 +402,85 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
-  // Check if user can delete a track
+  // Song ownership management
+  const loadSongOwnerships = async () => {
+    if (!selectedPlaylist) return;
+    
+    try {
+      const q = query(
+        collection(db, 'songOwnerships'),
+        where('playlistId', '==', selectedPlaylist.playlistId)
+      );
+      const querySnapshot = await getDocs(q);
+      const ownerships: SongOwnership[] = [];
+      
+      querySnapshot.forEach((doc) => {
+        ownerships.push({ id: doc.id, ...doc.data() } as SongOwnership);
+      });
+      
+      setSongOwnerships(ownerships);
+    } catch (error) {
+      console.error('Failed to load song ownerships:', error);
+    }
+  };
+
+  const trackSongOwnership = async (trackId: string, spotifyTrackUri: string) => {
+    if (!selectedPlaylist) return;
+    
+    const currentUserName = getUserName();
+    const currentDeviceId = getDeviceId();
+    
+    if (!currentUserName) return;
+
+    try {
+      const ownership: Omit<SongOwnership, 'id'> = {
+        trackId,
+        spotifyTrackUri,
+        addedByUser: currentUserName,
+        addedByDeviceId: currentDeviceId,
+        addedAt: new Date().toISOString(),
+        playlistId: selectedPlaylist.playlistId
+      };
+
+      await addDoc(collection(db, 'songOwnerships'), ownership);
+      
+      // Update local state
+      setSongOwnerships(prev => [...prev, { ...ownership, id: Date.now().toString() }]);
+    } catch (error) {
+      console.error('Failed to track song ownership:', error);
+    }
+  };
+
+  const removeSongOwnership = async (trackId: string) => {
+    try {
+      const ownership = songOwnerships.find(o => o.trackId === trackId);
+      if (ownership) {
+        await deleteDoc(doc(db, 'songOwnerships', ownership.id));
+        setSongOwnerships(prev => prev.filter(o => o.id !== ownership.id));
+      }
+    } catch (error) {
+      console.error('Failed to remove song ownership:', error);
+    }
+  };
+
+  // Check if user can delete a track based on wedding app user system
   const canDeleteTrack = (track: SpotifyApi.PlaylistTrackObject) => {
-    return isAdmin || (currentUser && track.added_by.id === currentUser.id);
+    if (isAdmin) return true;
+    
+    const currentUserName = getUserName();
+    const currentDeviceId = getDeviceId();
+    
+    if (!currentUserName) return false;
+    
+    const ownership = songOwnerships.find(o => o.trackId === track.track.id);
+    if (!ownership) return false; // If no ownership record, can't delete
+    
+    return ownership.addedByUser === currentUserName && ownership.addedByDeviceId === currentDeviceId;
   };
 
   // Count deletable tracks
   const getDeletableTracksCount = () => {
-    return playlistTracks.filter(item => 
-      isAdmin || (currentUser && item.added_by.id === currentUser.id)
-    ).length;
+    return playlistTracks.filter(item => canDeleteTrack(item)).length;
   };
 
   if (!isSpotifyAvailable) {
