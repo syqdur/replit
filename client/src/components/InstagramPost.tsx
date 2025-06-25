@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, MoreHorizontal, Trash2, Edit3, AlertTriangle } from 'lucide-react';
-import { MediaItem, Comment, Like } from '../types';
+import { MediaItem, Comment, Like, MediaTag } from '../types';
+import { MediaTagging } from './MediaTagging';
+import { getMediaTags } from '../services/firebaseService';
 
 interface InstagramPostProps {
   item: MediaItem;
@@ -18,6 +20,7 @@ interface InstagramPostProps {
   isDarkMode: boolean;
   getUserAvatar?: (userName: string, deviceId?: string) => string | null;
   getUserDisplayName?: (userName: string, deviceId?: string) => string;
+  getUserDeviceId?: () => string;
 }
 
 export const InstagramPost: React.FC<InstagramPostProps> = ({
@@ -35,7 +38,8 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
   onClick,
   isDarkMode,
   getUserAvatar,
-  getUserDisplayName
+  getUserDisplayName,
+  getUserDeviceId
 }) => {
   const [commentText, setCommentText] = useState('');
   const [showAllComments, setShowAllComments] = useState(false);
@@ -43,6 +47,12 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
   const [imageLoading, setImageLoading] = useState(true);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [editNoteText, setEditNoteText] = useState(item.noteText || '');
+  const [tags, setTags] = useState<MediaTag[]>([]);
+  
+  useEffect(() => {
+    const unsubscribe = getMediaTags(item.id, setTags);
+    return () => unsubscribe();
+  }, [item.id]);
 
   const isLiked = likes.some(like => like.userName === userName);
   const likeCount = likes.length;
@@ -413,6 +423,24 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
               Alle {comments.length} Kommentare ansehen
             </button>
           )}
+          </div>
+
+          {/* Media Tagging */}
+          <div className={`mt-4 pt-4 border-t transition-colors duration-300 ${
+            isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'
+          }`}>
+            <MediaTagging
+              mediaId={item.id}
+              tags={tags}
+              currentUser={userName}
+              currentDeviceId={getUserDeviceId ? getUserDeviceId() : ''}
+              isAdmin={isAdmin}
+              isDarkMode={isDarkMode}
+              onTagsUpdated={() => {
+                // Trigger a fresh subscription to reload tags
+              }}
+              getUserDisplayName={getUserDisplayName || ((name) => name)}
+            />
           </div>
 
           {/* Add Comment */}

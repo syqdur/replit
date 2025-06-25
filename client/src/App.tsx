@@ -792,6 +792,7 @@ function App() {
               isDarkMode={isDarkMode}
               getUserAvatar={getUserAvatar}
               getUserDisplayName={getUserDisplayName}
+              deviceId={deviceId || ''}
             />
           </>
         ) : activeTab === 'timeline' ? (

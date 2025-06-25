@@ -9,6 +9,17 @@ export interface MediaItem {
   noteText?: string;
   note?: string; // Legacy support
   isUnavailable?: boolean;
+  tags?: MediaTag[]; // Tagged users in this media
+}
+
+export interface MediaTag {
+  id: string;
+  mediaId: string;
+  userName: string;
+  deviceId: string;
+  taggedBy: string;
+  taggedByDeviceId: string;
+  createdAt: string;
 }
 
 export interface Comment {

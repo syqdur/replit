@@ -19,6 +19,7 @@ interface InstagramGalleryProps {
   isDarkMode: boolean;
   getUserAvatar?: (userName: string, deviceId?: string) => string | null;
   getUserDisplayName?: (userName: string, deviceId?: string) => string;
+  deviceId: string;
 }
 
 export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
@@ -35,7 +36,8 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
   userName,
   isDarkMode,
   getUserAvatar,
-  getUserDisplayName
+  getUserDisplayName,
+  deviceId
 }) => {
   const [viewMode, setViewMode] = useState<'feed' | 'grid'>('feed');
   const [notesSliderIndex, setNotesSliderIndex] = useState(0);

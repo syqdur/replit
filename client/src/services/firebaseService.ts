@@ -18,7 +18,7 @@ import {
   updateDoc
 } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
-import { MediaItem, Comment, Like, ProfileData } from '../types';
+import { MediaItem, Comment, Like, ProfileData, MediaTag } from '../types';
 
 export interface UserProfile {
   id: string;
@@ -597,4 +597,118 @@ export const loadUserProfiles = (callback: (profiles: UserProfile[]) => void): (
   });
   
   return unsubscribe;
+};
+
+// Media Tagging Functions
+export const addMediaTag = async (
+  mediaId: string,
+  userName: string,
+  deviceId: string,
+  taggedBy: string,
+  taggedByDeviceId: string
+): Promise<MediaTag> => {
+  try {
+    const tagData = {
+      mediaId,
+      userName,
+      deviceId,
+      taggedBy,
+      taggedByDeviceId,
+      createdAt: new Date().toISOString()
+    };
+
+    const docRef = await addDoc(collection(db, 'media_tags'), tagData);
+    console.log(`✅ Tagged ${userName} in media ${mediaId}`);
+    
+    return {
+      id: docRef.id,
+      ...tagData
+    };
+  } catch (error) {
+    console.error('Error adding media tag:', error);
+    throw error;
+  }
+};
+
+export const removeMediaTag = async (tagId: string): Promise<void> => {
+  try {
+    await deleteDoc(doc(db, 'media_tags', tagId));
+    console.log(`✅ Removed media tag ${tagId}`);
+  } catch (error) {
+    console.error('Error removing media tag:', error);
+    throw error;
+  }
+};
+
+export const getMediaTags = (
+  mediaId: string,
+  callback: (tags: MediaTag[]) => void
+): () => void => {
+  const q = query(
+    collection(db, 'media_tags'),
+    where('mediaId', '==', mediaId)
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const tags: MediaTag[] = [];
+    snapshot.forEach((doc) => {
+      tags.push({
+        id: doc.id,
+        ...doc.data()
+      } as MediaTag);
+    });
+    // Sort tags by creation date in JavaScript
+    tags.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    callback(tags);
+  });
+};
+
+export const getAllUsers = async (): Promise<Array<{userName: string, deviceId: string, displayName?: string}>> => {
+  try {
+    const usersQuery = query(collection(db, 'live_users'));
+    const usersSnapshot = await getDocs(usersQuery);
+    
+    const users: Array<{userName: string, deviceId: string, displayName?: string}> = [];
+    const seenUsers = new Set<string>();
+    
+    usersSnapshot.forEach((doc) => {
+      const userData = doc.data();
+      const userKey = `${userData.userName}_${userData.deviceId}`;
+      
+      if (!seenUsers.has(userKey)) {
+        seenUsers.add(userKey);
+        users.push({
+          userName: userData.userName,
+          deviceId: userData.deviceId,
+          displayName: userData.displayName
+        });
+      }
+    });
+    
+    // Also get user profiles for display names
+    const profilesQuery = query(collection(db, 'user_profiles'));
+    const profilesSnapshot = await getDocs(profilesQuery);
+    
+    const profileMap = new Map<string, string>();
+    profilesSnapshot.forEach((doc) => {
+      const profile = doc.data();
+      const key = `${profile.userName}_${profile.deviceId}`;
+      if (profile.displayName) {
+        profileMap.set(key, profile.displayName);
+      }
+    });
+    
+    // Update display names from profiles
+    users.forEach(user => {
+      const key = `${user.userName}_${user.deviceId}`;
+      if (profileMap.has(key)) {
+        user.displayName = profileMap.get(key);
+      }
+    });
+    
+    return users.sort((a, b) => (a.displayName || a.userName).localeCompare(b.displayName || b.userName));
+  } catch (error) {
+    console.error('Error getting users:', error);
+    return [];
+  }
 };
