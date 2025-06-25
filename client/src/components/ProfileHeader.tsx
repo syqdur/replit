@@ -205,7 +205,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                      isDarkMode ? 'text-pink-400' : 'text-pink-600'
                     }`} 
                     style={{
-                      animation: 'heartbeat 1.5s ease-in-out infinite'
+                      animation: 'heartbeat 3s ease-in-out infinite'
                     }} />
                   </div>
                 </div>
