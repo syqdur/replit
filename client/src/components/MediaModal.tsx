@@ -314,19 +314,34 @@ export const MediaModal: React.FC<MediaModalProps> = ({
 
           {/* Comments preview */}
           {currentComments.length > 0 && (
-            <div className="space-y-2 mb-4 max-h-32 overflow-y-auto">
-              {currentComments.slice(-3).map((comment) => (
-                <div key={comment.id} className="text-sm">
-                  <span className="font-semibold text-white mr-2">
-                    {getUserDisplayName ? getUserDisplayName(comment.userName, comment.deviceId) : comment.userName}
-                  </span>
-                  <span className="text-gray-300">
-                    {comment.text}
-                  </span>
-                </div>
-              ))}
+            <div className="space-y-3 mb-4 max-h-32 overflow-y-auto">
+              {currentComments.slice(-3).map((comment) => {
+                const commentAvatarUrl = getUserAvatar 
+                  ? getUserAvatar(comment.userName, comment.deviceId) 
+                  : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(comment.userName)}&backgroundColor=transparent`;
+                
+                return (
+                  <div key={comment.id} className="text-sm flex items-start gap-2">
+                    <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+                      <img 
+                        src={commentAvatarUrl}
+                        alt={comment.userName}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="font-semibold text-white mr-2">
+                        {getUserDisplayName ? getUserDisplayName(comment.userName, comment.deviceId) : comment.userName}
+                      </span>
+                      <span className="text-gray-300">
+                        {comment.text}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
               {currentComments.length > 3 && (
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-gray-400 ml-8">
                   +{currentComments.length - 3} weitere Kommentare
                 </div>
               )}
@@ -335,6 +350,13 @@ export const MediaModal: React.FC<MediaModalProps> = ({
 
           {/* Add comment */}
           <form onSubmit={handleSubmitComment} className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+              <img 
+                src={getAvatarUrl(userName, undefined)}
+                alt={userName}
+                className="w-full h-full object-cover"
+              />
+            </div>
             <input
               type="text"
               value={commentText}

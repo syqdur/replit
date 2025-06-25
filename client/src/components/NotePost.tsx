@@ -325,32 +325,47 @@ export const NotePost: React.FC<NotePostProps> = ({
           <div className="space-y-2">
           {displayComments.map((comment) => {
             const canDeleteThisComment = isAdmin || comment.userName === userName;
+            const commentAvatarUrl = getUserAvatar 
+              ? getUserAvatar(comment.userName, comment.deviceId) 
+              : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(comment.userName)}&backgroundColor=transparent`;
             
             return (
-              <div key={comment.id} className="text-sm flex items-start justify-between group">
-                <div className="flex-1">
-                  <span className={`font-semibold mr-2 transition-colors duration-300 ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    {getUserDisplayName ? getUserDisplayName(comment.userName, comment.deviceId) : comment.userName}
-                    {comment.userName === userName && (
-                      <span className={`ml-1 text-xs px-1.5 py-0.5 rounded transition-colors duration-300 ${
-                        isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        Du
-                      </span>
-                    )}
-                  </span>
-                  <span className={`transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>
-                    {comment.text}
-                  </span>
+              <div key={comment.id} className="text-sm flex items-start gap-3 group">
+                {/* Profile Picture */}
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5">
+                  <img 
+                    src={commentAvatarUrl}
+                    alt={comment.userName}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
+                
+                <div className="flex-1 min-w-0">
+                  <div>
+                    <span className={`font-semibold mr-2 transition-colors duration-300 ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      {getUserDisplayName ? getUserDisplayName(comment.userName, comment.deviceId) : comment.userName}
+                      {comment.userName === userName && (
+                        <span className={`ml-1 text-xs px-1.5 py-0.5 rounded transition-colors duration-300 ${
+                          isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          Du
+                        </span>
+                      )}
+                    </span>
+                    <span className={`transition-colors duration-300 ${
+                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      {comment.text}
+                    </span>
+                  </div>
+                </div>
+                
                 {canDeleteThisComment && (
                   <button
                     onClick={() => handleDeleteComment(comment.id, comment)}
-                    className="opacity-0 group-hover:opacity-100 ml-2 p-1 text-red-500 hover:bg-red-50 rounded transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-red-50 rounded transition-all flex-shrink-0"
                     title="Kommentar löschen"
                   >
                     <Trash2 className="w-3 h-3" />
