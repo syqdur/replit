@@ -26,13 +26,25 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
   const [countdownEnded, setCountdownEnded] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = loadProfile(setProfileData);
+    const unsubscribe = loadProfile((data) => {
+      setProfileData(prev => {
+        // Only update if data actually changed
+        if (JSON.stringify(prev) !== JSON.stringify(data)) {
+          return data;
+        }
+        return prev;
+      });
+    });
     return unsubscribe;
   }, []);
 
-  // Countdown timer effect
+  // Countdown timer effect with memoized calculation
   useEffect(() => {
-    if (!profileData?.countdownDate) return;
+    if (!profileData?.countdownDate) {
+      setCountdown(null);
+      setCountdownEnded(false);
+      return;
+    }
 
     const updateCountdown = () => {
       const target = new Date(profileData.countdownDate);
@@ -40,11 +52,23 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
       const difference = target.getTime() - now.getTime();
 
       if (difference > 0) {
-        setCountdown({
+        const newCountdown = {
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
           hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
           minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((difference % (1000 * 60)) / 1000)
+        };
+        
+        // Only update if values actually changed
+        setCountdown(prev => {
+          if (!prev || 
+              prev.days !== newCountdown.days || 
+              prev.hours !== newCountdown.hours || 
+              prev.minutes !== newCountdown.minutes || 
+              prev.seconds !== newCountdown.seconds) {
+            return newCountdown;
+          }
+          return prev;
         });
         setCountdownEnded(false);
       } else {
