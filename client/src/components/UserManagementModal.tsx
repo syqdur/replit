@@ -315,6 +315,23 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
             deletedCount++;
           }
         });
+        
+        // Also delete media, comments, likes, and stories for this user
+        const mediaQuery = query(collection(db, 'media'), where('deviceId', '==', deviceId));
+        const mediaSnapshot = await getDocs(mediaQuery);
+        mediaSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+        
+        const commentsQuery = query(collection(db, 'comments'), where('deviceId', '==', deviceId));
+        const commentsSnapshot = await getDocs(commentsQuery);
+        commentsSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+        
+        const likesQuery = query(collection(db, 'likes'), where('deviceId', '==', deviceId));
+        const likesSnapshot = await getDocs(likesQuery);
+        likesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+        
+        const storiesQuery = query(collection(db, 'stories'), where('deviceId', '==', deviceId));
+        const storiesSnapshot = await getDocs(storiesQuery);
+        storiesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
       }
 
       if (deletedCount > 0) {
@@ -331,12 +348,16 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
           const userName = userKey.slice(0, -37);
           
           if (currentUserName === userName && currentDeviceId === deviceId) {
-            console.log(`🧹 Current user was deleted, clearing localStorage and reloading`);
+            console.log(`🧹 Current user was bulk deleted - clearing all data and reloading`);
+            // Mark user as deleted to prevent presence updates
+            localStorage.setItem('userDeleted', 'true');
             localStorage.removeItem('userName');
             localStorage.removeItem('deviceId');
             localStorage.removeItem('admin_status');
-            // Force page reload to reset user state
-            window.location.reload();
+            // Small delay to ensure Firebase operations complete
+            setTimeout(() => {
+              window.location.reload();
+            }, 500);
             return; // Exit early since page will reload
           }
         }
@@ -394,13 +415,15 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       
       const batch = writeBatch(db);
       
-      // Delete from live_users collection
+      // Delete ALL entries from live_users collection for this deviceId
       const liveUsersQuery = query(
         collection(db, 'live_users'),
         where('deviceId', '==', deviceId)
       );
       const liveUsersSnapshot = await getDocs(liveUsersQuery);
+      console.log(`🗑️ Found ${liveUsersSnapshot.docs.length} live_users entries to delete`);
       liveUsersSnapshot.docs.forEach(doc => {
+        console.log(`🗑️ Deleting live_users entry: ${doc.id}`);
         batch.delete(doc.ref);
       });
       
@@ -451,12 +474,17 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       const currentDeviceId = localStorage.getItem('deviceId');
       
       if (currentUserName === userName && currentDeviceId === deviceId) {
-        console.log(`🧹 Clearing localStorage for current user: ${userName}`);
+        console.log(`🧹 Current user deleted themselves - clearing all data and reloading`);
+        // Mark user as deleted to prevent presence updates
+        localStorage.setItem('userDeleted', 'true');
         localStorage.removeItem('userName');
         localStorage.removeItem('deviceId');
         localStorage.removeItem('admin_status');
-        // Force page reload to reset user state
-        window.location.reload();
+        // Small delay to ensure Firebase operations complete
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+        return; // Exit early
       }
       
       console.log(`✅ Successfully deleted user: ${userName}`);

@@ -79,6 +79,12 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
     // Update user presence (after cleanup)
     const updatePresence = async () => {
       try {
+        // Check if user was deleted - stop presence updates
+        if (localStorage.getItem('userDeleted') === 'true') {
+          console.log(`🚫 User marked as deleted - skipping presence update`);
+          return;
+        }
+        
         console.log(`📡 Updating presence for ${currentUser}...`);
         
         // 🔧 FIX: Use deviceId as document ID to ensure uniqueness
@@ -125,6 +131,12 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
 
     // Set up presence heartbeat (every 30 seconds for better responsiveness)
     const presenceInterval = setInterval(() => {
+      // Check if user was deleted - stop heartbeat
+      if (localStorage.getItem('userDeleted') === 'true') {
+        console.log(`🚫 User deleted - stopping heartbeat`);
+        clearInterval(presenceInterval);
+        return;
+      }
       console.log(`💓 Heartbeat for ${currentUser}`);
       updatePresence();
     }, 30000); // Every 30 seconds
