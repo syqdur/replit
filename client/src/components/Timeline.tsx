@@ -473,23 +473,31 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
+    <div className={`min-h-screen transition-all duration-500 ${
       isDarkMode 
-        ? 'bg-gradient-to-br from-slate-900 via-purple-900/50 to-pink-900/30' 
-        : 'bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50'
+        ? 'bg-gradient-to-br from-gray-900 via-purple-900/10 to-pink-900/10' 
+        : 'bg-gradient-to-br from-gray-50 via-pink-50/30 to-purple-50/20'
     }`}>
       {/* Modal für Medienanzeige */}
       {modalMedia && (
         <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-70"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
           onClick={() => setModalMedia(null)}
         >
           <div
-            className="relative max-w-3xl w-full max-h-[90vh] bg-white rounded-xl shadow-lg flex flex-col items-center justify-center p-4"
+            className={`relative max-w-3xl w-full max-h-[90vh] rounded-3xl backdrop-blur-xl border flex flex-col items-center justify-center p-6 transition-all duration-300 ${
+              isDarkMode 
+                ? 'bg-gray-900/90 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+                : 'bg-white/90 border-gray-200/30 shadow-2xl shadow-pink-500/10'
+            }`}
             onClick={e => e.stopPropagation()}
           >
             <button
-              className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700"
+              className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
+                isDarkMode 
+                  ? 'bg-white/10 hover:bg-white/20 text-white' 
+                  : 'bg-white/80 hover:bg-white/90 text-gray-700'
+              }`}
               onClick={() => setModalMedia(null)}
               aria-label="Schließen"
             >
@@ -510,7 +518,9 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
     className="max-h-[70vh] max-w-full rounded-lg object-contain border border-gray-200"
   />
 )}
-              <div className="mt-2 text-center text-sm text-gray-700">
+              <div className={`mt-3 text-center text-sm transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 {modalMedia.title}
               </div>
             </div>
@@ -518,10 +528,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
         </div>
       )}
       {/* Header */}
-      <div className={`p-4 sm:p-6 backdrop-blur-xl border-b transition-all duration-300 ${
+      <div className={`sticky top-0 z-40 p-4 sm:p-6 backdrop-blur-xl border-b transition-all duration-300 ${
         isDarkMode 
-          ? 'bg-white/5 border-white/10' 
-          : 'bg-white/70 border-white/20'
+          ? 'bg-gray-900/70 border-gray-700/30 shadow-xl shadow-purple-500/5' 
+          : 'bg-white/70 border-gray-200/30 shadow-xl shadow-pink-500/5'
       }`}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 sm:gap-4">
@@ -567,7 +577,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
 
       {/* Add/Edit Form */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-40">
           <div className={`rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto transition-colors duration-300 ${
             isDarkMode ? 'bg-gray-800' : 'bg-white'
           }`}>
@@ -639,10 +649,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                     onChange={(e) => setFormData({ ...formData, customEventName: e.target.value })}
                     placeholder="z.B. Unser erster Hund, Hauseinweihung, ..."
                     disabled={isUploading}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-colors duration-300 ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 outline-none backdrop-blur-sm transition-all duration-300 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                        ? 'bg-white/5 border-white/20 text-white placeholder-gray-400' 
+                        : 'bg-white/60 border-gray-200/40 text-gray-900 placeholder-gray-500'
                     }`}
                     required={formData.type === 'custom'}
                   />
@@ -726,10 +736,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                   placeholder="Erzähle von diesem besonderen Moment..."
                   rows={3}
                   disabled={isUploading}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none resize-none transition-colors duration-300 ${
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 outline-none resize-none backdrop-blur-sm transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                      ? 'bg-white/5 border-white/20 text-white placeholder-gray-400' 
+                      : 'bg-white/60 border-gray-200/40 text-gray-900 placeholder-gray-500'
                   }`}
                 />
               </div>
@@ -756,12 +766,12 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className={`w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg transition-all duration-300 ${
+                  className={`w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-xl backdrop-blur-sm transition-all duration-300 ${
                     isUploading
                       ? 'cursor-not-allowed opacity-50'
                       : isDarkMode
-                        ? 'border-gray-600 hover:border-gray-500 hover:bg-gray-700/30'
-                        : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                        ? 'border-white/20 hover:border-white/30 hover:bg-white/5 text-gray-300'
+                        : 'border-gray-300/60 hover:border-gray-400/60 hover:bg-white/30 text-gray-700'
                   }`}
                 >
                   <Upload className="w-5 h-5" />
@@ -784,8 +794,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                     </h4>
                     <div className="space-y-2 max-h-32 overflow-y-auto">
                       {selectedFiles.map((file, index) => (
-                        <div key={index} className={`flex items-center justify-between p-2 rounded border transition-colors duration-300 ${
-                          isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                        <div key={index} className={`flex items-center justify-between p-3 rounded-xl backdrop-blur-sm border transition-all duration-300 ${
+                          isDarkMode ? 'bg-white/5 border-white/20' : 'bg-white/60 border-gray-200/40'
                         }`}>
                           <div className="flex items-center gap-2 min-w-0">
                             {file.type.startsWith('video/') ? (
@@ -829,8 +839,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
 
               {/* Upload Progress */}
               {isUploading && (
-                <div className={`p-4 rounded-lg transition-colors duration-300 ${
-                  isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                <div className={`p-4 rounded-xl backdrop-blur-sm border transition-all duration-300 ${
+                  isDarkMode ? 'bg-white/5 border-white/20' : 'bg-white/60 border-gray-200/40'
                 }`}>
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-4 h-4 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
@@ -841,11 +851,11 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                     </span>
                   </div>
                   {uploadProgress > 0 && (
-                    <div className={`w-full h-2 rounded-full overflow-hidden transition-colors duration-300 ${
-                      isDarkMode ? 'bg-gray-600' : 'bg-gray-200'
+                    <div className={`w-full h-2 rounded-full overflow-hidden backdrop-blur-sm transition-all duration-300 ${
+                      isDarkMode ? 'bg-white/10' : 'bg-gray-300/60'
                     }`}>
                       <div 
-                        className="h-full bg-pink-500 transition-all duration-300"
+                        className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
                       />
                     </div>
@@ -859,12 +869,12 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                   type="button"
                   onClick={resetForm}
                   disabled={isUploading}
-                  className={`flex-1 py-2 px-4 rounded-lg transition-colors duration-300 ${
+                  className={`flex-1 py-3 px-4 rounded-xl backdrop-blur-sm border transition-all duration-300 ${
                     isUploading
                       ? 'cursor-not-allowed opacity-50'
                       : isDarkMode 
-                        ? 'bg-gray-600 hover:bg-gray-500 text-gray-200' 
-                        : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                        ? 'bg-white/10 border-white/20 hover:bg-white/20 text-gray-200' 
+                        : 'bg-white/60 border-gray-200/40 hover:bg-white/80 text-gray-700'
                   }`}
                 >
                   Abbrechen
@@ -872,11 +882,11 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                 <button
                   type="submit"
                   disabled={isUploading}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl backdrop-blur-sm transition-all duration-300 ${
                     isUploading
                       ? 'cursor-not-allowed opacity-50 bg-gray-400'
-                      : 'bg-pink-600 hover:bg-pink-700'
-                  } text-white`}
+                      : 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg shadow-pink-500/25'
+                  } text-white border border-white/20`}
                 >
                   {isUploading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -895,30 +905,32 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
       <div className="p-4 sm:p-6">
         {events.length === 0 ? (
           <div className="text-center py-12">
-            <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center transition-colors duration-300 ${
-              isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+            <div className={`w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center backdrop-blur-xl border transition-all duration-300 ${
+              isDarkMode 
+                ? 'bg-white/5 border-white/20 shadow-xl shadow-purple-500/10' 
+                : 'bg-white/60 border-gray-200/40 shadow-xl shadow-pink-500/10'
             }`}>
-              <Heart className={`w-6 h-6 transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-500' : 'text-gray-400'
+              <Heart className={`w-8 h-8 transition-colors duration-300 ${
+                isDarkMode ? 'text-pink-400' : 'text-pink-500'
               }`} />
             </div>
-            <h3 className={`text-xl font-light mb-2 transition-colors duration-300 ${
+            <h3 className={`text-2xl font-bold mb-3 transition-colors duration-300 ${
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}>
               Noch keine Events
             </h3>
-            <p className={`text-sm transition-colors duration-300 ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-500'
+            <p className={`text-base mb-6 transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
             }`}>
               {isAdmin ? 'Füge das erste Event eurer Liebesgeschichte hinzu!' : 'Die Timeline wird bald mit besonderen Momenten gefüllt.'}
             </p>
             {isAdmin && (
               <button
                 onClick={() => setShowAddForm(true)}
-                className={`mt-4 px-6 py-3 rounded-xl transition-colors duration-300 ${
+                className={`px-8 py-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 ${
                   isDarkMode 
-                    ? 'bg-pink-600 hover:bg-pink-700 text-white' 
-                    : 'bg-pink-500 hover:bg-pink-600 text-white'
+                    ? 'bg-gradient-to-r from-pink-500/80 to-purple-600/80 hover:from-pink-500 hover:to-purple-600 text-white border border-white/20 shadow-lg shadow-pink-500/25' 
+                    : 'bg-gradient-to-r from-pink-400/80 to-purple-500/80 hover:from-pink-400 hover:to-purple-500 text-white border border-white/30 shadow-lg shadow-pink-400/25'
                 }`}
               >
                 Erstes Event hinzufügen
