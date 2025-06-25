@@ -665,50 +665,70 @@ export const getMediaTags = (
 
 export const getAllUsers = async (): Promise<Array<{userName: string, deviceId: string, displayName?: string}>> => {
   try {
+    console.log('🔍 Fetching all users for tagging...');
+    
+    // Get users from live_users collection
     const usersQuery = query(collection(db, 'live_users'));
     const usersSnapshot = await getDocs(usersQuery);
     
     const users: Array<{userName: string, deviceId: string, displayName?: string}> = [];
     const seenUsers = new Set<string>();
     
+    console.log(`📊 Found ${usersSnapshot.size} live user entries`);
+    
     usersSnapshot.forEach((doc) => {
       const userData = doc.data();
-      const userKey = `${userData.userName}_${userData.deviceId}`;
+      if (userData.userName && userData.deviceId) {
+        const userKey = `${userData.userName}_${userData.deviceId}`;
+        
+        if (!seenUsers.has(userKey)) {
+          seenUsers.add(userKey);
+          users.push({
+            userName: userData.userName,
+            deviceId: userData.deviceId,
+            displayName: userData.displayName || userData.userName
+          });
+        }
+      }
+    });
+    
+    console.log(`👥 Processed ${users.length} unique users`);
+    
+    // Also get user profiles for better display names
+    try {
+      const profilesQuery = query(collection(db, 'user_profiles'));
+      const profilesSnapshot = await getDocs(profilesQuery);
       
-      if (!seenUsers.has(userKey)) {
-        seenUsers.add(userKey);
-        users.push({
-          userName: userData.userName,
-          deviceId: userData.deviceId,
-          displayName: userData.displayName
-        });
-      }
-    });
+      console.log(`👤 Found ${profilesSnapshot.size} user profiles`);
+      
+      const profileMap = new Map<string, string>();
+      profilesSnapshot.forEach((doc) => {
+        const profile = doc.data();
+        if (profile.userName && profile.deviceId && profile.displayName) {
+          const key = `${profile.userName}_${profile.deviceId}`;
+          profileMap.set(key, profile.displayName);
+        }
+      });
+      
+      // Update display names from profiles
+      users.forEach(user => {
+        const key = `${user.userName}_${user.deviceId}`;
+        if (profileMap.has(key)) {
+          user.displayName = profileMap.get(key);
+        }
+      });
+      
+      console.log(`✅ Updated display names for ${profileMap.size} users`);
+    } catch (profileError) {
+      console.warn('Could not fetch user profiles:', profileError);
+    }
     
-    // Also get user profiles for display names
-    const profilesQuery = query(collection(db, 'user_profiles'));
-    const profilesSnapshot = await getDocs(profilesQuery);
+    const sortedUsers = users.sort((a, b) => (a.displayName || a.userName).localeCompare(b.displayName || b.userName));
+    console.log(`📋 Returning ${sortedUsers.length} users for tagging`);
     
-    const profileMap = new Map<string, string>();
-    profilesSnapshot.forEach((doc) => {
-      const profile = doc.data();
-      const key = `${profile.userName}_${profile.deviceId}`;
-      if (profile.displayName) {
-        profileMap.set(key, profile.displayName);
-      }
-    });
-    
-    // Update display names from profiles
-    users.forEach(user => {
-      const key = `${user.userName}_${user.deviceId}`;
-      if (profileMap.has(key)) {
-        user.displayName = profileMap.get(key);
-      }
-    });
-    
-    return users.sort((a, b) => (a.displayName || a.userName).localeCompare(b.displayName || b.userName));
+    return sortedUsers;
   } catch (error) {
-    console.error('Error getting users:', error);
+    console.error('❌ Error getting users for tagging:', error);
     return [];
   }
 };
