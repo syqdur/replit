@@ -213,9 +213,16 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       
       console.log(`📊 Found ${profilesSnapshot.docs.length} profiles in userProfiles database`);
       
-      profilesSnapshot.docs.forEach((doc) => {
+      profilesSnapshot.docs.forEach((doc, index) => {
         try {
           const data = doc.data();
+          console.log(`👤 Profile ${index + 1}:`, {
+            docId: doc.id,
+            userName: data.userName,
+            displayName: data.displayName,
+            deviceId: data.deviceId?.substring(0, 8) + '...',
+            hasRequiredFields: !!(data.userName && data.deviceId)
+          });
           
           if (data && data.userName && data.deviceId) {
             const key = `${data.userName}-${data.deviceId}`;
@@ -230,12 +237,18 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
                 contributionCount: 0,
                 lastActivity: data.updatedAt || data.createdAt || new Date().toISOString()
               });
-              console.log(`👤 Added profile-only user: ${data.userName} (${data.displayName || 'no display name'})`);
+              console.log(`✅ Added profile-only user: ${data.userName} (${data.displayName || 'no display name'})`);
             } else {
               // User exists in live_users, just mark they have a profile
               const user = userMap.get(key)!;
               user.contributionCount = Math.max(user.contributionCount, 1);
+              console.log(`🔄 Updated existing user: ${data.userName} with profile info`);
             }
+          } else {
+            console.log(`❌ Skipping profile - missing required fields:`, {
+              userName: data.userName,
+              deviceId: data.deviceId ? 'present' : 'missing'
+            });
           }
         } catch (docError) {
           console.warn('Error processing profile document:', docError);
