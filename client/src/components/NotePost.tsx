@@ -15,6 +15,8 @@ interface NotePostProps {
   userName: string;
   isAdmin: boolean;
   isDarkMode: boolean;
+  getUserAvatar?: (userName: string, deviceId?: string) => string | null;
+  getUserDisplayName?: (userName: string, deviceId?: string) => string;
 }
 
 export const NotePost: React.FC<NotePostProps> = ({
@@ -29,7 +31,9 @@ export const NotePost: React.FC<NotePostProps> = ({
   showDeleteButton,
   userName,
   isAdmin,
-  isDarkMode
+  isDarkMode,
+  getUserAvatar,
+  getUserDisplayName
 }) => {
   const [commentText, setCommentText] = useState('');
   const [showAllComments, setShowAllComments] = useState(false);
@@ -153,7 +157,7 @@ export const NotePost: React.FC<NotePostProps> = ({
               <span className={`font-semibold text-base transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
-                {item.uploadedBy}
+                {getUserDisplayName ? getUserDisplayName(item.uploadedBy, item.deviceId) : item.uploadedBy}
                 {item.uploadedBy === userName && (
                   <span className={`ml-2 text-xs px-3 py-1 rounded-full transition-colors duration-300 ${
                     isDarkMode ? 'bg-blue-600/80 text-white' : 'bg-blue-100/80 text-blue-800'
@@ -323,7 +327,7 @@ export const NotePost: React.FC<NotePostProps> = ({
                   <span className={`font-semibold mr-2 transition-colors duration-300 ${
                     isDarkMode ? 'text-white' : 'text-gray-900'
                   }`}>
-                    {comment.userName}
+                    {getUserDisplayName ? getUserDisplayName(comment.userName, comment.deviceId) : comment.userName}
                     {comment.userName === userName && (
                       <span className={`ml-1 text-xs px-1.5 py-0.5 rounded transition-colors duration-300 ${
                         isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'

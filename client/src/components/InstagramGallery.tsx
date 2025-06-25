@@ -134,6 +134,8 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                 userName={userName}
                 isAdmin={isAdmin}
                 isDarkMode={isDarkMode}
+                getUserAvatar={getUserAvatar}
+                getUserDisplayName={getUserDisplayName}
               />
             ) : (
               <InstagramPost
@@ -268,7 +270,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                                   <span className={`font-semibold transition-colors duration-300 ${
                                     isDarkMode ? 'text-white' : 'text-gray-900'
                                   }`}>
-                                    {item.uploadedBy}
+                                    {getUserDisplayName ? getUserDisplayName(item.uploadedBy, item.deviceId) : item.uploadedBy}
                                     {item.uploadedBy === userName && (
                                       <span className={`ml-2 text-xs px-2 py-0.5 rounded-full transition-colors duration-300 ${
                                         isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'

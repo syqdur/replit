@@ -425,12 +425,15 @@ function App() {
     return userProfile?.profilePicture || null;
   };
 
-  // Function to get user's display name
+  // Function to get user's display name (display name overrides username)
   const getUserDisplayName = (targetUserName: string, targetDeviceId?: string) => {
     const userProfile = userProfiles.find(p => 
       p.userName === targetUserName && (!targetDeviceId || p.deviceId === targetDeviceId)
     );
-    return userProfile?.displayName || targetUserName;
+    // Return display name if it exists and is different from username, otherwise return username
+    return (userProfile?.displayName && userProfile.displayName !== targetUserName) 
+      ? userProfile.displayName 
+      : targetUserName;
   };
 
   // Show Spotify callback handler if on callback page

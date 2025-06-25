@@ -231,7 +231,7 @@ export const MediaModal: React.FC<MediaModalProps> = ({
                       Bild nicht verfügbar
                     </p>
                     <p className="text-sm text-center opacity-75 mb-4">
-                      Von {currentItem.uploadedBy}
+                      Von {getUserDisplayName ? getUserDisplayName(currentItem.uploadedBy, currentItem.deviceId) : currentItem.uploadedBy}
                     </p>
                     <button
                       onClick={() => {
@@ -279,7 +279,7 @@ export const MediaModal: React.FC<MediaModalProps> = ({
             </div>
             <div>
               <span className="font-semibold text-white">
-                {currentItem.uploadedBy}
+                {getUserDisplayName ? getUserDisplayName(currentItem.uploadedBy, currentItem.deviceId) : currentItem.uploadedBy}
               </span>
               <div className="text-sm text-gray-300">
                 {formatDate(currentItem.uploadedAt)}
@@ -318,7 +318,7 @@ export const MediaModal: React.FC<MediaModalProps> = ({
               {currentComments.slice(-3).map((comment) => (
                 <div key={comment.id} className="text-sm">
                   <span className="font-semibold text-white mr-2">
-                    {comment.userName}
+                    {getUserDisplayName ? getUserDisplayName(comment.userName, comment.deviceId) : comment.userName}
                   </span>
                   <span className="text-gray-300">
                     {comment.text}

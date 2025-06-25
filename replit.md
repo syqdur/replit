@@ -88,6 +88,12 @@ This is a comprehensive wedding gallery application with the following architect
 ## Recent Changes
 
 ### January 25, 2025
+- **Display Name Override System**: Implemented complete display name system that overrides usernames throughout the UI when users set custom display names in their profiles
+- **Selfie Camera Button**: Fixed profile edit modal selfie button to properly trigger camera capture instead of gallery picker for taking profile picture selfies
+- **Cross-Component Display Name Sync**: Updated all components (InstagramPost, NotePost, MediaModal, InstagramGallery) to consistently show display names for posts, comments, and media attribution
+- **Automatic Profile Creation**: Enhanced content posting workflow to automatically create user profiles ensuring proper display name tracking for all contributors
+
+### January 25, 2025 (Earlier)
 - **Database Migration**: Successfully migrated backend from in-memory storage to PostgreSQL with Drizzle ORM for persistent data storage
 - **Camera Functionality**: Added camera capture component for profile picture selfies with front/rear camera switching and photo preview
 - **Profile Enhancement**: Enhanced profile editing with both gallery upload and camera capture options for profile pictures
