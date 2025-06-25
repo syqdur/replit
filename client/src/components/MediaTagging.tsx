@@ -148,20 +148,20 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
       {!showTagInput ? (
         <button
           onClick={() => setShowTagInput(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/20 dark:bg-gray-800/20 text-gray-700 dark:text-gray-300 backdrop-blur-lg border border-white/30 dark:border-gray-600/30 hover:bg-white/30 dark:hover:bg-gray-700/30 shadow-lg hover:shadow-xl"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/20 dark:bg-gray-800/60 text-gray-700 dark:text-gray-100 backdrop-blur-lg border border-white/30 dark:border-gray-700/40 hover:bg-white/30 dark:hover:bg-gray-700/80 shadow-lg hover:shadow-xl"
         >
           <UserPlus className="w-4 h-4" />
           Person markieren
         </button>
       ) : (
-        <div className="p-4 rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-xl">
+        <div className="p-4 rounded-2xl bg-white/80 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 shadow-xl">
           {/* Search Input */}
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Nach Person suchen..."
-            className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white transition-all duration-300 mb-4"
+            className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300 mb-4"
             autoFocus
           />
 
@@ -175,7 +175,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                   disabled={isLoading}
                   className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
                     isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                  } bg-white/40 dark:bg-gray-800/40 hover:bg-white/60 dark:hover:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 border border-white/20 dark:border-gray-600/20 hover:border-purple-300 dark:hover:border-purple-600 shadow-sm hover:shadow-md`}
+                  } bg-white/40 dark:bg-gray-800/60 hover:bg-white/60 dark:hover:bg-gray-700/80 backdrop-blur-sm text-gray-700 dark:text-gray-100 border border-white/20 dark:border-gray-700/40 hover:border-purple-300 dark:hover:border-purple-500 shadow-sm hover:shadow-md`}
                 >
                   {user.displayName || user.userName}
                 </button>
@@ -194,7 +194,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                 setShowTagInput(false);
                 setSearchTerm('');
               }}
-              className="px-4 py-2 text-sm rounded-xl font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-300 backdrop-blur-lg border border-white/30 dark:border-gray-600/30 shadow-lg"
+              className="px-4 py-2 text-sm rounded-xl font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/30 dark:bg-gray-800/60 hover:bg-white/50 dark:hover:bg-gray-700/80 text-gray-700 dark:text-gray-100 backdrop-blur-lg border border-white/30 dark:border-gray-700/40 shadow-lg"
             >
               Abbrechen
             </button>
