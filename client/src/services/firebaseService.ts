@@ -460,16 +460,27 @@ export const updateProfile = async (
       console.log('📷 Profile picture uploaded:', fileName);
     }
     
-    const profilePayload = {
+    // Clean payload - remove undefined values to prevent Firebase errors
+    const profilePayload: any = {
       name: profileData.name,
       bio: profileData.bio,
-      profilePicture: profilePictureUrl,
-      countdownDate: profileData.countdownDate,
-      countdownEndMessage: profileData.countdownEndMessage,
-      countdownMessageDismissed: profileData.countdownMessageDismissed,
       updatedAt: new Date().toISOString(),
       updatedBy: userName
     };
+
+    // Only add optional fields if they have values
+    if (profilePictureUrl) {
+      profilePayload.profilePicture = profilePictureUrl;
+    }
+    if (profileData.countdownDate) {
+      profilePayload.countdownDate = profileData.countdownDate;
+    }
+    if (profileData.countdownEndMessage) {
+      profilePayload.countdownEndMessage = profileData.countdownEndMessage;
+    }
+    if (profileData.countdownMessageDismissed !== undefined) {
+      profilePayload.countdownMessageDismissed = profileData.countdownMessageDismissed;
+    }
     
     // Check if profile already exists
     const profileQuery = query(collection(db, 'profile'));
