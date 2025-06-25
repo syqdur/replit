@@ -153,19 +153,21 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                 }`} />
               )}
             </button>
-            <button
-              onClick={() => setShowEditModal(true)}
-              className={`p-2 rounded-full transition-all duration-300 hover:scale-110 ${
-                isDarkMode 
-                  ? 'bg-gray-700/50 hover:bg-gray-600/50 backdrop-blur-sm' 
-                  : 'bg-gray-100/50 hover:bg-gray-200/50 backdrop-blur-sm'
-              }`}
-              title="Profil bearbeiten"
-            >
-              <Settings className={`w-4 h-4 transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`} />
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => setShowEditModal(true)}
+                className={`p-2 rounded-full transition-all duration-300 hover:scale-110 ${
+                  isDarkMode 
+                    ? 'bg-gray-700/50 hover:bg-gray-600/50 backdrop-blur-sm' 
+                    : 'bg-gray-100/50 hover:bg-gray-200/50 backdrop-blur-sm'
+                }`}
+                title="Profil bearbeiten"
+              >
+                <Settings className={`w-4 h-4 transition-colors duration-300 ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`} />
+              </button>
+            )}
           </div>
         </div>
        

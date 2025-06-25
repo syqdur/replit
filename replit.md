@@ -97,6 +97,9 @@ This is a comprehensive wedding gallery application with the following architect
 - **Cross-Component Display Name Sync**: Updated all components (InstagramPost, NotePost, MediaModal, InstagramGallery) to consistently show display names for posts, comments, and media attribution
 - **Automatic Profile Creation**: Enhanced content posting workflow to automatically create user profiles ensuring proper display name tracking for all contributors
 
+### January 25, 2025 (Later)
+- **Profile Edit Security Fix**: Fixed profile editing gear icon to only show in admin mode, preventing unauthorized access to profile editing functionality
+
 ### January 25, 2025 (Earlier)
 - **Database Migration**: Successfully migrated backend from in-memory storage to PostgreSQL with Drizzle ORM for persistent data storage
 - **Camera Functionality**: Added camera capture component for profile picture selfies with front/rear camera switching and photo preview
