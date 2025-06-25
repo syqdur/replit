@@ -1034,26 +1034,28 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                               const mediaType = event.mediaTypes?.[mediaIndex] || 'image';
                               
                               return (
-                                <div key={mediaIndex} className="relative aspect-square rounded-2xl overflow-hidden group backdrop-blur-sm border border-white/20">
+                                <div 
+                                  key={mediaIndex} 
+                                  className="relative aspect-square rounded-2xl overflow-hidden group backdrop-blur-sm border border-white/20 cursor-pointer"
+                                  onClick={() => setModalMedia({ url, type: mediaType, title: event.title })}
+                                >
                                   {mediaType === 'video' ? (
                                     <video
                                       src={url}
-                                      className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-110"
-                                      onClick={() => setModalMedia({ url, type: 'video', title: event.title })}
+                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                       preload="metadata"
                                     />
                                   ) : (
                                     <img
                                       src={url}
                                       alt={`${event.title} - Bild ${mediaIndex + 1}`}
-                                      className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-110"
-                                      onClick={() => setModalMedia({ url, type: 'image', title: event.title })}
+                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                     />
                                   )}
                                   
                                   {/* Video Play Button - Always visible for videos */}
                                   {mediaType === 'video' && (
-                                    <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                       <div className="bg-black/60 backdrop-blur-sm rounded-full p-4 transition-all duration-300 group-hover:scale-110 group-hover:bg-black/80">
                                         <Play className="w-8 h-8 text-white fill-white" />
                                       </div>
@@ -1061,7 +1063,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                                   )}
                                   
                                   {/* Media type indicator */}
-                                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                                     <div className="bg-black/60 backdrop-blur-sm rounded-full p-2">
                                       {mediaType === 'video' ? (
                                         <Video className="w-4 h-4 text-white" />
