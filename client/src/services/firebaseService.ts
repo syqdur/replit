@@ -1255,16 +1255,26 @@ export const addNotification = async (
   mediaUrl?: string
 ): Promise<void> => {
   try {
-    await addDoc(collection(db, 'notifications'), {
+    // Create base notification object
+    const notificationData: any = {
       type,
       message,
       targetUser,
       targetDeviceId,
-      mediaId,
-      mediaUrl,
       read: false,
       createdAt: new Date().toISOString()
-    });
+    };
+
+    // Only add optional fields if they have values
+    if (mediaId !== undefined && mediaId !== null) {
+      notificationData.mediaId = mediaId;
+    }
+    
+    if (mediaUrl !== undefined && mediaUrl !== null) {
+      notificationData.mediaUrl = mediaUrl;
+    }
+
+    await addDoc(collection(db, 'notifications'), notificationData);
   } catch (error) {
     console.error('Error adding notification:', error);
     throw error;

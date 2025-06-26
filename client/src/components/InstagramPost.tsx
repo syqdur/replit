@@ -316,6 +316,8 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
             }}
             getUserDisplayName={getUserDisplayName || ((name) => name)}
             mediaUploader={item.uploadedBy}
+            mediaType={item.type}
+            mediaUrl={item.url}
           />
         </div>
 

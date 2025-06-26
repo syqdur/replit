@@ -122,6 +122,7 @@ This is a comprehensive wedding gallery application with the following architect
 ### January 26, 2025 (UI Fixes)
 - **User Management Overlap Fix**: Fixed overlapping profile picture and upload button in User Management interface by completely separating upload button from profile picture container for cleaner mobile layout
 - **Real-time Profile Picture Sync**: Implemented comprehensive real-time synchronization system with custom events, immediate refresh triggers, and cross-component communication for instant profile picture updates in User Management interface
+- **Firebase Notification Error Fix**: Resolved "Unsupported field value: undefined" error in notification system by filtering out undefined values before creating Firebase documents and adding missing mediaType/mediaUrl props to MediaTagging component
 
 ### January 26, 2025 (Complete Feature Updates)
 - **Real Android/iPhone Push Notifications**: Implemented comprehensive push notification system with enhanced service worker supporting real mobile device notifications, including vibration patterns, notification icons, and click-to-navigate functionality
