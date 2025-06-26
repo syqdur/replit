@@ -39,6 +39,7 @@ import {
   getUserProfile,
   getAllUserProfiles,
   createOrUpdateUserProfile,
+  uploadUserProfilePicture,
   UserProfile
 } from './services/firebaseService';
 import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
@@ -512,13 +513,20 @@ function App() {
       const { userName, deviceId, profilePicture } = event.detail;
       console.log(`🔄 New user connected (${userName}), resyncing all profiles...`);
       
-      // If user provided a profile picture during registration, save it
-      if (profilePicture) {
+      // If user provided a profile picture during registration, upload it first then save profile
+      if (profilePicture && profilePicture instanceof File) {
         try {
-          console.log('💾 Saving profile picture for new user:', userName);
+          console.log('📷 Uploading profile picture for new user:', userName);
+          
+          // Upload the profile picture to Firebase Storage
+          const profilePictureUrl = await uploadUserProfilePicture(profilePicture, userName, deviceId);
+          
+          console.log('✅ Profile picture uploaded, creating user profile...');
+          
+          // Create user profile with the uploaded picture URL
           await createOrUpdateUserProfile(userName, deviceId, {
             displayName: userName,
-            profilePicture: profilePicture
+            profilePicture: profilePictureUrl
           });
           
           // Update current user profile if this is the current user
