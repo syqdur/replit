@@ -20,6 +20,7 @@ import { PublicRecapPage } from './components/PublicRecapPage';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { UserProfileModal } from './components/UserProfileModal';
 import { BackToTopButton } from './components/BackToTopButton';
+import { NotificationCenter } from './components/NotificationCenter';
 import { useUser } from './hooks/useUser';
 import { useDarkMode } from './hooks/useDarkMode';
 import { MediaItem, Comment, Like } from './types';
@@ -799,6 +800,15 @@ function App() {
                 currentUser={userName || ''}
                 isDarkMode={isDarkMode}
               />
+              
+              {/* Notification Center */}
+              {userName && (
+                <NotificationCenter
+                  userName={userName}
+                  deviceId={deviceId}
+                  isDarkMode={isDarkMode}
+                />
+              )}
               
               {/* User Profile Edit Button - Shows user's profile picture or default icon */}
               <button

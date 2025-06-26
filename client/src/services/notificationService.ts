@@ -97,7 +97,7 @@ class NotificationService {
   ): Promise<void> {
     try {
       // Create notification in Firebase
-      const notification: Omit<Notification, 'id'> = {
+      const notification = {
         type: 'tag',
         title: 'Du wurdest markiert!',
         message: `${taggerUser} hat dich in einem ${mediaType === 'video' ? 'Video' : 'Foto'} markiert`,
@@ -105,9 +105,9 @@ class NotificationService {
         targetDeviceId: taggedDeviceId,
         fromUser: taggerUser,
         fromDeviceId: taggerDeviceId,
-        mediaId,
-        mediaType,
-        mediaUrl,
+        mediaId: mediaId,
+        mediaType: mediaType,
+        mediaUrl: mediaUrl || '',
         read: false,
         createdAt: new Date().toISOString()
       };
