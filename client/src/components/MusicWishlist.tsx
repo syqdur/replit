@@ -119,7 +119,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
   }, [searchQuery, isSpotifyAvailable]);
 
   const loadSongOwnerships = async () => {
-    if (!selectedPlaylist) return;
+    if (!selectedPlaylist) {
+      console.log('🎵 No selected playlist, skipping ownership loading');
+      return;
+    }
+
+    console.log(`🎵 Loading song ownerships for playlist: ${selectedPlaylist.playlistId}`);
 
     try {
       const q = query(
@@ -130,9 +135,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       const ownerships: SongOwnership[] = [];
 
       querySnapshot.forEach((doc) => {
-        ownerships.push({ id: doc.id, ...doc.data() } as SongOwnership);
+        const ownership = { id: doc.id, ...doc.data() } as SongOwnership;
+        ownerships.push(ownership);
+        console.log(`🎵 Found ownership: ${ownership.trackId} by ${ownership.addedByUser} (${ownership.addedByDeviceId})`);
       });
 
+      console.log(`🎵 Loaded ${ownerships.length} song ownerships`);
       setSongOwnerships(ownerships);
     } catch (error) {
       console.error('Failed to load song ownerships:', error);
@@ -234,22 +242,31 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
 
   const canDeleteTrack = (track: any) => {
     if (isAdmin) {
+      console.log(`🎵 Admin can delete track: ${track.track.name}`);
       return true;
     }
 
     const currentUserName = getUserName();
     const currentDeviceId = getDeviceId();
 
+    console.log(`🎵 Current user: ${currentUserName} (${currentDeviceId})`);
+
     if (!currentUserName) {
+      console.log(`🎵 No current user name, cannot delete track: ${track.track.name}`);
       return false;
     }
 
     const ownership = songOwnerships.find(o => o.trackId === track.track.id);
     if (!ownership) {
+      console.log(`🎵 No ownership found for track: ${track.track.name} (ID: ${track.track.id})`);
+      console.log(`🎵 Available ownerships:`, songOwnerships.map(o => ({ trackId: o.trackId, user: o.addedByUser, device: o.addedByDeviceId })));
       return false;
     }
 
-    return ownership.addedByUser === currentUserName && ownership.addedByDeviceId === currentDeviceId;
+    const canDelete = ownership.addedByUser === currentUserName && ownership.addedByDeviceId === currentDeviceId;
+    console.log(`🎵 Track: ${track.track.name} - Owner: ${ownership.addedByUser} (${ownership.addedByDeviceId}) - Can delete: ${canDelete}`);
+    
+    return canDelete;
   };
 
   const formatDuration = (ms: number) => {
