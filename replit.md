@@ -117,6 +117,7 @@ This is a comprehensive wedding gallery application with the following architect
 - **Enhanced Profile UX**: Profile edit button now clearly shows "Profil" text with user avatar or UserPlus icon, making profile editing functionality obvious to users
 - **Pure Glassmorphism Profile Button**: Applied clean glass styling with transparent backgrounds, rounded-2xl corners, backdrop blur effects, and neutral shadows without colored gradients
 - **Fixed Text Override**: Resolved profile button text cutoff with proper flex controls, truncation handling, and optimized spacing for clean display
+- **Uniform Button Heights**: Standardized profile button and live user indicator to same 40px height for consistent header alignment
 
 ### January 26, 2025 (Complete Feature Updates)
 - **Real Android/iPhone Push Notifications**: Implemented comprehensive push notification system with enhanced service worker supporting real mobile device notifications, including vibration patterns, notification icons, and click-to-navigate functionality
