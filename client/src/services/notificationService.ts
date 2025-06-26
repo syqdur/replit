@@ -289,3 +289,121 @@ class NotificationService {
 }
 
 export const notificationService = new NotificationService();
+
+// Initialize push notifications for Android/iPhone
+export const initializePushNotifications = async (): Promise<boolean> => {
+  try {
+    // Check if service workers and notifications are supported
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      console.warn('❌ Push notifications not supported on this device');
+      return false;
+    }
+
+    // Request notification permission with better UX
+    let permission = Notification.permission;
+    
+    if (permission === 'default') {
+      permission = await Notification.requestPermission();
+    }
+    
+    if (permission !== 'granted') {
+      console.warn('❌ Notification permission denied');
+      return false;
+    }
+
+    // Register enhanced service worker
+    const registration = await navigator.serviceWorker.register('/sw.js', {
+      scope: '/'
+    });
+    
+    // Wait for service worker to be ready
+    await navigator.serviceWorker.ready;
+    console.log('✅ Service Worker registered and ready');
+
+    // For real Android/iPhone notifications, you would normally subscribe here
+    // with VAPID keys, but for local testing we'll setup the foundation
+    try {
+      // Check if already subscribed
+      const existingSubscription = await registration.pushManager.getSubscription();
+      
+      if (!existingSubscription) {
+        // For production, add your VAPID public key here
+        // const subscription = await registration.pushManager.subscribe({
+        //   userVisibleOnly: true,
+        //   applicationServerKey: urlBase64ToUint8Array('YOUR_VAPID_PUBLIC_KEY')
+        // });
+        
+        console.log('✅ Ready for push notifications (VAPID setup needed for production)');
+      } else {
+        console.log('✅ Already subscribed to push notifications');
+      }
+      
+      // Listen for messages from service worker
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data?.type === 'NAVIGATE_TO_MEDIA') {
+          handleServiceWorkerNavigation(event.data);
+        }
+      });
+      
+      return true;
+    } catch (subscriptionError) {
+      console.error('❌ Push subscription setup failed:', subscriptionError);
+      // Still return true as local notifications work
+      return true;
+    }
+  } catch (error) {
+    console.error('❌ Failed to initialize push notifications:', error);
+    return false;
+  }
+};
+
+// Handle navigation messages from service worker
+const handleServiceWorkerNavigation = (data: any) => {
+  const { mediaId, url } = data;
+  
+  if (mediaId) {
+    // Trigger navigation to specific media
+    window.dispatchEvent(new CustomEvent('navigateToMedia', {
+      detail: { mediaId }
+    }));
+  } else if (url) {
+    // Navigate to specific URL
+    window.location.href = url;
+  }
+};
+
+// Send real push notification (for production with backend)
+export const sendPushNotification = async (
+  subscription: PushSubscription,
+  payload: {
+    title: string;
+    message: string;
+    mediaId?: string;
+    type: string;
+    icon?: string;
+    image?: string;
+  }
+) => {
+  // This would be called from your backend server with proper VAPID keys
+  // Here's the structure for when you implement the backend push service
+  
+  const notificationPayload = {
+    title: payload.title,
+    body: payload.message,
+    icon: payload.icon || '/icon-192x192.png',
+    badge: '/icon-72x72.png',
+    image: payload.image,
+    data: {
+      mediaId: payload.mediaId,
+      type: payload.type,
+      url: payload.mediaId ? `/?media=${payload.mediaId}` : '/'
+    },
+    tag: `wedding-${payload.type}`,
+    requireInteraction: false,
+    vibrate: [200, 100, 200]
+  };
+
+  // In production, send this to your backend push service
+  console.log('📱 Push notification payload ready:', notificationPayload);
+  return notificationPayload;
+};

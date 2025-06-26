@@ -45,7 +45,7 @@ import {
 } from './services/firebaseService';
 import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
 import { getUserName, getDeviceId } from './utils/deviceId';
-import { notificationService } from './services/notificationService';
+import { notificationService, initializePushNotifications } from './services/notificationService';
 import {
   subscribeStories,
   subscribeAllStories,
@@ -142,12 +142,35 @@ function App() {
           await notificationService.subscribeToPush(userName, deviceId);
           console.log('✅ Push notifications initialized');
         }
+        
+        // Initialize real push notifications for Android/iPhone
+        await initializePushNotifications();
       } catch (error) {
         console.log('⚠️ Push notifications not available:', error);
       }
     };
 
     initNotifications();
+
+    // Handle navigation events from service worker (real push notifications)
+    const handleServiceWorkerNavigation = (event: any) => {
+      const { mediaId } = event.detail;
+      if (mediaId) {
+        // Navigate to media and open modal
+        setActiveTab('gallery');
+        const mediaIndex = mediaItems.findIndex(item => item.id === mediaId);
+        if (mediaIndex !== -1) {
+          setCurrentImageIndex(mediaIndex);
+          setModalOpen(true);
+        }
+      }
+    };
+
+    window.addEventListener('navigateToMedia', handleServiceWorkerNavigation);
+    
+    return () => {
+      window.removeEventListener('navigateToMedia', handleServiceWorkerNavigation);
+    };
   }, [userName, deviceId]);
 
   // Subscribe to stories when user is logged in
