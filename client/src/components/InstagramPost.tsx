@@ -468,7 +468,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 rounded-full overflow-hidden">
               <img 
-                src={getAvatarUrl(userName, undefined)}
+                src={getAvatarUrl(userName, getUserDeviceId?.())}
                 alt={userName}
                 className="w-full h-full object-cover"
               />
