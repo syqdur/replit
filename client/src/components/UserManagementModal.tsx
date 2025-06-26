@@ -994,10 +994,10 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
                         {/* Profile Picture with Upload */}
                         <div className="relative flex-shrink-0">
-                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold transition-colors duration-300 ${
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold transition-colors duration-300 border-2 ${
                             user.isOnline
-                              ? isDarkMode ? 'bg-green-600 text-white' : 'bg-green-500 text-white'
-                              : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
+                              ? isDarkMode ? 'bg-green-600 text-white border-green-400' : 'bg-green-500 text-white border-green-300'
+                              : isDarkMode ? 'bg-gray-600 text-gray-300 border-gray-500' : 'bg-gray-300 text-gray-700 border-gray-200'
                           }`}>
                             {getUserAvatar?.(user.userName, user.deviceId) ? (
                               <img 
@@ -1010,23 +1010,23 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             )}
                           </div>
                           
-                          {/* Profile Picture Upload Button */}
+                          {/* Profile Picture Upload Button - Positioned to avoid overlap */}
                           <button
                             onClick={() => triggerFileInput(user.userName, user.deviceId)}
                             disabled={uploadingProfilePic === userKey}
-                            className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all duration-200 ${
+                            className={`absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center text-xs transition-all duration-200 border-2 ${
                               uploadingProfilePic === userKey
-                                ? 'bg-gray-400 cursor-not-allowed'
+                                ? 'bg-gray-400 cursor-not-allowed border-gray-300'
                                 : isDarkMode 
-                                  ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg hover:shadow-xl' 
-                                  : 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl'
-                            }`}
+                                  ? 'bg-blue-600 hover:bg-blue-500 text-white border-blue-400 shadow-lg hover:shadow-xl' 
+                                  : 'bg-blue-500 hover:bg-blue-600 text-white border-blue-300 shadow-lg hover:shadow-xl'
+                            } ${isDarkMode ? 'border-gray-800' : 'border-white'}`}
                             title="Profilbild setzen"
                           >
                             {uploadingProfilePic === userKey ? (
-                              <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                              <div className="w-2.5 h-2.5 border border-white border-t-transparent rounded-full animate-spin"></div>
                             ) : (
-                              <Camera className="w-3 h-3" />
+                              <Camera className="w-2.5 h-2.5" />
                             )}
                           </button>
                           
