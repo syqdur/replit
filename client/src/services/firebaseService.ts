@@ -1270,3 +1270,26 @@ export const addNotification = async (
     throw error;
   }
 };
+
+// Create a test notification for debugging
+export const createTestNotification = async (userName: string, deviceId: string) => {
+  try {
+    await addDoc(collection(db, 'notifications'), {
+      type: 'test',
+      title: 'Test Benachrichtigung',
+      message: 'Dies ist eine Test-Benachrichtigung um das System zu überprüfen',
+      targetUser: userName,
+      targetDeviceId: deviceId,
+      fromUser: 'System',
+      fromDeviceId: 'test',
+      mediaId: 'test',
+      mediaUrl: '',
+      read: false,
+      createdAt: new Date().toISOString()
+    });
+    console.log('✅ Test notification created');
+  } catch (error) {
+    console.error('❌ Failed to create test notification:', error);
+    throw error;
+  }
+};

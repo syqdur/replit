@@ -41,7 +41,8 @@ import {
   getAllUserProfiles,
   createOrUpdateUserProfile,
   uploadUserProfilePicture,
-  UserProfile
+  UserProfile,
+  createTestNotification
 } from './services/firebaseService';
 import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
 import { getUserName, getDeviceId } from './utils/deviceId';
@@ -843,6 +844,28 @@ function App() {
                   isDarkMode={isDarkMode}
                   onNavigateToMedia={handleNavigateToMedia}
                 />
+              )}
+              
+              {/* Temporary Test Notification Button - For debugging */}
+              {userName && isAdmin && (
+                <button
+                  onClick={async () => {
+                    try {
+                      await createTestNotification(userName, deviceId);
+                      console.log('🧪 Test notification created successfully!');
+                    } catch (error) {
+                      console.error('❌ Failed to create test notification:', error);
+                    }
+                  }}
+                  className={`p-2 rounded-full text-xs transition-all duration-300 ${
+                    isDarkMode 
+                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                      : 'bg-purple-500 hover:bg-purple-600 text-white'
+                  }`}
+                  title="Create Test Notification"
+                >
+                  TEST
+                </button>
               )}
               
               {/* User Profile Edit Button - Shows user's profile picture or default icon */}

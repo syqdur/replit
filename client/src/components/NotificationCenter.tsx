@@ -25,12 +25,15 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     if (!userName) return;
 
     // Subscribe to notifications
+    console.log(`🔔 Setting up notification subscription for: ${userName} (${deviceId})`);
     const unsubscribe = notificationService.subscribeToNotifications(
       userName,
       deviceId,
       (newNotifications) => {
+        console.log(`📬 Received ${newNotifications.length} notifications:`, newNotifications);
         setNotifications(newNotifications);
         const unread = newNotifications.filter(n => !n.read).length;
+        console.log(`📊 Calculated unread count: ${unread}`);
         setUnreadCount(unread);
       }
     );
@@ -131,11 +134,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
       {/* Notification Dropdown */}
       {isOpen && (
-        <div className={`absolute right-0 top-full mt-2 w-80 max-w-sm rounded-2xl shadow-2xl border z-50 ${
+        <div className={`absolute right-0 top-full mt-2 w-80 max-w-sm rounded-2xl shadow-2xl border z-[99999] ${
           isDarkMode 
             ? 'bg-gray-800 border-gray-600' 
             : 'bg-white border-gray-200'
-        }`}>
+        }`} style={{ zIndex: 99999 }}>
           {/* Header */}
           <div className={`flex items-center justify-between p-4 border-b ${
             isDarkMode ? 'border-gray-600' : 'border-gray-200'
