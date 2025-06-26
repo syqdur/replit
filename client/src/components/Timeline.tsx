@@ -198,7 +198,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
         console.log(`✅ Timeline file uploaded successfully: ${fileName}`);
       } catch (error) {
         console.error(`❌ Error uploading ${file.name}:`, error);
-        throw new Error(`Fehler beim Hochladen von ${file.name}: ${error.message || 'Unbekannter Fehler'}`);
+        const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler';
+        throw new Error(`Fehler beim Hochladen von ${file.name}: ${errorMessage}`);
       }
     }
     
@@ -1050,13 +1051,13 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                             'grid-cols-2 sm:grid-cols-3'
                           }`}>
                             {event.mediaUrls.map((url, mediaIndex) => {
-                              const mediaType = event.mediaTypes?.[mediaIndex] || 'image';
+                              const mediaType = (event.mediaTypes?.[mediaIndex] || 'image') as 'image' | 'video';
                               
                               return (
                                 <div 
                                   key={mediaIndex} 
                                   className="relative aspect-square rounded-xl sm:rounded-2xl overflow-hidden group backdrop-blur-sm border border-white/20 cursor-pointer"
-                                  onClick={() => setModalMedia({ url, type: mediaType, title: event.title })}
+                                  onClick={() => setModalMedia({ url, type: mediaType as 'image' | 'video', title: event.title })}
                                 >
                                   {mediaType === 'video' ? (
                                     <video
@@ -1127,7 +1128,6 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
             </div>
           </div>
         )}
-      </div>
       </div>
     </div>
   );
