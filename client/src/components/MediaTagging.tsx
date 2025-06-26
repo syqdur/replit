@@ -11,7 +11,8 @@ import {
   addNotification,
   getLocationFromCoordinates,
   searchLocations,
-  getCurrentLocation
+  getCurrentLocation,
+  getUserProfilesOnce
 } from '../services/firebaseService';
 import { MediaTag, LocationTag } from '../types';
 
@@ -33,6 +34,7 @@ interface User {
   userName: string;
   deviceId: string;
   displayName?: string;
+  profilePicture?: string;
 }
 
 interface LocationSuggestion {
@@ -63,11 +65,29 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
   const [customLocationName, setCustomLocationName] = useState('');
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
   const [isSearchingLocations, setIsSearchingLocations] = useState(false);
+  const [userProfiles, setUserProfiles] = useState<any[]>([]);
 
   useEffect(() => {
     loadUsers();
     loadLocationTags();
+    loadUserProfiles();
   }, []);
+
+  const loadUserProfiles = async () => {
+    try {
+      const profiles = await getUserProfilesOnce();
+      setUserProfiles(profiles);
+    } catch (error) {
+      console.error('Error loading user profiles:', error);
+    }
+  };
+
+  const getUserAvatar = (userName: string, deviceId?: string): string | null => {
+    const profile = userProfiles.find(p => 
+      p.userName === userName && (!deviceId || p.deviceId === deviceId)
+    );
+    return profile?.profilePicture || null;
+  };
 
   useEffect(() => {
     if (customLocationName && customLocationName.length > 2) {
@@ -361,24 +381,57 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
               />
 
               {/* User List */}
-              <div className="max-h-40 overflow-y-auto space-y-2">
+              <div className="max-h-48 overflow-y-auto space-y-3">
                 {filteredUsers.length > 0 ? (
-                  filteredUsers.map((user) => (
-                    <button
-                      key={`${user.userName}_${user.deviceId}`}
-                      onClick={() => handleAddTag(user)}
-                      disabled={isLoading}
-                      className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
-                        isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                      } bg-white/40 dark:bg-gray-800/60 hover:bg-white/60 dark:hover:bg-gray-700/80 backdrop-blur-sm text-gray-700 dark:text-gray-100 border border-white/20 dark:border-gray-700/40 hover:border-purple-300 dark:hover:border-purple-500 shadow-sm hover:shadow-md`}
-                    >
-                      {user.displayName || user.userName}
-                    </button>
-                  ))
+                  filteredUsers.map((user) => {
+                    const userAvatar = getUserAvatar(user.userName, user.deviceId);
+                    const displayName = getUserDisplayName(user.userName, user.deviceId);
+                    
+                    return (
+                      <button
+                        key={`${user.userName}_${user.deviceId}`}
+                        onClick={() => handleAddTag(user)}
+                        disabled={isLoading}
+                        className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
+                          isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                        } bg-white/60 dark:bg-gray-800/80 hover:bg-white/80 dark:hover:bg-gray-700/90 backdrop-blur-lg text-gray-900 dark:text-gray-100 border border-white/30 dark:border-gray-700/50 hover:border-purple-300 dark:hover:border-purple-500 shadow-md hover:shadow-lg`}
+                      >
+                        {/* Profile Picture */}
+                        <div className="relative flex-shrink-0">
+                          {userAvatar ? (
+                            <img
+                              src={userAvatar}
+                              alt={displayName}
+                              className="w-10 h-10 rounded-full object-cover border-2 border-white/50 dark:border-gray-600/50 shadow-sm"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-medium text-sm border-2 border-white/50 dark:border-gray-600/50 shadow-sm">
+                              {displayName.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* User Name */}
+                        <div className="flex-1 text-left">
+                          <span className="font-medium">{displayName}</span>
+                        </div>
+                        
+                        {/* Add Icon */}
+                        <div className="flex-shrink-0">
+                          <UserPlus className="w-4 h-4 text-purple-500 dark:text-purple-400" />
+                        </div>
+                      </button>
+                    );
+                  })
                 ) : (
-                  <p className="text-sm text-center py-4 text-gray-500 dark:text-gray-400 bg-white/30 dark:bg-gray-800/30 rounded-xl backdrop-blur-sm border border-white/20 dark:border-gray-600/20">
-                    {searchTerm ? 'Keine Personen gefunden' : 'Alle Personen bereits markiert'}
-                  </p>
+                  <div className="text-center py-6">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                      <UserPlus className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                      {searchTerm ? 'Keine Personen gefunden' : 'Alle Personen bereits markiert'}
+                    </p>
+                  </div>
                 )}
               </div>
 
