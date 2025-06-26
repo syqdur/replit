@@ -53,6 +53,13 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     setIsAdmin(adminProp);
   }, [adminProp]);
 
+  // Reload ownership data when playlist tracks change
+  useEffect(() => {
+    if (playlistTracks.length > 0 && selectedPlaylist) {
+      loadSongOwnerships();
+    }
+  }, [playlistTracks, selectedPlaylist]);
+
   useEffect(() => {
     const checkSpotify = async () => {
       try {
@@ -67,9 +74,11 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           if (playlist) {
             setSelectedPlaylist(playlist);
             
-            const cleanup = subscribeToPlaylistUpdates(playlist.playlistId, (tracks) => {
+            const cleanup = subscribeToPlaylistUpdates(playlist.playlistId, async (tracks) => {
               setPlaylistTracks(tracks);
               setSyncStatus('live');
+              // Reload ownership data when tracks change
+              await loadSongOwnerships();
             });
 
             setUnsubscribeSnapshot(() => cleanup);
@@ -133,6 +142,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
         ownerships.push({ id: doc.id, ...doc.data() } as SongOwnership);
       });
 
+      console.log(`🎵 Refreshed ${ownerships.length} song ownerships after tab switch`);
       setSongOwnerships(ownerships);
     } catch (error) {
       console.error('Failed to load song ownerships:', error);
