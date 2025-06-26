@@ -425,7 +425,34 @@ function App() {
     });
   };
 
-  // Load current user profile when user changes
+  // Real-time profile synchronization - polling for profile changes
+  useEffect(() => {
+    if (!userName || !deviceId) return;
+    
+    console.log(`🔄 Setting up profile sync for ${userName}`);
+    
+    const checkProfileUpdates = async () => {
+      try {
+        const latestProfile = await getUserProfile(userName, deviceId);
+        if (latestProfile && JSON.stringify(latestProfile) !== JSON.stringify(currentUserProfile)) {
+          console.log(`📸 Profile updated for ${userName}:`, latestProfile.profilePicture ? 'Has picture' : 'No picture');
+          setCurrentUserProfile(latestProfile);
+        }
+      } catch (error) {
+        console.error('Error checking profile updates:', error);
+      }
+    };
+    
+    // Check for profile updates every 3 seconds for live sync
+    const interval = setInterval(checkProfileUpdates, 3000);
+    
+    return () => {
+      console.log(`🔄 Cleaning up profile sync for ${userName}`);
+      clearInterval(interval);
+    };
+  }, [userName, deviceId, currentUserProfile]);
+
+  // Load current user profile when user changes (fallback)
   useEffect(() => {
     const loadCurrentUserProfile = async () => {
       if (userName && deviceId) {
@@ -489,6 +516,7 @@ function App() {
       }
     };
 
+    // Only load initially, real-time updates handled by listener above
     loadCurrentUserProfile();
   }, [userName, deviceId]);
 
