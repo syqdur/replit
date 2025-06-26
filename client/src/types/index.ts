@@ -10,6 +10,22 @@ export interface MediaItem {
   note?: string; // Legacy support
   isUnavailable?: boolean;
   tags?: MediaTag[]; // Tagged users in this media
+  location?: LocationTag; // Geographic location where media was taken
+}
+
+export interface LocationTag {
+  id: string;
+  mediaId: string;
+  name: string; // Display name (e.g., "Eiffel Tower, Paris")
+  address?: string; // Full address
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+  placeId?: string; // Google Places ID or similar
+  addedBy: string;
+  addedByDeviceId: string;
+  createdAt: string;
 }
 
 export interface MediaTag {

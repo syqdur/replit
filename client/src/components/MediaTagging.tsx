@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { X, UserPlus, Tag, Trash2 } from 'lucide-react';
-import { MediaTag } from '../types';
-import { addMediaTag, removeMediaTag, getAllUsers } from '../services/firebaseService';
+import { X, UserPlus, Tag, Trash2, MapPin, Navigation } from 'lucide-react';
+import { MediaTag, LocationTag } from '../types';
+import { 
+  addMediaTag, 
+  removeMediaTag, 
+  getAllUsers,
+  addLocationTag,
+  removeLocationTag,
+  getLocationTags,
+  getCurrentLocation,
+  getLocationFromCoordinates
+} from '../services/firebaseService';
 import { notificationService } from '../services/notificationService';
 
 interface MediaTaggingProps {
@@ -38,13 +47,18 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
   mediaUrl
 }) => {
   const [showTagInput, setShowTagInput] = useState(false);
+  const [showLocationInput, setShowLocationInput] = useState(false);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [locationTags, setLocationTags] = useState<LocationTag[]>([]);
+  const [customLocationName, setCustomLocationName] = useState('');
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     loadUsers();
+    loadLocationTags();
   }, []);
 
   useEffect(() => {
@@ -69,6 +83,15 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
       setAvailableUsers(users);
     } catch (error) {
       console.error('Error loading users:', error);
+    }
+  };
+
+  const loadLocationTags = async () => {
+    try {
+      const locations = await getLocationTags(mediaId);
+      setLocationTags(locations);
+    } catch (error) {
+      console.error('Error loading location tags:', error);
     }
   };
 
@@ -133,9 +156,96 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
     }
   };
 
+  const handleAddCurrentLocation = async () => {
+    if (isLoadingLocation) return;
+    
+    setIsLoadingLocation(true);
+    try {
+      const coordinates = await getCurrentLocation();
+      const locationData = await getLocationFromCoordinates(
+        coordinates.latitude,
+        coordinates.longitude
+      );
+      
+      await addLocationTag(
+        mediaId,
+        {
+          name: locationData.name,
+          address: locationData.address,
+          coordinates
+        },
+        currentUser,
+        currentDeviceId
+      );
+      
+      await loadLocationTags();
+      setShowLocationInput(false);
+      setCustomLocationName('');
+    } catch (error) {
+      console.error('Error adding current location:', error);
+      alert('Fehler beim Hinzufügen des aktuellen Standorts. Bitte überprüfen Sie Ihre Standortberechtigungen.');
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
+
+  const handleAddCustomLocation = async () => {
+    if (isLoadingLocation || !customLocationName.trim()) return;
+    
+    setIsLoadingLocation(true);
+    try {
+      await addLocationTag(
+        mediaId,
+        {
+          name: customLocationName.trim()
+        },
+        currentUser,
+        currentDeviceId
+      );
+      
+      await loadLocationTags();
+      setShowLocationInput(false);
+      setCustomLocationName('');
+    } catch (error) {
+      console.error('Error adding custom location:', error);
+      alert('Fehler beim Hinzufügen des Standorts. Bitte versuchen Sie es erneut.');
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
+
+  const handleRemoveLocationTag = async (locationTag: LocationTag) => {
+    if (isLoadingLocation) return;
+    
+    // Allow removing location tags if:
+    // 1. User created the location tag themselves
+    // 2. User is admin (can remove any location tag)
+    // 3. User uploaded the media (can remove location tags from their own media)
+    const canRemove = 
+      locationTag.addedBy === currentUser || 
+      isAdmin || 
+      (mediaUploader && mediaUploader === currentUser);
+    
+    if (!canRemove) {
+      alert('Sie können nur Ihre eigenen Standort-Tags entfernen.');
+      return;
+    }
+    
+    setIsLoadingLocation(true);
+    try {
+      await removeLocationTag(locationTag.id);
+      await loadLocationTags();
+    } catch (error) {
+      console.error('Error removing location tag:', error);
+      alert('Fehler beim Entfernen des Standort-Tags. Bitte versuchen Sie es erneut.');
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
+
   return (
     <div className="space-y-3">
-      {/* Existing Tags */}
+      {/* Existing User Tags */}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
@@ -151,6 +261,32 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                   disabled={isLoading}
                   className={`ml-1 hover:opacity-70 transition-all duration-300 transform hover:scale-110 ${
                     isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Existing Location Tags */}
+      {locationTags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {locationTags.map((locationTag) => (
+            <div
+              key={locationTag.id}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-green-500/20 to-blue-500/20 text-green-700 dark:text-green-300 backdrop-blur-sm border border-green-200/30 dark:border-green-600/30 shadow-lg hover:shadow-xl"
+            >
+              <MapPin className="w-3 h-3" />
+              <span>{locationTag.name}</span>
+              {(locationTag.addedBy === currentUser || isAdmin || (mediaUploader && mediaUploader === currentUser)) && (
+                <button
+                  onClick={() => handleRemoveLocationTag(locationTag)}
+                  disabled={isLoadingLocation}
+                  className={`ml-1 hover:opacity-70 transition-all duration-300 transform hover:scale-110 ${
+                    isLoadingLocation ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
                   <X className="w-3 h-3" />
@@ -212,6 +348,71 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                   onClick={() => {
                     setShowTagInput(false);
                     setSearchTerm('');
+                  }}
+                  className="px-4 py-2 text-sm rounded-xl font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/30 dark:bg-gray-800/60 hover:bg-white/50 dark:hover:bg-gray-700/80 text-gray-700 dark:text-gray-100 backdrop-blur-lg border border-white/30 dark:border-gray-700/40 shadow-lg"
+                >
+                  Abbrechen
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Add Location Button - Only show for media uploader or admin */}
+      {(mediaUploader === currentUser || isAdmin) && (
+        <>
+          {!showLocationInput ? (
+            <button
+              onClick={() => setShowLocationInput(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/20 dark:bg-gray-800/60 text-gray-700 dark:text-gray-100 backdrop-blur-lg border border-white/30 dark:border-gray-700/40 hover:bg-white/30 dark:hover:bg-gray-700/80 shadow-lg hover:shadow-xl"
+            >
+              <MapPin className="w-4 h-4" />
+              Standort hinzufügen
+            </button>
+          ) : (
+            <div className="p-4 rounded-2xl bg-white/80 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 shadow-xl">
+              {/* Current Location Button */}
+              <button
+                onClick={handleAddCurrentLocation}
+                disabled={isLoadingLocation}
+                className={`w-full flex items-center justify-center gap-2 px-4 py-3 mb-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] ${
+                  isLoadingLocation ? 'opacity-50 cursor-not-allowed' : ''
+                } bg-gradient-to-r from-green-500/20 to-blue-500/20 hover:from-green-500/30 hover:to-blue-500/30 text-green-700 dark:text-green-300 backdrop-blur-sm border border-green-200/30 dark:border-green-600/30 shadow-lg hover:shadow-xl`}
+              >
+                <Navigation className="w-4 h-4" />
+                {isLoadingLocation ? 'Standort wird ermittelt...' : 'Aktueller Standort'}
+              </button>
+
+              {/* Custom Location Input */}
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={customLocationName}
+                  onChange={(e) => setCustomLocationName(e.target.value)}
+                  placeholder="Standort eingeben (z.B. Eiffelturm, Paris)"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-green-500 focus:ring-4 focus:ring-green-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300"
+                />
+
+                <button
+                  onClick={handleAddCustomLocation}
+                  disabled={isLoadingLocation || !customLocationName.trim()}
+                  className={`w-full px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] ${
+                    isLoadingLocation || !customLocationName.trim() 
+                      ? 'opacity-50 cursor-not-allowed' 
+                      : ''
+                  } bg-white/40 dark:bg-gray-800/60 hover:bg-white/60 dark:hover:bg-gray-700/80 backdrop-blur-sm text-gray-700 dark:text-gray-100 border border-white/20 dark:border-gray-700/40 hover:border-green-300 dark:hover:border-green-500 shadow-sm hover:shadow-md`}
+                >
+                  {isLoadingLocation ? 'Wird hinzugefügt...' : 'Standort hinzufügen'}
+                </button>
+              </div>
+
+              {/* Cancel Button */}
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={() => {
+                    setShowLocationInput(false);
+                    setCustomLocationName('');
                   }}
                   className="px-4 py-2 text-sm rounded-xl font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/30 dark:bg-gray-800/60 hover:bg-white/50 dark:hover:bg-gray-700/80 text-gray-700 dark:text-gray-100 backdrop-blur-lg border border-white/30 dark:border-gray-700/40 shadow-lg"
                 >

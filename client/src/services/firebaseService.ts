@@ -18,7 +18,7 @@ import {
   updateDoc
 } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
-import { MediaItem, Comment, Like, ProfileData, MediaTag } from '../types';
+import { MediaItem, Comment, Like, ProfileData, MediaTag, LocationTag } from '../types';
 
 export interface UserProfile {
   id: string;
@@ -789,5 +789,154 @@ export const getAllUsers = async (): Promise<Array<{userName: string, deviceId: 
   } catch (error) {
     console.error('❌ Error getting users for tagging:', error);
     return [];
+  }
+};
+
+// Location Tagging Functions
+export const addLocationTag = async (
+  mediaId: string,
+  locationData: {
+    name: string;
+    address?: string;
+    coordinates?: { latitude: number; longitude: number };
+    placeId?: string;
+  },
+  addedBy: string,
+  addedByDeviceId: string
+): Promise<string> => {
+  try {
+    const locationTag: Omit<LocationTag, 'id'> = {
+      mediaId,
+      name: locationData.name,
+      address: locationData.address,
+      coordinates: locationData.coordinates,
+      placeId: locationData.placeId,
+      addedBy,
+      addedByDeviceId,
+      createdAt: new Date().toISOString()
+    };
+
+    const docRef = await addDoc(collection(db, 'locationTags'), locationTag);
+    console.log('✅ Location tag added:', locationData.name);
+    return docRef.id;
+  } catch (error) {
+    console.error('❌ Failed to add location tag:', error);
+    throw error;
+  }
+};
+
+export const removeLocationTag = async (locationTagId: string): Promise<void> => {
+  try {
+    await deleteDoc(doc(db, 'locationTags', locationTagId));
+    console.log('✅ Location tag removed');
+  } catch (error) {
+    console.error('❌ Failed to remove location tag:', error);
+    throw error;
+  }
+};
+
+export const getLocationTags = async (mediaId: string): Promise<LocationTag[]> => {
+  try {
+    const q = query(
+      collection(db, 'locationTags'),
+      where('mediaId', '==', mediaId)
+    );
+    
+    const snapshot = await getDocs(q);
+    const locationTags: LocationTag[] = [];
+    
+    snapshot.forEach((doc) => {
+      locationTags.push({
+        id: doc.id,
+        ...doc.data()
+      } as LocationTag);
+    });
+    
+    return locationTags;
+  } catch (error) {
+    console.error('❌ Failed to get location tags:', error);
+    return [];
+  }
+};
+
+// Location Search using Browser Geolocation API
+export const getCurrentLocation = (): Promise<{ latitude: number; longitude: number }> => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation is not supported by this browser'));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        });
+      },
+      (error) => {
+        reject(error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000 // 5 minutes
+      }
+    );
+  });
+};
+
+// Reverse geocoding to get location name from coordinates
+export const getLocationFromCoordinates = async (
+  latitude: number,
+  longitude: number
+): Promise<{ name: string; address: string }> => {
+  try {
+    // Using a free geocoding service (OpenStreetMap Nominatim)
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+      {
+        headers: {
+          'User-Agent': 'Wedding-Gallery-App'
+        }
+      }
+    );
+    
+    if (!response.ok) {
+      throw new Error('Geocoding request failed');
+    }
+    
+    const data = await response.json();
+    
+    // Extract meaningful location name
+    const address = data.address || {};
+    const locationParts = [];
+    
+    if (address.tourism || address.amenity) {
+      locationParts.push(address.tourism || address.amenity);
+    }
+    if (address.road || address.pedestrian) {
+      locationParts.push(address.road || address.pedestrian);
+    }
+    if (address.city || address.town || address.village) {
+      locationParts.push(address.city || address.town || address.village);
+    }
+    if (address.country) {
+      locationParts.push(address.country);
+    }
+    
+    const name = locationParts.length > 0 ? locationParts.join(', ') : 'Current Location';
+    const fullAddress = data.display_name || 'Unknown Address';
+    
+    return {
+      name,
+      address: fullAddress
+    };
+  } catch (error) {
+    console.error('❌ Failed to get location from coordinates:', error);
+    return {
+      name: 'Current Location',
+      address: 'Location coordinates'
+    };
   }
 };
