@@ -862,13 +862,13 @@ function App() {
                 </button>
               )}
               
-              {/* Instagram 2.0 Profile Edit Button */}
+              {/* Pure Glassmorphism Profile Edit Button */}
               <button
                 onClick={() => setShowUserProfileModal(true)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-2xl transition-all duration-300 hover:scale-105 backdrop-blur-sm shadow-lg ${
                   isDarkMode 
-                    ? 'bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-blue-600/20 hover:from-blue-500/30 hover:via-purple-500/30 hover:to-blue-500/30 text-blue-200 border border-blue-500/30 shadow-blue-500/20' 
-                    : 'bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 hover:from-blue-600/30 hover:via-purple-600/30 hover:to-blue-600/30 text-blue-700 border border-blue-400/30 shadow-blue-400/20'
+                    ? 'bg-white/10 hover:bg-white/15 text-white border border-white/20 shadow-black/20' 
+                    : 'bg-white/20 hover:bg-white/30 text-gray-800 border border-white/30 shadow-gray-500/20'
                 }`}
                 title="Mein Profil bearbeiten"
               >
@@ -876,11 +876,11 @@ function App() {
                   <img 
                     src={currentUserProfile?.profilePicture || ''} 
                     alt="My Profile"
-                    className="w-7 h-7 rounded-full object-cover ring-2 ring-blue-400/50 shadow-sm"
+                    className="w-7 h-7 rounded-full object-cover ring-2 ring-white/30 shadow-sm"
                   />
                 ) : (
                   <UserPlus className={`w-5 h-5 transition-colors duration-300 ${
-                    isDarkMode ? 'text-blue-300' : 'text-blue-600'
+                    isDarkMode ? 'text-white/80' : 'text-gray-700'
                   }`} />
                 )}
                 <span className="text-sm font-semibold whitespace-nowrap hidden sm:inline-block">Profil</span>
