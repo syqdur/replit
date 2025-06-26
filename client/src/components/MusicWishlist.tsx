@@ -365,7 +365,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
               }`}>
                 <svg
                   viewBox="0 0 24 24"
-                  className={`w-full h-full transition-colors duration-300 ${
+                  className={`w-full h-full transition-all duration-300 transform hover:scale-110 ${
                     isDarkMode ? 'fill-green-300' : 'fill-green-600'
                   }`}
                 >
