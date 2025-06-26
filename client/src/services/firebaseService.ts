@@ -885,6 +885,11 @@ export const getCurrentLocation = (): Promise<{ latitude: number; longitude: num
           accuracy: position.coords.accuracy
         });
         
+        // Check if accuracy is reasonable (less than 1000m)
+        if (position.coords.accuracy > 1000) {
+          console.warn('⚠️ Location accuracy is poor:', position.coords.accuracy + 'm');
+        }
+        
         resolve({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
@@ -927,86 +932,140 @@ export const getCurrentLocation = (): Promise<{ latitude: number; longitude: num
   });
 };
 
-// Reverse geocoding to get location name from coordinates
+// Reverse geocoding to get location name from coordinates with multiple services
 export const getLocationFromCoordinates = async (
   latitude: number,
   longitude: number
 ): Promise<{ name: string; address: string }> => {
-  try {
-    // Using higher precision geocoding with detailed address components
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=16&addressdetails=1&extratags=1`,
-      {
-        headers: {
-          'User-Agent': 'Wedding-Gallery-App'
-        }
+  // Try multiple geocoding services for better accuracy
+  const geocodingServices = [
+    {
+      name: 'Nominatim',
+      url: `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1&extratags=1`,
+      headers: { 'User-Agent': 'Wedding-Gallery-App' }
+    },
+    {
+      name: 'Photon',
+      url: `https://photon.komoot.io/reverse?lat=${latitude}&lon=${longitude}&limit=1`,
+      headers: {}
+    }
+  ];
+
+  for (const service of geocodingServices) {
+    try {
+      console.log(`🔍 Trying ${service.name} geocoding service...`);
+      
+      const response = await fetch(service.url, {
+        headers: service.headers
+      });
+      
+      if (!response.ok) {
+        console.warn(`⚠️ ${service.name} service failed:`, response.status);
+        continue;
       }
-    );
-    
-    if (!response.ok) {
-      throw new Error('Geocoding request failed');
+      
+      const data = await response.json();
+      
+      if (service.name === 'Nominatim') {
+        return parseNominatimResponse(data);
+      } else if (service.name === 'Photon') {
+        return parsePhotonResponse(data);
+      }
+    } catch (error) {
+      console.warn(`❌ ${service.name} geocoding failed:`, error);
+      continue;
     }
-    
-    const data = await response.json();
-    
-    // Extract meaningful location name with better accuracy
-    const address = data.address || {};
-    const locationParts = [];
-    
-    // Prioritize specific places and points of interest
-    if (address.tourism) {
-      locationParts.push(address.tourism);
-    } else if (address.amenity) {
-      locationParts.push(address.amenity);
-    } else if (address.shop) {
-      locationParts.push(address.shop);
-    } else if (address.leisure) {
-      locationParts.push(address.leisure);
-    } else if (address.building) {
-      locationParts.push(address.building);
-    } else if (address.house_number && address.road) {
-      locationParts.push(`${address.house_number} ${address.road}`);
-    } else if (address.road) {
-      locationParts.push(address.road);
-    } else if (address.pedestrian) {
-      locationParts.push(address.pedestrian);
-    }
-    
-    // Add neighborhood or suburb for better context
-    if (address.neighbourhood) {
-      locationParts.push(address.neighbourhood);
-    } else if (address.suburb) {
-      locationParts.push(address.suburb);
-    }
-    
-    // Add city
-    if (address.city) {
-      locationParts.push(address.city);
-    } else if (address.town) {
-      locationParts.push(address.town);
-    } else if (address.village) {
-      locationParts.push(address.village);
-    }
-    
-    // Add country for international context
-    if (address.country) {
-      locationParts.push(address.country);
-    }
-    
-    const name = locationParts.length > 0 ? locationParts.join(', ') : 'Current Location';
-    const fullAddress = data.display_name || 'Unknown Address';
-    
-    return {
-      name,
-      address: fullAddress
-    };
-  } catch (error) {
-    console.error('❌ Failed to get location from coordinates:', error);
-    return {
-      name: 'Current Location',
-      address: 'Location coordinates'
-    };
   }
+
+  // Fallback if all services fail
+  console.error('❌ All geocoding services failed');
+  return {
+    name: 'Current Location',
+    address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+  };
+};
+
+// Parse Nominatim response with enhanced accuracy for German locations
+const parseNominatimResponse = (data: any): { name: string; address: string } => {
+  const address = data.address || {};
+  const locationParts = [];
+  
+  // For German locations, prioritize proper city/town/village identification
+  if (address.village) {
+    locationParts.push(address.village);
+  } else if (address.town) {
+    locationParts.push(address.town);
+  } else if (address.city) {
+    locationParts.push(address.city);
+  } else if (address.municipality) {
+    locationParts.push(address.municipality);
+  }
+  
+  // Add specific location details if available
+  if (address.tourism) {
+    locationParts.unshift(address.tourism);
+  } else if (address.amenity) {
+    locationParts.unshift(address.amenity);
+  } else if (address.shop) {
+    locationParts.unshift(address.shop);
+  } else if (address.house_number && address.road) {
+    locationParts.unshift(`${address.house_number} ${address.road}`);
+  } else if (address.road) {
+    locationParts.unshift(address.road);
+  }
+  
+  // Add state/region for context
+  if (address.state && address.state !== address.city && address.state !== address.town && address.state !== address.village) {
+    locationParts.push(address.state);
+  }
+  
+  // Add country
+  if (address.country) {
+    locationParts.push(address.country);
+  }
+  
+  const name = locationParts.length > 0 ? locationParts.join(', ') : 'Current Location';
+  const fullAddress = data.display_name || 'Unknown Address';
+  
+  console.log('📍 Nominatim parsed location:', { name, fullAddress });
+  
+  return { name, address: fullAddress };
+};
+
+// Parse Photon response
+const parsePhotonResponse = (data: any): { name: string; address: string } => {
+  if (!data.features || data.features.length === 0) {
+    throw new Error('No results from Photon service');
+  }
+  
+  const feature = data.features[0];
+  const props = feature.properties || {};
+  const locationParts = [];
+  
+  if (props.name) {
+    locationParts.push(props.name);
+  }
+  
+  if (props.city) {
+    locationParts.push(props.city);
+  } else if (props.district) {
+    locationParts.push(props.district);
+  }
+  
+  if (props.state) {
+    locationParts.push(props.state);
+  }
+  
+  if (props.country) {
+    locationParts.push(props.country);
+  }
+  
+  const name = locationParts.length > 0 ? locationParts.join(', ') : 'Current Location';
+  const fullAddress = props.label || name;
+  
+  console.log('📍 Photon parsed location:', { name, fullAddress });
+  
+  return { name, address: fullAddress };
 };
 
 // Location search for autocomplete suggestions with improved accuracy
