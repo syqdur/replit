@@ -1,0 +1,1102 @@
+import React, { useState, useEffect } from 'react';
+import { Music, Search, X, Plus, Trash2, ExternalLink, AlertCircle, RefreshCw, Clock, Heart, Play, Volume2, Check, CheckSquare, Square, Zap, Wifi, Activity } from 'lucide-react';
+import { 
+  searchTracks, 
+  addTrackToPlaylist, 
+  removeTrackFromPlaylist,
+  getSelectedPlaylist,
+  getPlaylistTracks,
+  isSpotifyConnected,
+  getCurrentUser,
+  subscribeToPlaylistUpdates,
+  bulkRemoveTracksFromPlaylist,
+  getCurrentSnapshotId,
+  getPendingOperationsCount
+} from '../services/spotifyService';
+import { SpotifyTrack } from '../types';
+import { getUserName, getDeviceId } from '../utils/deviceId';
+import { collection, addDoc, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../config/firebase';
+
+interface MusicWishlistProps {
+  isDarkMode: boolean;
+  isAdmin?: boolean;
+}
+
+interface SongOwnership {
+  id: string;
+  trackId: string;
+  spotifyTrackUri: string;
+  addedByUser: string;
+  addedByDeviceId: string;
+  addedAt: string;
+  playlistId: string;
+}
+
+export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmin: adminProp = false }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SpotifyTrack[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [playlistTracks, setPlaylistTracks] = useState<SpotifyApi.PlaylistTrackObject[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isSpotifyAvailable, setIsSpotifyAvailable] = useState(false);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<{ id: string; name: string; playlistId: string } | null>(null);
+  const [isAddingTrack, setIsAddingTrack] = useState<string | null>(null);
+  const [isRemovingTrack, setIsRemovingTrack] = useState<string | null>(null);
+  const [showAddSuccess, setShowAddSuccess] = useState(false);
+  const [currentUser, setCurrentUser] = useState<SpotifyApi.CurrentUsersProfileResponse | null>(null);
+  const [songOwnerships, setSongOwnerships] = useState<SongOwnership[]>([]);
+  const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
+  const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [syncStatus, setSyncStatus] = useState<'connecting' | 'live' | 'syncing' | 'error'>('connecting');
+  const [operationCount, setOperationCount] = useState(0);
+  const [snapshotId, setSnapshotId] = useState<string | null>(null);
+
+  // 🚀 NEW: Snapshot-based optimistic updates with perfect sync
+  useEffect(() => {
+    if (!selectedPlaylist || !isSpotifyAvailable) return;
+
+    console.log('🚀 === SETTING UP SNAPSHOT-BASED SYNC ===');
+    console.log('Playlist:', selectedPlaylist.name);
+    
+    setSyncStatus('connecting');
+
+    // Subscribe to snapshot-based optimistic updates
+    const unsubscribe = subscribeToPlaylistUpdates(
+      selectedPlaylist.playlistId,
+      (tracks) => {
+        console.log('🚀 === SNAPSHOT UPDATE RECEIVED ===');
+        console.log('Tracks:', tracks.length);
+        
+        const currentSnapshot = getCurrentSnapshotId();
+        const pendingOps = getPendingOperationsCount();
+        
+        console.log('Current Snapshot:', currentSnapshot);
+        console.log('Pending Operations:', pendingOps);
+        
+        setPlaylistTracks(tracks);
+        setLastUpdate(new Date());
+        setSnapshotId(currentSnapshot);
+        setOperationCount(pendingOps);
+        
+        // Update sync status based on pending operations
+        if (pendingOps > 0) {
+          setSyncStatus('syncing');
+        } else {
+          setSyncStatus('live');
+        }
+      }
+    );
+
+    // Set status to live after initial load
+    setTimeout(() => {
+      const pendingOps = getPendingOperationsCount();
+      setSyncStatus(pendingOps > 0 ? 'syncing' : 'live');
+    }, 1000);
+
+    return () => {
+      console.log('🚀 Cleaning up snapshot-based sync');
+      unsubscribe();
+    };
+  }, [selectedPlaylist, isSpotifyAvailable]);
+
+  // Check if Spotify is connected and load playlist tracks
+  useEffect(() => {
+    const checkSpotify = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        // Check if Spotify is connected
+        const connected = await isSpotifyConnected();
+        setIsSpotifyAvailable(connected);
+        
+        if (connected) {
+          // Get current user
+          const user = await getCurrentUser();
+          setCurrentUser(user);
+          
+          // Use the admin prop from parent component instead of assuming all users are admins
+          setIsAdmin(adminProp);
+          
+          // Get selected playlist
+          const playlist = await getSelectedPlaylist();
+          setSelectedPlaylist(playlist);
+          
+          if (playlist) {
+            try {
+              // Load initial playlist tracks (this will trigger snapshot tracking)
+              const tracks = await getPlaylistTracks(playlist.playlistId);
+              setPlaylistTracks(tracks);
+              setLastUpdate(new Date());
+              
+              // Get initial snapshot ID
+              const currentSnapshot = getCurrentSnapshotId();
+              setSnapshotId(currentSnapshot);
+              
+              // Load song ownerships for permission checking
+              await loadSongOwnerships();
+              
+              console.log('✅ Initial playlist loaded with snapshot tracking');
+              
+            } catch (playlistError) {
+              console.error('Failed to load playlist tracks:', playlistError);
+              setError('Failed to load playlist tracks. The playlist may no longer exist or you may not have access to it.');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check Spotify:', error);
+        setError('Failed to load Spotify data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkSpotify();
+  }, []);
+
+  // Search with debounce
+  useEffect(() => {
+    if (!searchQuery.trim() || !isSpotifyAvailable) {
+      setSearchResults([]);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setIsSearching(true);
+      setError(null);
+      
+      try {
+        const results = await searchTracks(searchQuery);
+        setSearchResults(results);
+      } catch (error) {
+        console.error('Search error:', error);
+        setError('Failed to search tracks');
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, isSpotifyAvailable]);
+
+  // 🚀 ENHANCED: Add track with instant UI feedback and snapshot tracking
+  const handleAddTrack = async (track: SpotifyTrack) => {
+    if (isAddingTrack) return;
+    
+    setIsAddingTrack(track.id);
+    setError(null);
+    setSyncStatus('syncing');
+    
+    try {
+      console.log('🚀 === INSTANT ADD WITH SNAPSHOT TRACKING ===');
+      console.log('Track:', track.name, 'by', track.artists.map(a => a.name).join(', '));
+      console.log('Current Snapshot:', snapshotId);
+      
+      // Add track to playlist (optimistic update + snapshot tracking happens inside the service)
+      await addTrackToPlaylist(track.uri);
+      
+      // Track ownership for permission checking
+      await trackSongOwnership(track.id, track.uri);
+      
+      // Show success message
+      setShowAddSuccess(true);
+      setTimeout(() => setShowAddSuccess(false), 2000);
+      
+      // Clear search
+      setSearchQuery('');
+      setSearchResults([]);
+      
+      console.log('✅ Track added with instant UI update and snapshot tracking');
+      
+    } catch (error: any) {
+      console.error('Failed to add track:', error);
+      
+      // Check if this is a scope error requiring re-authentication
+      if (error.requiresReauth || (error.status === 403 && error.message?.includes('Insufficient'))) {
+        setError('Spotify permissions insufficient. Please disconnect and reconnect to grant full access.');
+      } else {
+        setError('Failed to add track to playlist: ' + (error.message || 'Unknown error'));
+      }
+      
+      setSyncStatus('error');
+      setTimeout(() => setSyncStatus('live'), 3000);
+    } finally {
+      setIsAddingTrack(null);
+    }
+  };
+
+  // 🚀 ENHANCED: Remove track with instant UI feedback and snapshot tracking
+  const handleRemoveTrack = async (track: SpotifyApi.PlaylistTrackObject) => {
+    if (isRemovingTrack) return;
+    
+    if (!confirm(`Remove "${track.track.name}" from the playlist?`)) {
+      return;
+    }
+    
+    setIsRemovingTrack(track.track.id);
+    setError(null);
+    setSyncStatus('syncing');
+    
+    try {
+      console.log('🚀 === INSTANT REMOVE WITH SNAPSHOT TRACKING ===');
+      console.log('Track:', track.track.name);
+      console.log('Current Snapshot:', snapshotId);
+      
+      // Remove track from playlist (optimistic update + snapshot tracking happens inside the service)
+      await removeTrackFromPlaylist(track.track.uri);
+      
+      // Remove ownership tracking
+      await removeSongOwnership(track.track.id);
+      
+      console.log('✅ Track removed with instant UI update and snapshot tracking');
+      
+    } catch (error) {
+      console.error('Failed to remove track:', error);
+      setError('Failed to remove track from playlist: ' + (error.message || 'Unknown error'));
+      setSyncStatus('error');
+      setTimeout(() => setSyncStatus('live'), 3000);
+    } finally {
+      setIsRemovingTrack(null);
+    }
+  };
+
+  // Toggle track selection for bulk delete
+  const toggleTrackSelection = (trackId: string) => {
+    setSelectedTracks(prev => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(trackId)) {
+        newSelection.delete(trackId);
+      } else {
+        newSelection.add(trackId);
+      }
+      return newSelection;
+    });
+  };
+
+  // Select all tracks
+  const selectAllTracks = () => {
+    // If admin, select all tracks
+    // If regular user, only select tracks added by the user
+    const trackIds = playlistTracks
+      .filter(item => canDeleteTrack(item))
+      .map(item => item.track.id);
+    
+    setSelectedTracks(new Set(trackIds));
+  };
+
+  // Deselect all tracks
+  const deselectAllTracks = () => {
+    setSelectedTracks(new Set());
+  };
+
+  // 🚀 ENHANCED: Bulk delete with instant sync and snapshot tracking
+  const handleBulkDelete = async () => {
+    if (selectedTracks.size === 0) {
+      alert('Keine Songs ausgewählt.');
+      return;
+    }
+    
+    // Filter tracks that can be deleted
+    const tracksToDelete = playlistTracks.filter(item => 
+      selectedTracks.has(item.track.id) && canDeleteTrack(item)
+    );
+    
+    if (tracksToDelete.length === 0) {
+      alert('Keine der ausgewählten Songs können gelöscht werden.');
+      return;
+    }
+    
+    const confirmMessage = `${tracksToDelete.length} Song${tracksToDelete.length > 1 ? 's' : ''} wirklich löschen?`;
+    
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+    
+    setIsBulkDeleting(true);
+    setError(null);
+    setSyncStatus('syncing');
+    
+    try {
+      console.log(`🚀 === INSTANT BULK DELETE WITH SNAPSHOT TRACKING ===`);
+      console.log(`Deleting ${tracksToDelete.length} tracks...`);
+      console.log('Current Snapshot:', snapshotId);
+      
+      // Extract URIs for bulk deletion
+      const trackUris = tracksToDelete.map(track => track.track.uri);
+      
+      // Bulk delete with instant UI updates and snapshot tracking (happens inside the service)
+      await bulkRemoveTracksFromPlaylist(trackUris);
+      
+      // Remove ownership tracking for all deleted tracks
+      for (const track of tracksToDelete) {
+        await removeSongOwnership(track.track.id);
+      }
+      
+      // Reset selection
+      setSelectedTracks(new Set());
+      setBulkDeleteMode(false);
+      
+      alert(`${tracksToDelete.length} Song${tracksToDelete.length > 1 ? 's' : ''} erfolgreich gelöscht!`);
+      
+      console.log('✅ Bulk delete completed with instant UI updates and snapshot tracking');
+      
+    } catch (error) {
+      console.error('Failed to bulk delete tracks:', error);
+      setError('Failed to delete some tracks: ' + (error.message || 'Unknown error'));
+      setSyncStatus('error');
+      setTimeout(() => setSyncStatus('live'), 3000);
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
+  // 🚀 ENHANCED: Manual refresh (now just forces fresh data load)
+  const handleRefresh = async () => {
+    if (!selectedPlaylist) return;
+    
+    setIsLoading(true);
+    setError(null);
+    setSyncStatus('syncing');
+    
+    try {
+      console.log('🔄 === MANUAL REFRESH WITH SNAPSHOT ===');
+      console.log('Current Snapshot:', snapshotId);
+      
+      // Force fresh data load with snapshot tracking
+      const tracks = await getPlaylistTracks(selectedPlaylist.playlistId);
+      setPlaylistTracks(tracks);
+      setLastUpdate(new Date());
+      
+      // Update snapshot ID
+      const currentSnapshot = getCurrentSnapshotId();
+      setSnapshotId(currentSnapshot);
+      
+      // Reload song ownerships
+      await loadSongOwnerships();
+      
+      setSyncStatus('live');
+      
+      console.log('✅ Manual refresh completed with snapshot tracking');
+      console.log('New Snapshot:', currentSnapshot);
+      
+    } catch (error) {
+      console.error('Failed to refresh tracks:', error);
+      setError('Failed to refresh playlist tracks: ' + (error.message || 'Unknown error'));
+      setSyncStatus('error');
+      setTimeout(() => setSyncStatus('live'), 3000);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Format duration
+  const formatDuration = (ms: number) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Format date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  };
+
+  // Song ownership management
+  const loadSongOwnerships = async () => {
+    if (!selectedPlaylist) return;
+    
+    try {
+      console.log('📋 === LOADING SONG OWNERSHIPS ===');
+      console.log('Playlist ID:', selectedPlaylist.playlistId);
+      
+      const q = query(
+        collection(db, 'songOwnerships'),
+        where('playlistId', '==', selectedPlaylist.playlistId)
+      );
+      const querySnapshot = await getDocs(q);
+      const ownerships: SongOwnership[] = [];
+      
+      querySnapshot.forEach((doc) => {
+        ownerships.push({ id: doc.id, ...doc.data() } as SongOwnership);
+      });
+      
+      console.log(`📋 Loaded ${ownerships.length} ownership records`);
+      ownerships.forEach(o => console.log(`  - ${o.trackId} by ${o.addedByUser} (${o.addedByDeviceId?.slice(0, 8)}...)`));
+      
+      setSongOwnerships(ownerships);
+    } catch (error) {
+      console.error('Failed to load song ownerships:', error);
+    }
+  };
+
+  const trackSongOwnership = async (trackId: string, spotifyTrackUri: string) => {
+    if (!selectedPlaylist) return;
+    
+    const currentUserName = getUserName();
+    const currentDeviceId = getDeviceId();
+    
+    if (!currentUserName) return;
+
+    try {
+      const ownership: Omit<SongOwnership, 'id'> = {
+        trackId,
+        spotifyTrackUri,
+        addedByUser: currentUserName,
+        addedByDeviceId: currentDeviceId,
+        addedAt: new Date().toISOString(),
+        playlistId: selectedPlaylist.playlistId
+      };
+
+      await addDoc(collection(db, 'songOwnerships'), ownership);
+      
+      // Update local state
+      setSongOwnerships(prev => [...prev, { ...ownership, id: Date.now().toString() }]);
+    } catch (error) {
+      console.error('Failed to track song ownership:', error);
+    }
+  };
+
+  const removeSongOwnership = async (trackId: string) => {
+    try {
+      const ownership = songOwnerships.find(o => o.trackId === trackId);
+      if (ownership) {
+        await deleteDoc(doc(db, 'songOwnerships', ownership.id));
+        setSongOwnerships(prev => prev.filter(o => o.id !== ownership.id));
+      }
+    } catch (error) {
+      console.error('Failed to remove song ownership:', error);
+    }
+  };
+
+  // Check if user can delete a track based on wedding app user system
+  const canDeleteTrack = (track: SpotifyApi.PlaylistTrackObject) => {
+    // Admin can delete any track
+    if (isAdmin) {
+      console.log(`✅ Admin can delete "${track.track.name}"`);
+      return true;
+    }
+    
+    const currentUserName = getUserName();
+    const currentDeviceId = getDeviceId();
+    
+    console.log(`🔍 Checking delete permission for "${track.track.name}"`);
+    console.log(`👤 Current user: ${currentUserName} (${currentDeviceId})`);
+    
+    if (!currentUserName) {
+      console.log('❌ No username found');
+      return false;
+    }
+    
+    const ownership = songOwnerships.find(o => o.trackId === track.track.id);
+    if (!ownership) {
+      console.log('❌ No ownership record found');
+      return false; // If no ownership record, can't delete
+    }
+    
+    console.log(`🏷️ Track added by: ${ownership.addedByUser} (${ownership.addedByDeviceId})`);
+    
+    const canDelete = ownership.addedByUser === currentUserName && ownership.addedByDeviceId === currentDeviceId;
+    console.log(`${canDelete ? '✅' : '❌'} Can delete: ${canDelete}`);
+    
+    return canDelete;
+  };
+
+  // Count deletable tracks
+  const getDeletableTracksCount = () => {
+    return playlistTracks.filter(item => canDeleteTrack(item)).length;
+  };
+
+  if (!isSpotifyAvailable) {
+    return (
+      <div className={`mx-4 my-6 p-6 rounded-lg border ${
+        isDarkMode 
+          ? 'bg-gray-900 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
+        <div className="text-center py-8">
+          <div className={`w-16 h-16 mx-auto mb-4 p-3 rounded-lg ${
+            isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+          }`}>
+            <Music className={`w-full h-full ${
+              isDarkMode ? 'text-green-400' : 'text-green-600'
+            }`} />
+          </div>
+          
+          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-green-500 to-emerald-600 bg-clip-text text-transparent`}>
+            Spotify nicht verbunden
+          </h3>
+          
+          <p className={`text-sm max-w-md mx-auto leading-relaxed transition-colors duration-300 ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            Ein Administrator muss zuerst ein Spotify-Konto verbinden und eine Playlist auswählen, bevor Musikwünsche möglich sind.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedPlaylist) {
+    return (
+      <div className={`mx-4 my-6 p-8 rounded-3xl transition-all duration-500 relative overflow-hidden ${
+        isDarkMode 
+          ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-green-500/10' 
+          : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-green-500/10'
+      }`}>
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-green-500' : 'bg-green-300'
+          }`} style={{ transform: 'translate(50%, -50%)' }}></div>
+          <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-[#1DB954]' : 'bg-green-400'
+          }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
+        </div>
+        
+        <div className="relative z-10 text-center py-8">
+          <div className={`w-20 h-20 mx-auto mb-6 p-4 rounded-2xl transition-all duration-300 ${
+            isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+          }`}>
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg"
+              alt="Spotify Logo"
+              className="w-full h-full filter brightness-0 invert"
+            />
+          </div>
+          
+          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-green-500 to-emerald-600 bg-clip-text text-transparent`}>
+            Keine Playlist ausgewählt
+          </h3>
+          
+          <p className={`text-sm max-w-md mx-auto leading-relaxed transition-colors duration-300 ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            Ein Administrator muss zuerst eine Playlist auswählen, bevor Musikwünsche möglich sind.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-4 my-6">
+      {/* Header */}
+      <div className={`p-4 rounded-lg border mb-4 ${
+        isDarkMode 
+          ? 'bg-gray-900 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className={`w-12 h-12 p-2 rounded-lg ${
+              isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+            }`}>
+              <Music className={`w-full h-full ${
+                isDarkMode ? 'text-green-400' : 'text-green-600'
+              }`} />
+            </div>
+            <div>
+              <h3 className={`text-lg font-semibold ${
+                isDarkMode ? 'text-gray-100' : 'text-gray-900'
+              }`}>
+                {selectedPlaylist.name}
+              </h3>
+              <div className="flex items-center gap-2">
+                <p className={`text-sm ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  {playlistTracks.length} Songs
+                </p>
+                <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs ${
+                  syncStatus === 'connecting' ? 'bg-yellow-100 text-yellow-700' :
+                  syncStatus === 'syncing' ? 'bg-blue-100 text-blue-700' :
+                  syncStatus === 'live' ? 'bg-green-100 text-green-700' :
+                  'bg-red-100 text-red-700'
+                }`}>
+                    <div className={`w-2 h-2 rounded-full ${
+                      syncStatus === 'connecting' ? 'bg-yellow-400 animate-pulse' :
+                      syncStatus === 'syncing' ? 'bg-blue-400 animate-pulse' :
+                      syncStatus === 'live' ? 'bg-green-400 animate-pulse' :
+                      'bg-red-400'
+                    }`}></div>
+                    <span>
+                      {syncStatus === 'connecting' ? 'Verbinde...' :
+                       syncStatus === 'syncing' ? 'Sync...' :
+                       syncStatus === 'live' ? 'Live' :
+                       'Fehler'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a
+              href={`https://open.spotify.com/playlist/${selectedPlaylist.playlistId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`p-2 rounded-lg ${
+                isDarkMode 
+                  ? 'bg-green-600 hover:bg-green-700 text-white' 
+                  : 'bg-green-500 hover:bg-green-600 text-white'
+              }`}
+              title="In Spotify öffnen"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+
+        {/* Search Section */}
+        <div className={`p-4 rounded-lg border mb-4 ${
+          isDarkMode 
+            ? 'bg-gray-900 border-gray-700' 
+            : 'bg-white border-gray-200'
+        }`}>
+          <div className="relative">
+            <Search className={`absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-500'
+            }`} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Suche nach Songs..."
+              className={`w-full pl-10 pr-10 py-3 rounded-lg border focus:ring-2 focus:ring-green-500 outline-none ${
+                isDarkMode 
+                  ? 'bg-gray-800 text-white placeholder-gray-400 border-gray-600' 
+                  : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300'
+              }`}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className={`absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 p-1 sm:p-1.5 rounded-full transition-all duration-300 hover:scale-110 ${
+                  isDarkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-200'
+                }`}
+              >
+                <X className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-300 ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                }`} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Success Message - Mobile optimized */}
+      {showAddSuccess && (
+        <div className={`mx-4 sm:mx-6 mb-4 p-3 rounded-lg ${
+          isDarkMode 
+            ? 'bg-[#1DB954]/20 border border-[#1DB954]/30 text-[#1DB954]' 
+            : 'bg-[#1DB954]/20 border border-[#1DB954]/30 text-[#1DB954]'
+        }`}>
+          <div className="flex items-center gap-2">
+            <div className="p-1 rounded-full bg-[#1DB954]">
+              <Check className="w-4 h-4 text-white" />
+            </div>
+            <p className="text-sm font-medium">
+              Song sofort hinzugefügt! 🚀 Snapshot-Sync aktiv
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Error Display - Mobile optimized */}
+      {error && (
+        <div className={`mx-4 sm:mx-6 mb-4 p-3 rounded-lg ${
+          isDarkMode 
+            ? 'bg-red-900/20 border border-red-700/30 text-red-400' 
+            : 'bg-red-100 border border-red-300 text-red-600'
+        }`}>
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <p className="text-sm">
+              {error}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Content Area */}
+      <div className="px-4 sm:px-6 -mt-4 sm:-mt-6">
+        {/* Search Results */}
+        {isSearching ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="w-8 h-8 border-4 border-[#1DB954] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : searchResults.length > 0 ? (
+          <div className="mb-6 sm:mb-8">
+            <h4 className={`text-base sm:text-lg font-bold mb-3 sm:mb-4 ${
+              isDarkMode ? 'text-white' : 'text-gray-800'
+            }`}>
+              Suchergebnisse
+            </h4>
+            <div className="space-y-2">
+              {searchResults.map((track) => (
+                <div
+                  key={track.id}
+                  className={`p-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-3 ${
+                    isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+                    {track.album?.images?.[0] ? (
+                      <img 
+                        src={track.album.images[0].url} 
+                        alt={track.album.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Music className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h5 className={`font-medium truncate text-sm sm:text-base ${
+                      isDarkMode ? 'text-white' : 'text-gray-800'
+                    }`}>
+                      {track.name}
+                    </h5>
+                    <p className={`text-xs truncate ${
+                      isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                    }`}>
+                      {track.artists.map(a => a.name).join(', ')}
+                      {track.album && ` • ${track.album.name}`}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleAddTrack(track)}
+                    disabled={isAddingTrack === track.id}
+                    className="p-2 rounded-full bg-[#1DB954] text-white hover:bg-opacity-80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                    title="Sofort zur Playlist hinzufügen"
+                  >
+                    {isAddingTrack === track.id ? (
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : searchQuery ? (
+          <div className={`text-center py-8 ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            <Music className="w-12 h-12 mx-auto mb-3" />
+            <p>
+              Keine Ergebnisse für "{searchQuery}" gefunden
+            </p>
+          </div>
+        ) : null}
+
+        {/* Playlist Tracks */}
+        <div className="pb-6 sm:pb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <h4 className={`text-base sm:text-lg font-bold ${
+                isDarkMode ? 'text-white' : 'text-gray-800'
+              }`}>
+                Playlist Songs
+              </h4>
+              
+              {/* 🚀 NEW: Enhanced sync status with snapshot and operation info */}
+              <div className={`flex items-center gap-2 text-xs ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}>
+                <div className={`w-2 h-2 rounded-full ${
+                  syncStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' :
+                  syncStatus === 'syncing' ? 'bg-blue-500 animate-pulse' :
+                  syncStatus === 'live' ? 'bg-green-500 animate-pulse' :
+                  'bg-red-500'
+                }`}></div>
+                <span>
+                  {syncStatus === 'connecting' ? 'Verbinde...' :
+                   syncStatus === 'syncing' ? 'Synchronisiert...' :
+                   syncStatus === 'live' ? '🚀 Snapshot-Sync' :
+                   'Sync-Fehler'}
+                </span>
+                <span>•</span>
+                <span>Update: {lastUpdate.toLocaleTimeString('de-DE')}</span>
+                {operationCount > 0 && (
+                  <>
+                    <span>•</span>
+                    <span className="text-blue-500 font-medium">{operationCount} Pending</span>
+                  </>
+                )}
+                {snapshotId && (
+                  <>
+                    <span>•</span>
+                    <span className="text-green-500 font-mono text-xs">#{snapshotId.slice(-6)}</span>
+                  </>
+                )}
+              </div>
+              
+              {/* Bulk Delete Controls */}
+              {getDeletableTracksCount() > 0 && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => setBulkDeleteMode(!bulkDeleteMode)}
+                    className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+                      bulkDeleteMode
+                        ? 'bg-red-500 text-white'
+                        : isDarkMode
+                          ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                          : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    }`}
+                  >
+                    {bulkDeleteMode ? 'Auswahl beenden' : 'Mehrere löschen'}
+                  </button>
+                  
+                  {bulkDeleteMode && (
+                    <>
+                      <span className={`text-xs ${
+                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                      }`}>
+                        {selectedTracks.size} von {getDeletableTracksCount()}
+                      </span>
+                      
+                      <button
+                        onClick={selectAllTracks}
+                        className={`text-xs px-2 py-1 rounded transition-colors ${
+                          isDarkMode ? 'text-blue-400 hover:bg-gray-700' : 'text-blue-600 hover:bg-blue-50'
+                        }`}
+                      >
+                        Alle
+                      </button>
+                      
+                      <button
+                        onClick={deselectAllTracks}
+                        className={`text-xs px-2 py-1 rounded transition-colors ${
+                          isDarkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-50'
+                        }`}
+                      >
+                        Keine
+                      </button>
+                      
+                      {selectedTracks.size > 0 && (
+                        <button
+                          onClick={handleBulkDelete}
+                          disabled={isBulkDeleting}
+                          className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-red-500 hover:bg-red-600 text-white transition-colors"
+                        >
+                          {isBulkDeleting ? (
+                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            <Trash2 className="w-3 h-3" />
+                          )}
+                          <span className="hidden sm:inline">{selectedTracks.size} sofort löschen</span>
+                          <span className="sm:hidden">Löschen</span>
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <button
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className={`p-3 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm hover:scale-105 ${
+                isDarkMode 
+                  ? 'bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-500/30 shadow-lg shadow-green-500/20' 
+                  : 'bg-green-50/80 text-green-700 hover:bg-green-100/90 border border-green-200/50 shadow-lg shadow-green-500/10'
+              }`}
+              title="Playlist manuell aktualisieren"
+            >
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <RefreshCw className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+
+          {/* Table Header */}
+          <div className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto]' : 'grid-cols-[1fr_auto]'} sm:${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-2 sm:gap-4 px-4 py-3 border-b text-xs font-semibold uppercase tracking-wider ${
+            isDarkMode 
+              ? 'border-green-500/20 text-green-300 bg-gradient-to-r from-green-500/10 to-emerald-500/10' 
+              : 'border-green-200/40 text-green-800 bg-gradient-to-r from-green-50/50 to-emerald-50/50'
+          }`}>
+            {bulkDeleteMode && <div className="hidden sm:block"></div>}
+            {!bulkDeleteMode && <div className="hidden sm:block">#</div>}
+            <div>Titel</div>
+            <div className="hidden sm:block">Hinzugefügt am</div>
+            <div className="flex justify-center">
+              <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : playlistTracks.length > 0 ? (
+            <div className="max-h-[300px] sm:max-h-[400px] overflow-y-auto">
+              <div className="space-y-1 mt-2">
+                {playlistTracks.map((item, index) => {
+                  const isSelected = selectedTracks.has(item.track.id);
+                  const canDelete = canDeleteTrack(item);
+                  const showCheckbox = bulkDeleteMode && canDelete;
+                  
+                  return (
+                    <div
+                      key={`${item.track.id}-${item.added_at}`}
+                      className={`grid ${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto]' : 'grid-cols-[1fr_auto]'} sm:${bulkDeleteMode ? 'grid-cols-[auto_1fr_auto_auto]' : 'grid-cols-[16px_1fr_auto_auto]'} gap-3 sm:gap-4 px-4 py-3 rounded-xl items-center group transition-all duration-300 backdrop-blur-sm ${
+                        isDarkMode 
+                          ? `hover:bg-green-500/10 text-white border border-transparent hover:border-green-500/20 ${isSelected ? 'bg-green-500/20 ring-2 ring-green-500/40 border-green-500/30' : ''}` 
+                          : `hover:bg-green-50/60 text-gray-900 border border-transparent hover:border-green-200/30 ${isSelected ? 'bg-green-100/60 ring-2 ring-green-400/40 border-green-300/30' : ''}`
+                      }`}
+                    >
+                      {bulkDeleteMode && (
+                        <div className="hidden sm:block">
+                          {showCheckbox && (
+                            <button
+                              onClick={() => toggleTrackSelection(item.track.id)}
+                              className={`p-1.5 rounded-lg transition-all duration-200 ${
+                                isSelected
+                                  ? 'text-green-400 bg-green-500/20 scale-110'
+                                  : isDarkMode ? 'text-green-300 hover:text-green-200 hover:bg-green-500/10' : 'text-green-600 hover:text-green-700 hover:bg-green-100/50'
+                              }`}
+                            >
+                              {isSelected ? <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5" /> : <Square className="w-4 h-4 sm:w-5 sm:h-5" />}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {!bulkDeleteMode && (
+                        <div className={`text-sm hidden sm:block font-medium ${
+                          isDarkMode ? 'text-green-300' : 'text-green-700'
+                        }`}>{index + 1}</div>
+                      )}
+                      
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        {bulkDeleteMode && showCheckbox && (
+                          <button
+                            onClick={() => toggleTrackSelection(item.track.id)}
+                            className={`p-1.5 rounded-lg transition-all duration-200 sm:hidden ${
+                              isSelected
+                                ? 'text-green-400 bg-green-500/20 scale-110'
+                                : isDarkMode ? 'text-green-300 hover:text-green-200 hover:bg-green-500/10' : 'text-green-600 hover:text-green-700 hover:bg-green-100/50'
+                            }`}
+                          >
+                            {isSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                          </button>
+                        )}
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-gradient-to-br from-green-100 to-emerald-100 flex-shrink-0 shadow-sm">
+                          {item.track.album?.images?.[0] ? (
+                            <img 
+                              src={item.track.album.images[0].url} 
+                              alt={item.track.album.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-200 to-emerald-200">
+                              <Music className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h5 className={`font-semibold truncate text-sm sm:text-base ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>
+                            {item.track.name}
+                          </h5>
+                          <p className={`text-xs truncate font-medium ${
+                            isDarkMode ? 'text-green-300/80' : 'text-green-700/80'
+                          }`}>
+                            {item.track.artists.map(a => a.name).join(', ')}
+                          </p>
+                        </div>
+                      </div>
+                      <div className={`text-xs hidden sm:block font-medium ${
+                        isDarkMode ? 'text-green-300/70' : 'text-green-700/70'
+                      }`}>
+                        {formatDate(item.added_at)}
+                      </div>
+                      <div className="flex items-center justify-end gap-1 sm:gap-2">
+                        <span className={`text-xs font-medium ${
+                          isDarkMode ? 'text-green-300/70' : 'text-green-700/70'
+                        }`}>
+                          {formatDuration(item.track.duration_ms)}
+                        </span>
+                        {!bulkDeleteMode && (
+                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {canDelete && (
+                              <button
+                                onClick={() => handleRemoveTrack(item)}
+                                disabled={isRemovingTrack === item.track.id}
+                                className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
+                                  isDarkMode 
+                                    ? 'hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-transparent hover:border-red-500/30' 
+                                    : 'hover:bg-red-50 text-red-600 hover:text-red-700 border border-transparent hover:border-red-200'
+                                }`}
+                                title="Sofort aus Playlist entfernen"
+                              >
+                                {isRemovingTrack === item.track.id ? (
+                                  <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                )}
+                              </button>
+                            )}
+                            <a
+                              href={item.track.external_urls.spotify}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
+                                isDarkMode 
+                                  ? 'hover:bg-green-500/20 text-green-400 hover:text-green-300 border border-transparent hover:border-green-500/30' 
+                                  : 'hover:bg-green-50 text-green-600 hover:text-green-700 border border-transparent hover:border-green-200'
+                              }`}
+                              title="In Spotify öffnen"
+                            >
+                              <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className={`text-center py-16 rounded-2xl mt-6 backdrop-blur-sm border ${
+              isDarkMode 
+                ? 'bg-green-500/10 border-green-500/20 shadow-2xl shadow-green-500/10' 
+                : 'bg-green-50/60 border-green-200/30 shadow-2xl shadow-green-500/5'
+            }`}>
+              <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center ${
+                isDarkMode ? 'bg-green-500/20' : 'bg-green-100/80'
+              }`}>
+                <Music className={`w-8 h-8 ${
+                  isDarkMode ? 'text-green-400' : 'text-green-600'
+                }`} />
+              </div>
+              <p className={`font-semibold text-lg mb-2 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
+                Keine Songs in der Playlist
+              </p>
+              <p className={`text-sm ${
+                isDarkMode ? 'text-green-300/80' : 'text-green-700/80'
+              }`}>
+                Suche nach Songs und füge sie zur Playlist hinzu
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
