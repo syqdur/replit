@@ -107,6 +107,15 @@
   }
 }
 
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
 /* Enhanced slideshow animations */
 @keyframes slideInFromRight {
   from {
