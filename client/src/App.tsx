@@ -471,6 +471,17 @@ function App() {
     });
   };
 
+  const handleNavigateToMedia = (mediaId: string) => {
+    // Find the media item in the current media list
+    const mediaIndex = mediaItems.findIndex(item => item.id === mediaId);
+    if (mediaIndex !== -1) {
+      // Switch to gallery tab and open the media modal
+      setActiveTab('gallery');
+      setCurrentImageIndex(mediaIndex);
+      setModalOpen(true);
+    }
+  };;
+
   // Real-time profile synchronization - polling for profile changes
   useEffect(() => {
     if (!userName || !deviceId) return;
@@ -807,6 +818,7 @@ function App() {
                   userName={userName}
                   deviceId={deviceId}
                   isDarkMode={isDarkMode}
+                  onNavigateToMedia={handleNavigateToMedia}
                 />
               )}
               

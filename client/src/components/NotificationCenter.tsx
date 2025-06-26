@@ -8,12 +8,14 @@ interface NotificationCenterProps {
   userName: string;
   deviceId: string;
   isDarkMode: boolean;
+  onNavigateToMedia?: (mediaId: string) => void;
 }
 
 export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   userName,
   deviceId,
-  isDarkMode
+  isDarkMode,
+  onNavigateToMedia
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -43,6 +45,19 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       });
     } catch (error) {
       console.error('Error marking notification as read:', error);
+    }
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+    // Mark as read when clicked
+    if (!notification.read) {
+      markAsRead(notification.id);
+    }
+
+    // Navigate to media if it's a media-related notification and callback is provided
+    if (notification.mediaId && onNavigateToMedia) {
+      onNavigateToMedia(notification.mediaId);
+      setIsOpen(false); // Close notification dropdown
     }
   };
 
@@ -171,11 +186,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           ? 'hover:bg-gray-700' 
                           : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => {
-                      if (!notification.read) {
-                        markAsRead(notification.id);
-                      }
-                    }}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex items-start gap-3">
                       {/* Icon */}
