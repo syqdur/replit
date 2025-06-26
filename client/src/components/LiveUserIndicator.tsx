@@ -12,7 +12,7 @@ import {
   getDocs
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { loadUserProfiles, UserProfile } from '../services/firebaseService';
+import { getUserProfilesOnce, UserProfile } from '../services/firebaseService';
 
 // Live User Types
 interface LiveUser {
@@ -42,7 +42,7 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
   useEffect(() => {
     const loadProfiles = async () => {
       try {
-        const profiles = await loadUserProfiles();
+        const profiles = await getUserProfilesOnce();
         setUserProfiles(profiles);
       } catch (error) {
         console.error('Error loading user profiles:', error);

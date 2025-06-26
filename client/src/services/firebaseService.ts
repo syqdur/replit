@@ -639,6 +639,25 @@ export const loadUserProfiles = (callback: (profiles: UserProfile[]) => void): (
   return unsubscribe;
 };
 
+// Promise-based version for one-time loading
+export const getUserProfilesOnce = async (): Promise<UserProfile[]> => {
+  try {
+    const profilesRef = collection(db, 'userProfiles');
+    const q = query(profilesRef, orderBy('updatedAt', 'desc'));
+    const snapshot = await getDocs(q);
+    
+    const profiles: UserProfile[] = [];
+    snapshot.forEach((doc) => {
+      profiles.push({ id: doc.id, ...doc.data() } as UserProfile);
+    });
+    
+    return profiles;
+  } catch (error) {
+    console.error('Error getting user profiles:', error);
+    return [];
+  }
+};
+
 // Media Tagging Functions
 export const addMediaTag = async (
   mediaId: string,
