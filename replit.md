@@ -125,6 +125,8 @@ This is a comprehensive wedding gallery application with the following architect
 - **Instagram 2.0 Music Section Restyling**: Complete redesign of MusicWishlist component with modern glassmorphism effects, gradient backgrounds, purple-pink-orange color scheme, backdrop blur, rounded corners, enhanced visual hierarchy, and Instagram-inspired aesthetic
 - **Spotify Green Theme**: Updated music section from purple/pink gradients to Spotify's signature green/emerald/teal color palette throughout all components, buttons, icons, and states
 - **Animated Music Icon**: Added subtle bouncing animation to Spotify logo with floating music note particles, pulse effects, and hover interactions for enhanced visual appeal
+- **Push Notification System**: Implemented comprehensive notification system with browser push notifications and service worker support for tagged users, comments, and likes - users receive real-time notifications when tagged in photos/videos, when someone comments on their media, or likes their content
+- **Upload Option Text Alignment**: Fixed text centering in upload modal options to maintain consistent styling across all upload buttons (photo/video, video recording, notes, stories)
 
 ### January 25, 2025 (Sprint Implementation Complete)
 - **Dark Mode Background Fix**: Removed all gradient backgrounds from dark mode across all components, implementing flat gray-900 background as requested for modern clean aesthetic

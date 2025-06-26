@@ -177,7 +177,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                     isDarkMode ? 'text-blue-400' : 'text-blue-600'
                   }`} />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 text-center">
                   <h4 className={`font-semibold ${
                     isDarkMode ? 'text-white' : 'text-gray-900'
                   }`}>
@@ -212,7 +212,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                     isDarkMode ? 'text-red-400' : 'text-red-600'
                   }`} />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 text-center">
                   <h4 className={`font-semibold ${
                     isDarkMode ? 'text-white' : 'text-gray-900'
                   }`}>
@@ -247,7 +247,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                     isDarkMode ? 'text-purple-400' : 'text-purple-600'
                   }`} />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 text-center">
                   <h4 className={`font-semibold ${
                     isDarkMode ? 'text-white' : 'text-gray-900'
                   }`}>
@@ -281,7 +281,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                       isDarkMode ? 'text-pink-400' : 'text-pink-600'
                     }`} />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 text-center">
                     <h4 className={`font-semibold ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
                     }`}>

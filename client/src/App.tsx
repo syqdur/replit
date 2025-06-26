@@ -44,6 +44,7 @@ import {
 } from './services/firebaseService';
 import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
 import { getUserName, getDeviceId } from './utils/deviceId';
+import { notificationService } from './services/notificationService';
 import {
   subscribeStories,
   subscribeAllStories,
@@ -128,6 +129,25 @@ function App() {
 
     return unsubscribe;
   }, []);
+
+  // Initialize notification service when user is logged in
+  useEffect(() => {
+    if (!userName) return;
+
+    const initNotifications = async () => {
+      try {
+        const initialized = await notificationService.init();
+        if (initialized) {
+          await notificationService.subscribeToPush(userName, deviceId);
+          console.log('✅ Push notifications initialized');
+        }
+      } catch (error) {
+        console.log('⚠️ Push notifications not available:', error);
+      }
+    };
+
+    initNotifications();
+  }, [userName, deviceId]);
 
   // Subscribe to stories when user is logged in
   useEffect(() => {
@@ -312,6 +332,19 @@ function App() {
     try {
       await addComment(mediaId, text, userName, deviceId);
       
+      // Find the media owner to send notification
+      const mediaItem = mediaItems.find(item => item.id === mediaId);
+      if (mediaItem && mediaItem.uploadedBy !== userName) {
+        await notificationService.sendCommentNotification(
+          mediaItem.uploadedBy,
+          mediaItem.deviceId,
+          userName,
+          deviceId,
+          mediaId,
+          text
+        );
+      }
+      
       // Ensure user profile exists for proper display name sync
       await createOrUpdateUserProfile(userName, deviceId, {});
     } catch (error) {
@@ -332,6 +365,18 @@ function App() {
     
     try {
       await toggleLike(mediaId, userName, deviceId);
+      
+      // Send notification for likes (simplified approach)
+      const mediaItem = mediaItems.find(item => item.id === mediaId);
+      if (mediaItem && mediaItem.uploadedBy !== userName) {
+        await notificationService.sendLikeNotification(
+          mediaItem.uploadedBy,
+          mediaItem.deviceId,
+          userName,
+          deviceId,
+          mediaId
+        );
+      }
     } catch (error) {
       console.error('Error toggling like:', error);
     }

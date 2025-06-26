@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, UserPlus, Tag, Trash2 } from 'lucide-react';
 import { MediaTag } from '../types';
 import { addMediaTag, removeMediaTag, getAllUsers } from '../services/firebaseService';
+import { notificationService } from '../services/notificationService';
 
 interface MediaTaggingProps {
   mediaId: string;
@@ -13,6 +14,8 @@ interface MediaTaggingProps {
   onTagsUpdated: () => void;
   getUserDisplayName: (userName: string, deviceId?: string) => string;
   mediaUploader?: string; // The user who uploaded this media
+  mediaType?: string; // Type of media (image/video)
+  mediaUrl?: string; // URL of the media for notifications
 }
 
 interface User {
@@ -30,7 +33,9 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
   isDarkMode,
   onTagsUpdated,
   getUserDisplayName,
-  mediaUploader
+  mediaUploader,
+  mediaType = 'image',
+  mediaUrl
 }) => {
   const [showTagInput, setShowTagInput] = useState(false);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
@@ -79,6 +84,18 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
         currentUser,
         currentDeviceId
       );
+      
+      // Send notification to tagged user
+      await notificationService.sendTagNotification(
+        user.userName,
+        user.deviceId,
+        currentUser,
+        currentDeviceId,
+        mediaId,
+        mediaType,
+        mediaUrl
+      );
+      
       onTagsUpdated();
       setSearchTerm('');
       setShowTagInput(false);
