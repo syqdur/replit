@@ -868,7 +868,7 @@ export const getLocationTags = async (mediaId: string): Promise<LocationTag[]> =
   }
 };
 
-// Location Search using Browser Geolocation API
+// Location Search using Browser Geolocation API with high accuracy
 export const getCurrentLocation = (): Promise<{ latitude: number; longitude: number }> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -876,20 +876,52 @@ export const getCurrentLocation = (): Promise<{ latitude: number; longitude: num
       return;
     }
 
+    // First attempt with maximum accuracy
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log('📍 GPS Location obtained:', {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy
+        });
+        
         resolve({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
         });
       },
       (error) => {
-        reject(error);
+        console.warn('❌ High accuracy location failed:', error.message);
+        
+        // Fallback to lower accuracy if high accuracy fails
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log('📍 Fallback GPS Location obtained:', {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy
+            });
+            
+            resolve({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            });
+          },
+          (fallbackError) => {
+            console.error('❌ All location attempts failed:', fallbackError);
+            reject(fallbackError);
+          },
+          {
+            enableHighAccuracy: false,
+            timeout: 15000,
+            maximumAge: 600000 // 10 minutes for fallback
+          }
+        );
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000 // 5 minutes
+        timeout: 20000, // Increased timeout for better accuracy
+        maximumAge: 60000 // 1 minute for fresh location
       }
     );
   });
@@ -901,9 +933,9 @@ export const getLocationFromCoordinates = async (
   longitude: number
 ): Promise<{ name: string; address: string }> => {
   try {
-    // Using a free geocoding service (OpenStreetMap Nominatim)
+    // Using higher precision geocoding with detailed address components
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=16&addressdetails=1&extratags=1`,
       {
         headers: {
           'User-Agent': 'Wedding-Gallery-App'
@@ -917,19 +949,46 @@ export const getLocationFromCoordinates = async (
     
     const data = await response.json();
     
-    // Extract meaningful location name
+    // Extract meaningful location name with better accuracy
     const address = data.address || {};
     const locationParts = [];
     
-    if (address.tourism || address.amenity) {
-      locationParts.push(address.tourism || address.amenity);
+    // Prioritize specific places and points of interest
+    if (address.tourism) {
+      locationParts.push(address.tourism);
+    } else if (address.amenity) {
+      locationParts.push(address.amenity);
+    } else if (address.shop) {
+      locationParts.push(address.shop);
+    } else if (address.leisure) {
+      locationParts.push(address.leisure);
+    } else if (address.building) {
+      locationParts.push(address.building);
+    } else if (address.house_number && address.road) {
+      locationParts.push(`${address.house_number} ${address.road}`);
+    } else if (address.road) {
+      locationParts.push(address.road);
+    } else if (address.pedestrian) {
+      locationParts.push(address.pedestrian);
     }
-    if (address.road || address.pedestrian) {
-      locationParts.push(address.road || address.pedestrian);
+    
+    // Add neighborhood or suburb for better context
+    if (address.neighbourhood) {
+      locationParts.push(address.neighbourhood);
+    } else if (address.suburb) {
+      locationParts.push(address.suburb);
     }
-    if (address.city || address.town || address.village) {
-      locationParts.push(address.city || address.town || address.village);
+    
+    // Add city
+    if (address.city) {
+      locationParts.push(address.city);
+    } else if (address.town) {
+      locationParts.push(address.town);
+    } else if (address.village) {
+      locationParts.push(address.village);
     }
+    
+    // Add country for international context
     if (address.country) {
       locationParts.push(address.country);
     }
@@ -950,7 +1009,7 @@ export const getLocationFromCoordinates = async (
   }
 };
 
-// Location search for autocomplete suggestions
+// Location search for autocomplete suggestions with improved accuracy
 export const searchLocations = async (query: string): Promise<Array<{
   name: string;
   address: string;
@@ -963,7 +1022,7 @@ export const searchLocations = async (query: string): Promise<Array<{
 
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`,
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=8&addressdetails=1&extratags=1&namedetails=1&bounded=0&dedupe=1`,
       {
         headers: {
           'User-Agent': 'Wedding-Gallery-App'
@@ -977,36 +1036,65 @@ export const searchLocations = async (query: string): Promise<Array<{
     
     const data = await response.json();
     
-    return data.map((item: any) => {
-      const address = item.address || {};
-      const locationParts = [];
-      
-      // Build a meaningful name from the address components
-      if (address.tourism || address.amenity || address.building) {
-        locationParts.push(address.tourism || address.amenity || address.building);
-      }
-      if (address.road || address.pedestrian) {
-        locationParts.push(address.road || address.pedestrian);
-      }
-      if (address.city || address.town || address.village) {
-        locationParts.push(address.city || address.town || address.village);
-      }
-      if (address.country) {
-        locationParts.push(address.country);
-      }
-      
-      const name = locationParts.length > 0 ? locationParts.join(', ') : item.display_name;
-      
-      return {
-        name,
-        address: item.display_name,
-        coordinates: {
-          latitude: parseFloat(item.lat),
-          longitude: parseFloat(item.lon)
-        },
-        placeId: item.place_id?.toString()
-      };
-    });
+    return data
+      .filter((item: any) => item.importance > 0.3) // Filter by importance score
+      .map((item: any) => {
+        const address = item.address || {};
+        const locationParts = [];
+        
+        // Prioritize meaningful location names
+        if (address.tourism) {
+          locationParts.push(address.tourism);
+        } else if (address.amenity) {
+          locationParts.push(address.amenity);
+        } else if (address.shop) {
+          locationParts.push(address.shop);
+        } else if (address.leisure) {
+          locationParts.push(address.leisure);
+        } else if (address.building && address.building !== 'yes') {
+          locationParts.push(address.building);
+        } else if (address.house_number && address.road) {
+          locationParts.push(`${address.house_number} ${address.road}`);
+        } else if (address.road) {
+          locationParts.push(address.road);
+        } else if (address.pedestrian) {
+          locationParts.push(address.pedestrian);
+        }
+        
+        // Add neighborhood/suburb for context
+        if (address.neighbourhood) {
+          locationParts.push(address.neighbourhood);
+        } else if (address.suburb) {
+          locationParts.push(address.suburb);
+        }
+        
+        // Add city/town
+        if (address.city) {
+          locationParts.push(address.city);
+        } else if (address.town) {
+          locationParts.push(address.town);
+        } else if (address.village) {
+          locationParts.push(address.village);
+        }
+        
+        // Add country for international locations
+        if (address.country && address.country !== 'Deutschland') {
+          locationParts.push(address.country);
+        }
+        
+        const name = locationParts.length > 0 ? locationParts.join(', ') : item.display_name.split(',').slice(0, 3).join(',');
+        
+        return {
+          name,
+          address: item.display_name,
+          coordinates: {
+            latitude: parseFloat(item.lat),
+            longitude: parseFloat(item.lon)
+          },
+          placeId: item.place_id?.toString()
+        };
+      })
+      .slice(0, 5); // Limit to top 5 results
   } catch (error) {
     console.error('❌ Failed to search locations:', error);
     return [];

@@ -191,11 +191,16 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
     
     setIsLoadingLocation(true);
     try {
+      console.log('🔍 Requesting current location with high accuracy...');
       const coordinates = await getCurrentLocation();
+      
+      console.log('📍 Coordinates obtained, fetching location details...');
       const locationData = await getLocationFromCoordinates(
         coordinates.latitude,
         coordinates.longitude
       );
+      
+      console.log('📍 Location resolved:', locationData.name);
       
       await addLocationTag(
         mediaId,
@@ -212,8 +217,22 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
       setShowLocationInput(false);
       setCustomLocationName('');
     } catch (error) {
-      console.error('Error adding current location:', error);
-      alert('Fehler beim Hinzufügen des aktuellen Standorts. Bitte überprüfen Sie Ihre Standortberechtigungen.');
+      console.error('❌ Error adding current location:', error);
+      
+      // Provide specific error messages based on error type
+      let errorMessage = 'Fehler beim Ermitteln des aktuellen Standorts.';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('permission')) {
+          errorMessage = 'Standort-Berechtigung verweigert. Bitte erlauben Sie den Zugriff auf Ihren Standort und versuchen Sie es erneut.';
+        } else if (error.message.includes('unavailable')) {
+          errorMessage = 'Standort nicht verfügbar. Bitte versuchen Sie es später erneut oder geben Sie den Standort manuell ein.';
+        } else if (error.message.includes('timeout')) {
+          errorMessage = 'Standort-Anfrage ist abgelaufen. Bitte versuchen Sie es erneut.';
+        }
+      }
+      
+      alert(`${errorMessage} ${error.message ? `(${error.message})` : ''}`);
     } finally {
       setIsLoadingLocation(false);
     }
