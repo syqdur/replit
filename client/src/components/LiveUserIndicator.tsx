@@ -12,6 +12,7 @@ import {
   getDocs
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { loadUserProfiles, UserProfile } from '../services/firebaseService';
 
 // Live User Types
 interface LiveUser {
@@ -35,6 +36,20 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [userProfiles, setUserProfiles] = useState<UserProfile[]>([]);
+
+  // Load user profiles for avatar display
+  useEffect(() => {
+    const loadProfiles = async () => {
+      try {
+        const profiles = await loadUserProfiles();
+        setUserProfiles(profiles);
+      } catch (error) {
+        console.error('Error loading user profiles:', error);
+      }
+    };
+    loadProfiles();
+  }, []);
 
   // Real Firebase live user tracking
   useEffect(() => {
@@ -276,6 +291,14 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
     return `${onlineCount} online`;
   };
 
+  // Helper function to get user profile picture
+  const getUserProfilePicture = (userName: string, deviceId: string) => {
+    const profile = userProfiles.find(p => 
+      p.userName === userName && p.deviceId === deviceId
+    );
+    return profile?.profilePicture || null;
+  };
+
   // Don't show anything if not initialized yet
   if (!isInitialized) {
     return (
@@ -356,31 +379,42 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
             </div>
           ) : onlineCount > 0 ? (
             <div className="space-y-1">
-              {liveUsers.map((user, index) => (
-                <div key={user.id} className="flex items-center gap-2 text-sm">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors duration-300 ${
-                    user.userName === currentUser
-                      ? isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
-                      : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-700'
-                  }`}>
-                    {user.userName.charAt(0).toUpperCase()}
-                  </div>
-                  <span className={`transition-colors duration-300 ${
-                    user.userName === currentUser
-                      ? isDarkMode ? 'text-blue-300 font-medium' : 'text-blue-600 font-medium'
-                      : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>
-                    {user.userName === currentUser ? 'Du' : user.userName}
-                  </span>
-                  {user.userName === currentUser && (
-                    <span className={`text-xs px-1.5 py-0.5 rounded transition-colors duration-300 ${
-                      isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
+              {liveUsers.map((user, index) => {
+                const profilePicture = getUserProfilePicture(user.userName, user.deviceId);
+                return (
+                  <div key={user.id} className="flex items-center gap-2 text-sm">
+                    <div className={`w-6 h-6 rounded-full overflow-hidden flex items-center justify-center text-xs font-semibold transition-colors duration-300 ${
+                      user.userName === currentUser
+                        ? isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                        : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-700'
                     }`}>
-                      Du
+                      {profilePicture ? (
+                        <img 
+                          src={profilePicture} 
+                          alt={user.userName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        user.userName.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <span className={`transition-colors duration-300 ${
+                      user.userName === currentUser
+                        ? isDarkMode ? 'text-blue-300 font-medium' : 'text-blue-600 font-medium'
+                        : isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      {user.userName === currentUser ? 'Du' : user.userName}
                     </span>
-                  )}
-                </div>
-              ))}
+                    {user.userName === currentUser && (
+                      <span className={`text-xs px-1.5 py-0.5 rounded transition-colors duration-300 ${
+                        isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        Du
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
               
               {otherUsers.length === 0 && onlineCount === 1 && (
                 <div className={`text-xs italic transition-colors duration-300 ${
