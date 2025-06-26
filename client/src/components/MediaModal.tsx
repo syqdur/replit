@@ -143,15 +143,32 @@ export const MediaModal: React.FC<MediaModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-40 flex items-center justify-center p-2 sm:p-4">
-      {/* Close button */}
+    <div 
+      className="fixed inset-0 bg-black/95 backdrop-blur-sm z-40 flex items-center justify-center"
+      onClick={(e) => {
+        // Close modal when clicking outside the content
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      {/* Mobile-optimized close button */}
       <button 
         onClick={onClose}
-        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50 p-2 sm:p-3 rounded-full bg-black/70 text-white hover:bg-black/90 transition-all duration-300 touch-manipulation shadow-lg"
-        style={{ minWidth: '48px', minHeight: '48px' }}
+        className="fixed top-4 right-4 z-[60] w-12 h-12 flex items-center justify-center rounded-full bg-white/90 text-black shadow-2xl border-2 border-white/50 touch-manipulation active:scale-95"
+        style={{ 
+          minWidth: '48px', 
+          minHeight: '48px',
+          backdropFilter: 'blur(8px)'
+        }}
       >
-        <X className="w-5 h-5 sm:w-6 sm:h-6" />
+        <X className="w-6 h-6 stroke-2" />
       </button>
+
+      {/* Mobile helper text */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-black/70 text-white px-3 py-1 rounded-full text-xs sm:hidden">
+        Tippe außerhalb oder auf X zum Schließen
+      </div>
 
       {/* Navigation buttons */}
       {items.length > 1 && (
