@@ -42,6 +42,7 @@ import {
   UserProfile
 } from './services/firebaseService';
 import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
+import { getUserName, getDeviceId } from './utils/deviceId';
 import {
   subscribeStories,
   subscribeAllStories,
@@ -507,19 +508,42 @@ function App() {
     syncAllUserProfiles();
 
     // Listen for new user connections and resync profiles
-    const handleUserConnected = (event: CustomEvent) => {
-      const { userName, deviceId } = event.detail;
+    const handleUserConnected = async (event: CustomEvent) => {
+      const { userName, deviceId, profilePicture } = event.detail;
       console.log(`🔄 New user connected (${userName}), resyncing all profiles...`);
+      
+      // If user provided a profile picture during registration, save it
+      if (profilePicture) {
+        try {
+          console.log('💾 Saving profile picture for new user:', userName);
+          await createOrUpdateUserProfile(userName, deviceId, {
+            displayName: userName,
+            profilePicture: profilePicture
+          });
+          
+          // Update current user profile if this is the current user
+          const currentStoredName = getUserName();
+          const currentStoredDeviceId = getDeviceId();
+          if (userName === currentStoredName && deviceId === currentStoredDeviceId) {
+            const updatedProfile = await getUserProfile(userName, deviceId);
+            setCurrentUserProfile(updatedProfile);
+          }
+          console.log('✅ Profile picture saved for new user');
+        } catch (error) {
+          console.error('❌ Error saving profile picture:', error);
+        }
+      }
+      
       // Delay the sync to ensure profile creation has completed
       setTimeout(() => {
         syncAllUserProfiles();
       }, 1000);
     };
 
-    window.addEventListener('userConnected', handleUserConnected as EventListener);
+    window.addEventListener('userConnected', handleUserConnected as any);
     
     return () => {
-      window.removeEventListener('userConnected', handleUserConnected as EventListener);
+      window.removeEventListener('userConnected', handleUserConnected as any);
     };
   }, []);
 
@@ -810,7 +834,7 @@ function App() {
         <ProfileHeader 
           isDarkMode={isDarkMode} 
           isAdmin={isAdmin}
-          userName={userName}
+          userName={userName ?? undefined}
           mediaItems={mediaItems}
           onToggleAdmin={(status) => {
             if (status) {

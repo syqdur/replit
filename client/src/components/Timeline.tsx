@@ -988,14 +988,14 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                             {event.title}
                           </h3>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm sm:text-base">
-                            <div className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 w-fit ${
+                            <div className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 max-w-full ${
                               isDarkMode ? 'bg-white/10 text-gray-300' : 'bg-white/60 text-gray-700'
                             }`}>
                               <Calendar className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                              <span className="font-medium">{formatDate(event.date)}</span>
+                              <span className="font-medium truncate">{formatDate(event.date)}</span>
                             </div>
                             {event.location && (
-                              <div className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 w-fit ${
+                              <div className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300 max-w-full min-w-0 ${
                                 isDarkMode ? 'bg-white/10 text-gray-300' : 'bg-white/60 text-gray-700'
                               }`}>
                                 <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />

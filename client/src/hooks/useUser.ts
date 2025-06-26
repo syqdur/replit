@@ -21,7 +21,7 @@ export const useUser = () => {
     }
   }, []);
 
-  const handleSetUserName = async (name: string) => {
+  const handleSetUserName = async (name: string, profilePicture?: File) => {
     setUserName(name);
     setUserNameState(name);
     setShowNamePrompt(false);
@@ -31,7 +31,7 @@ export const useUser = () => {
     
     // Trigger a window event to notify App component to resync profiles
     window.dispatchEvent(new CustomEvent('userConnected', { 
-      detail: { userName: name, deviceId: getDeviceId() } 
+      detail: { userName: name, deviceId: getDeviceId(), profilePicture } 
     }));
   };
 
