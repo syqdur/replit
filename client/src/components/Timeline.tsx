@@ -528,10 +528,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
         </div>
       )}
       {/* Header */}
-      <div className={`sticky top-0 z-40 p-4 sm:p-6 backdrop-blur-xl border-b transition-all duration-300 ${
+      <div className={`mx-4 sm:mx-6 mt-4 sm:mt-6 mb-6 p-4 sm:p-6 backdrop-blur-xl border transition-all duration-300 rounded-2xl sm:rounded-3xl ${
         isDarkMode 
-          ? 'bg-gray-900/90 border-gray-700/30 shadow-lg shadow-purple-500/5' 
-          : 'bg-white/90 border-gray-200/30 shadow-lg shadow-pink-500/5'
+          ? 'bg-white/5 border-white/10 shadow-xl shadow-black/20' 
+          : 'bg-white/70 border-white/40 shadow-xl shadow-pink-100/50'
       }`}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 sm:gap-4">
@@ -1127,6 +1127,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
