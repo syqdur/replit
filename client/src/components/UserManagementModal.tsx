@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Users, Smartphone, Wifi, WifiOff, Clock, RefreshCw, XCircle, Eye, Trash2, AlertTriangle, CheckSquare, Square } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Users, Smartphone, Wifi, WifiOff, Clock, RefreshCw, XCircle, Eye, Trash2, AlertTriangle, CheckSquare, Square, Camera, Upload } from 'lucide-react';
 import { 
   collection, 
   query, 
@@ -12,6 +12,7 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { uploadUserProfilePicture, createOrUpdateUserProfile } from '../services/firebaseService';
 
 interface UserManagementModalProps {
   isOpen: boolean;
@@ -55,6 +56,8 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+  const [uploadingProfilePic, setUploadingProfilePic] = useState<string | null>(null);
+  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   // Generate avatar URL with custom profile picture support
   const getAvatarUrl = (username: string, deviceId?: string) => {
@@ -362,6 +365,60 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Admin Profile Picture Management
+  const handleProfilePictureUpload = async (userName: string, deviceId: string, file: File) => {
+    const userKey = `${userName}-${deviceId}`;
+    setUploadingProfilePic(userKey);
+    
+    try {
+      console.log(`📸 Admin uploading profile picture for ${userName}...`);
+      
+      // Upload the profile picture using the existing service
+      const downloadURL = await uploadUserProfilePicture(file, userName, deviceId);
+      
+      console.log(`✅ Profile picture uploaded successfully for ${userName}: ${downloadURL}`);
+      
+      // Refresh user data to show updated profile picture
+      await loadUserData();
+      
+    } catch (error) {
+      console.error('❌ Error uploading profile picture:', error);
+      setError(`Fehler beim Hochladen des Profilbilds für ${userName}`);
+    } finally {
+      setUploadingProfilePic(null);
+    }
+  };
+
+  const triggerFileInput = (userName: string, deviceId: string) => {
+    const userKey = `${userName}-${deviceId}`;
+    const input = fileInputRefs.current[userKey];
+    if (input) {
+      input.click();
+    }
+  };
+
+  const handleFileChange = async (userName: string, deviceId: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Bitte wählen Sie eine Bilddatei aus');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Bilddatei ist zu groß. Maximum 5MB erlaubt.');
+        return;
+      }
+      
+      await handleProfilePictureUpload(userName, deviceId, file);
+    }
+    
+    // Reset file input
+    event.target.value = '';
   };
 
   const bulkDeleteUsers = async () => {
@@ -958,18 +1015,53 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             </button>
                           </td>
                           
-                          {/* User Info */}
+                          {/* User Info with Profile Picture Management */}
                           <td className="px-4 py-4">
                             <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors duration-300 ${
-                                user.isOnline
-                                  ? isDarkMode ? 'bg-green-600 text-white' : 'bg-green-500 text-white'
-                                  : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
-                              }`}>
-                                <img 
-                                  src={getAvatarUrl(user.userName, user.deviceId)}
-                                  alt={user.userName}
-                                  className="w-full h-full object-cover"
+                              <div className="relative">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors duration-300 ${
+                                  user.isOnline
+                                    ? isDarkMode ? 'bg-green-600 text-white' : 'bg-green-500 text-white'
+                                    : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
+                                }`}>
+                                  {getUserAvatar?.(user.userName, user.deviceId) ? (
+                                    <img 
+                                      src={getUserAvatar(user.userName, user.deviceId)!}
+                                      alt={user.userName}
+                                      className="w-full h-full object-cover rounded-full"
+                                    />
+                                  ) : (
+                                    <span>{user.userName.charAt(0).toUpperCase()}</span>
+                                  )}
+                                </div>
+                                
+                                {/* Profile Picture Upload Button */}
+                                <button
+                                  onClick={() => triggerFileInput(user.userName, user.deviceId)}
+                                  disabled={uploadingProfilePic === userKey}
+                                  className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all duration-200 ${
+                                    uploadingProfilePic === userKey
+                                      ? 'bg-gray-400 cursor-not-allowed'
+                                      : isDarkMode 
+                                        ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg hover:shadow-xl' 
+                                        : 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl'
+                                  }`}
+                                  title="Profilbild für diesen Benutzer setzen"
+                                >
+                                  {uploadingProfilePic === userKey ? (
+                                    <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                                  ) : (
+                                    <Camera className="w-3 h-3" />
+                                  )}
+                                </button>
+                                
+                                {/* Hidden File Input */}
+                                <input
+                                  ref={(el) => fileInputRefs.current[userKey] = el}
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handleFileChange(user.userName, user.deviceId, e)}
+                                  className="hidden"
                                 />
                               </div>
                               <div>
