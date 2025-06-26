@@ -932,12 +932,44 @@ export const getCurrentLocation = (): Promise<{ latitude: number; longitude: num
   });
 };
 
-// Reverse geocoding to get location name from coordinates with multiple services
+// Reverse geocoding using Google's Geocoding API for maximum accuracy
 export const getLocationFromCoordinates = async (
   latitude: number,
   longitude: number
 ): Promise<{ name: string; address: string }> => {
-  // Try multiple geocoding services for better accuracy
+  // Try Google Geocoding API first (most accurate)
+  const googleApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  
+  if (googleApiKey) {
+    try {
+      console.log('🔍 Using Google Geocoding API for maximum accuracy...');
+      
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${googleApiKey}&language=de&region=de`,
+        {
+          method: 'GET'
+        }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.status === 'OK' && data.results.length > 0) {
+          return parseGoogleGeocodingResponse(data.results[0]);
+        } else {
+          console.warn('⚠️ Google Geocoding API returned no results:', data.status);
+        }
+      } else {
+        console.warn('⚠️ Google Geocoding API request failed:', response.status);
+      }
+    } catch (error) {
+      console.warn('❌ Google Geocoding API failed:', error);
+    }
+  } else {
+    console.log('ℹ️ Google Maps API key not available, using fallback services');
+  }
+
+  // Fallback to OpenStreetMap services
   const geocodingServices = [
     {
       name: 'Nominatim',
@@ -977,12 +1009,65 @@ export const getLocationFromCoordinates = async (
     }
   }
 
-  // Fallback if all services fail
+  // Final fallback
   console.error('❌ All geocoding services failed');
   return {
     name: 'Current Location',
     address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
   };
+};
+
+// Parse Google Geocoding API response for optimal accuracy
+const parseGoogleGeocodingResponse = (result: any): { name: string; address: string } => {
+  const addressComponents = result.address_components || [];
+  const locationParts = [];
+  
+  // Extract components in order of specificity
+  const getComponent = (types: string[]) => {
+    return addressComponents.find((comp: any) => 
+      types.some(type => comp.types.includes(type))
+    )?.long_name;
+  };
+  
+  // Try to get the most specific location first
+  const establishment = getComponent(['establishment', 'point_of_interest']);
+  const streetNumber = getComponent(['street_number']);
+  const route = getComponent(['route']);
+  const locality = getComponent(['locality', 'sublocality']);
+  const adminLevel2 = getComponent(['administrative_area_level_2']);
+  const adminLevel1 = getComponent(['administrative_area_level_1']);
+  const country = getComponent(['country']);
+  
+  // Build location name prioritizing specific places
+  if (establishment) {
+    locationParts.push(establishment);
+  } else if (streetNumber && route) {
+    locationParts.push(`${streetNumber} ${route}`);
+  } else if (route) {
+    locationParts.push(route);
+  }
+  
+  // Add locality (city/town/village)
+  if (locality) {
+    locationParts.push(locality);
+  }
+  
+  // Add administrative area (state/region) if different from locality
+  if (adminLevel1 && adminLevel1 !== locality) {
+    locationParts.push(adminLevel1);
+  }
+  
+  // Add country
+  if (country) {
+    locationParts.push(country);
+  }
+  
+  const name = locationParts.length > 0 ? locationParts.join(', ') : 'Current Location';
+  const fullAddress = result.formatted_address || name;
+  
+  console.log('📍 Google Geocoding parsed location:', { name, fullAddress });
+  
+  return { name, address: fullAddress };
 };
 
 // Parse Nominatim response with enhanced accuracy for German locations
