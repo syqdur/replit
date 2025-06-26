@@ -109,6 +109,13 @@ This is a comprehensive wedding gallery application with the following architect
 - **Instagram 2.0 Greenish Redesign**: Applied modern glassmorphism styling to MusicWishlist with green color scheme, improved text readability, larger album artwork, and enhanced hover effects
 - **Gear Icon Enhancement**: Moved profile gear icon to center position and increased size for better visibility and accessibility
 
+### January 26, 2025 (Layout Improvements)
+- **Header Layout Restructure**: Moved live user indicator from left to right side of header for better visual balance and user experience
+- **Floating Admin Controls**: Relocated admin toggle and settings buttons from header to fixed bottom-left corner position as floating action buttons with enhanced visibility
+- **Intuitive Profile Button**: Redesigned visitor profile edit button from confusing circular icon to clear labeled "Profil" button with icon and text for better user recognition
+- **Improved Admin Accessibility**: Admin controls now positioned as prominent floating buttons (lock/unlock and settings gear) in bottom-left corner for easier access
+- **Enhanced Profile UX**: Profile edit button now clearly shows "Profil" text with user avatar or UserPlus icon, making profile editing functionality obvious to users
+
 ### January 26, 2025 (Complete Feature Updates)
 - **Real Android/iPhone Push Notifications**: Implemented comprehensive push notification system with enhanced service worker supporting real mobile device notifications, including vibration patterns, notification icons, and click-to-navigate functionality
 - **Enhanced Service Worker**: Created production-ready service worker with caching, background sync, and proper notification handling for Android and iPhone devices with PWA manifest configuration

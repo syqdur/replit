@@ -830,12 +830,6 @@ function App() {
               </h1>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Live User Indicator */}
-              <LiveUserIndicator 
-                currentUser={userName || ''}
-                isDarkMode={isDarkMode}
-              />
-              
               {/* Notification Center */}
               {userName && (
                 <NotificationCenter
@@ -868,98 +862,35 @@ function App() {
                 </button>
               )}
               
-              {/* User Profile Edit Button - Shows user's profile picture or default icon */}
+              {/* Intuitive Profile Edit Button with Text */}
               <button
                 onClick={() => setShowUserProfileModal(true)}
-                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full transition-all duration-300 hover:scale-110 overflow-hidden ring-1 ${
-                  currentUserProfile?.profilePicture
-                    ? 'ring-blue-400/50 hover:ring-blue-400/70'
-                    : isDarkMode 
-                      ? 'bg-blue-600/50 hover:bg-blue-500/50 backdrop-blur-sm ring-blue-500/50' 
-                      : 'bg-blue-500/50 hover:bg-blue-600/50 backdrop-blur-sm ring-blue-400/50'
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105 ${
+                  isDarkMode 
+                    ? 'bg-blue-600/20 hover:bg-blue-500/30 text-blue-200 border border-blue-500/30' 
+                    : 'bg-blue-500/20 hover:bg-blue-600/30 text-blue-700 border border-blue-400/30'
                 }`}
                 title="Mein Profil bearbeiten"
               >
                 {currentUserProfile?.profilePicture ? (
-                  <div className="relative w-full h-full">
-                    <img 
-                      src={currentUserProfile?.profilePicture || ''} 
-                      alt="My Profile"
-                      className="w-full h-full object-cover"
-                    />
-                    {/* Gear icon overlay for profile picture */}
-                    <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
-                      isDarkMode 
-                        ? 'bg-gray-800 border-2 border-gray-600' 
-                        : 'bg-white border-2 border-gray-400'
-                    }`}>
-                      <Settings className={`w-2 h-2 sm:w-2.5 sm:h-2.5 transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-200' : 'text-gray-700'
-                      }`} />
-                    </div>
-                  </div>
+                  <img 
+                    src={currentUserProfile?.profilePicture || ''} 
+                    alt="My Profile"
+                    className="w-6 h-6 rounded-full object-cover ring-1 ring-blue-400/50"
+                  />
                 ) : (
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <UserPlus className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-300 ${
-                      isDarkMode ? 'text-white' : 'text-white'
-                    }`} />
-                    {/* Gear icon overlay for default icon - centered and larger */}
-                    <div className={`absolute inset-0 flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full transition-all duration-300 shadow-lg ${
-                      isDarkMode 
-                        ? 'bg-gray-800/90 border-2 border-gray-600' 
-                        : 'bg-white/90 border-2 border-gray-400'
-                    }`}>
-                      <Settings className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-200' : 'text-gray-700'
-                      }`} />
-                    </div>
-                  </div>
-                )}
-              </button>
-              
-              {/* Admin Toggle */}
-              <button
-                onClick={() => {
-                  if (isAdmin) {
-                    handleAdminLogout();
-                  } else {
-                    setShowAdminLogin(true);
-                  }
-                }}
-                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center ring-1 ${
-                  isDarkMode 
-                    ? 'bg-gray-800/60 hover:bg-gray-700/70 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
-                    : 'bg-white/60 hover:bg-gray-50/70 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
-                }`}
-                title={isAdmin ? "Admin-Modus verlassen" : "Admin-Modus"}
-              >
-                {isAdmin ? (
-                  <Unlock className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`} />
-                ) : (
-                  <Lock className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                  <UserPlus className={`w-5 h-5 transition-colors duration-300 ${
+                    isDarkMode ? 'text-blue-300' : 'text-blue-600'
                   }`} />
                 )}
+                <span className="text-sm font-medium hidden sm:block">Profil</span>
               </button>
               
-              {/* Admin Site Settings - Only visible in admin mode */}
-              {isAdmin && (
-                <button
-                  onClick={() => setShowProfileEditModal(true)}
-                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center ring-1 ${
-                    isDarkMode 
-                      ? 'bg-gray-800/60 hover:bg-gray-700/70 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
-                      : 'bg-white/60 hover:bg-gray-50/70 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
-                  }`}
-                  title="Website-Profil bearbeiten"
-                >
-                  <Settings className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`} />
-                </button>
-              )}
+              {/* Live User Indicator - Moved to right side */}
+              <LiveUserIndicator 
+                currentUser={userName || ''}
+                isDarkMode={isDarkMode}
+              />
               
               <button
                 onClick={toggleDarkMode}
@@ -1156,6 +1087,55 @@ function App() {
 
       {/* Back to Top Button */}
       <BackToTopButton isDarkMode={isDarkMode} />
+
+      {/* Floating Admin Button - Bottom Left Corner */}
+      {userName && (
+        <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2">
+          {/* Admin Toggle Button */}
+          <button
+            onClick={() => {
+              if (isAdmin) {
+                handleAdminLogout();
+              } else {
+                setShowAdminLogin(true);
+              }
+            }}
+            className={`w-12 h-12 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg ring-2 ${
+              isDarkMode 
+                ? 'bg-gray-800/90 hover:bg-gray-700/90 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
+                : 'bg-white/90 hover:bg-gray-50/90 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
+            }`}
+            title={isAdmin ? "Admin-Modus verlassen" : "Admin-Modus"}
+          >
+            {isAdmin ? (
+              <Unlock className={`w-5 h-5 transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`} />
+            ) : (
+              <Lock className={`w-5 h-5 transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`} />
+            )}
+          </button>
+
+          {/* Admin Site Settings - Only visible in admin mode */}
+          {isAdmin && (
+            <button
+              onClick={() => setShowProfileEditModal(true)}
+              className={`w-12 h-12 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg ring-2 ${
+                isDarkMode 
+                  ? 'bg-gray-800/90 hover:bg-gray-700/90 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
+                  : 'bg-white/90 hover:bg-gray-50/90 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
+              }`}
+              title="Website-Profil bearbeiten"
+            >
+              <Settings className={`w-5 h-5 transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`} />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
