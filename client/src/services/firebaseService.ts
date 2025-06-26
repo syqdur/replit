@@ -805,18 +805,27 @@ export const addLocationTag = async (
   addedByDeviceId: string
 ): Promise<string> => {
   try {
-    const locationTag: Omit<LocationTag, 'id'> = {
+    // Clean the locationData to remove undefined values
+    const cleanLocationData: any = {
       mediaId,
       name: locationData.name,
-      address: locationData.address,
-      coordinates: locationData.coordinates,
-      placeId: locationData.placeId,
       addedBy,
       addedByDeviceId,
       createdAt: new Date().toISOString()
     };
 
-    const docRef = await addDoc(collection(db, 'locationTags'), locationTag);
+    // Only add optional fields if they have values
+    if (locationData.address) {
+      cleanLocationData.address = locationData.address;
+    }
+    if (locationData.coordinates) {
+      cleanLocationData.coordinates = locationData.coordinates;
+    }
+    if (locationData.placeId) {
+      cleanLocationData.placeId = locationData.placeId;
+    }
+
+    const docRef = await addDoc(collection(db, 'location_tags'), cleanLocationData);
     console.log('✅ Location tag added:', locationData.name);
     return docRef.id;
   } catch (error) {
@@ -827,7 +836,7 @@ export const addLocationTag = async (
 
 export const removeLocationTag = async (locationTagId: string): Promise<void> => {
   try {
-    await deleteDoc(doc(db, 'locationTags', locationTagId));
+    await deleteDoc(doc(db, 'location_tags', locationTagId));
     console.log('✅ Location tag removed');
   } catch (error) {
     console.error('❌ Failed to remove location tag:', error);
@@ -838,7 +847,7 @@ export const removeLocationTag = async (locationTagId: string): Promise<void> =>
 export const getLocationTags = async (mediaId: string): Promise<LocationTag[]> => {
   try {
     const q = query(
-      collection(db, 'locationTags'),
+      collection(db, 'location_tags'),
       where('mediaId', '==', mediaId)
     );
     
@@ -938,5 +947,68 @@ export const getLocationFromCoordinates = async (
       name: 'Current Location',
       address: 'Location coordinates'
     };
+  }
+};
+
+// Location search for autocomplete suggestions
+export const searchLocations = async (query: string): Promise<Array<{
+  name: string;
+  address: string;
+  coordinates?: { latitude: number; longitude: number };
+  placeId?: string;
+}>> => {
+  if (!query.trim() || query.trim().length < 3) {
+    return [];
+  }
+
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`,
+      {
+        headers: {
+          'User-Agent': 'Wedding-Gallery-App'
+        }
+      }
+    );
+    
+    if (!response.ok) {
+      throw new Error('Location search request failed');
+    }
+    
+    const data = await response.json();
+    
+    return data.map((item: any) => {
+      const address = item.address || {};
+      const locationParts = [];
+      
+      // Build a meaningful name from the address components
+      if (address.tourism || address.amenity || address.building) {
+        locationParts.push(address.tourism || address.amenity || address.building);
+      }
+      if (address.road || address.pedestrian) {
+        locationParts.push(address.road || address.pedestrian);
+      }
+      if (address.city || address.town || address.village) {
+        locationParts.push(address.city || address.town || address.village);
+      }
+      if (address.country) {
+        locationParts.push(address.country);
+      }
+      
+      const name = locationParts.length > 0 ? locationParts.join(', ') : item.display_name;
+      
+      return {
+        name,
+        address: item.display_name,
+        coordinates: {
+          latitude: parseFloat(item.lat),
+          longitude: parseFloat(item.lon)
+        },
+        placeId: item.place_id?.toString()
+      };
+    });
+  } catch (error) {
+    console.error('❌ Failed to search locations:', error);
+    return [];
   }
 };

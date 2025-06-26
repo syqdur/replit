@@ -9,7 +9,8 @@ import {
   removeLocationTag,
   getLocationTags,
   getCurrentLocation,
-  getLocationFromCoordinates
+  getLocationFromCoordinates,
+  searchLocations
 } from '../services/firebaseService';
 import { notificationService } from '../services/notificationService';
 
@@ -53,13 +54,42 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [locationTags, setLocationTags] = useState<LocationTag[]>([]);
   const [customLocationName, setCustomLocationName] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState<Array<{
+    name: string;
+    address: string;
+    coordinates?: { latitude: number; longitude: number };
+    placeId?: string;
+  }>>([]);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [isSearchingLocations, setIsSearchingLocations] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     loadUsers();
     loadLocationTags();
   }, []);
+
+  // Location search effect with debouncing
+  useEffect(() => {
+    const searchTimeout = setTimeout(async () => {
+      if (customLocationName.trim().length >= 3) {
+        setIsSearchingLocations(true);
+        try {
+          const suggestions = await searchLocations(customLocationName);
+          setLocationSuggestions(suggestions);
+        } catch (error) {
+          console.error('Error searching locations:', error);
+          setLocationSuggestions([]);
+        } finally {
+          setIsSearchingLocations(false);
+        }
+      } else {
+        setLocationSuggestions([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(searchTimeout);
+  }, [customLocationName]);
 
   useEffect(() => {
     if (searchTerm.trim()) {
@@ -206,8 +236,38 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
       await loadLocationTags();
       setShowLocationInput(false);
       setCustomLocationName('');
+      setLocationSuggestions([]);
     } catch (error) {
       console.error('Error adding custom location:', error);
+      alert('Fehler beim Hinzufügen des Standorts. Bitte versuchen Sie es erneut.');
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
+
+  const handleSelectLocationSuggestion = async (suggestion: {
+    name: string;
+    address: string;
+    coordinates?: { latitude: number; longitude: number };
+    placeId?: string;
+  }) => {
+    if (isLoadingLocation) return;
+    
+    setIsLoadingLocation(true);
+    try {
+      await addLocationTag(
+        mediaId,
+        suggestion,
+        currentUser,
+        currentDeviceId
+      );
+      
+      await loadLocationTags();
+      setShowLocationInput(false);
+      setCustomLocationName('');
+      setLocationSuggestions([]);
+    } catch (error) {
+      console.error('Error adding selected location:', error);
       alert('Fehler beim Hinzufügen des Standorts. Bitte versuchen Sie es erneut.');
     } finally {
       setIsLoadingLocation(false);
@@ -385,20 +445,55 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
               </button>
 
               {/* Custom Location Input */}
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  value={customLocationName}
-                  onChange={(e) => setCustomLocationName(e.target.value)}
-                  placeholder="Standort eingeben (z.B. Eiffelturm, Paris)"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-green-500 focus:ring-4 focus:ring-green-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300"
-                />
+              <div className="space-y-3 relative">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={customLocationName}
+                    onChange={(e) => setCustomLocationName(e.target.value)}
+                    placeholder="Standort eingeben (z.B. Eiffelturm, Paris)"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-green-500 focus:ring-4 focus:ring-green-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300"
+                  />
+                  {isSearchingLocations && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-green-500 border-t-transparent"></div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Location Suggestions Dropdown */}
+                {locationSuggestions.length > 0 && (
+                  <div className="absolute z-50 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                    {locationSuggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSelectLocationSuggestion(suggestion)}
+                        disabled={isLoadingLocation}
+                        className={`w-full text-left px-4 py-3 hover:bg-green-500/10 dark:hover:bg-green-500/20 transition-colors duration-200 border-b border-gray-200/30 dark:border-gray-700/30 last:border-b-0 ${
+                          isLoadingLocation ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                              {suggestion.name}
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                              {suggestion.address}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <button
                   onClick={handleAddCustomLocation}
-                  disabled={isLoadingLocation || !customLocationName.trim()}
+                  disabled={isLoadingLocation || !customLocationName.trim() || locationSuggestions.length > 0}
                   className={`w-full px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] ${
-                    isLoadingLocation || !customLocationName.trim() 
+                    isLoadingLocation || !customLocationName.trim() || locationSuggestions.length > 0
                       ? 'opacity-50 cursor-not-allowed' 
                       : ''
                   } bg-white/40 dark:bg-gray-800/60 hover:bg-white/60 dark:hover:bg-gray-700/80 backdrop-blur-sm text-gray-700 dark:text-gray-100 border border-white/20 dark:border-gray-700/40 hover:border-green-300 dark:hover:border-green-500 shadow-sm hover:shadow-md`}
