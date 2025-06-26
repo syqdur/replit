@@ -72,6 +72,26 @@
   }
 }
 
+/* Heart float animation for envelope */
+@keyframes heart-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(-2px) scale(1.1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-4px) scale(1.2);
+    opacity: 0.9;
+  }
+  75% {
+    transform: translateY(-2px) scale(1.1);
+    opacity: 0.8;
+  }
+}
+
 /* Enhanced slideshow animations */
 @keyframes slideInFromRight {
   from {

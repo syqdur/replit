@@ -244,11 +244,53 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-full flex items-center justify-center relative">
-                                {/* Simple animated note icon */}
-                                <div className="text-2xl animate-pulse" style={{
-                                  animation: 'gentle-bounce 3s ease-in-out infinite'
-                                }}>
-                                  📝
+                                {/* Animated Envelope with Heart */}
+                                <div className="relative">
+                                  {/* Envelope using SVG for clean rendering */}
+                                  <svg 
+                                    width="24" 
+                                    height="18" 
+                                    viewBox="0 0 24 18" 
+                                    className={`transition-colors duration-300 ${
+                                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                    }`}
+                                    style={{
+                                      animation: 'gentle-bounce 3s ease-in-out infinite'
+                                    }}
+                                  >
+                                    {/* Envelope body */}
+                                    <rect 
+                                      x="2" 
+                                      y="4" 
+                                      width="20" 
+                                      height="12" 
+                                      rx="1" 
+                                      fill="none" 
+                                      stroke="currentColor" 
+                                      strokeWidth="1.5"
+                                    />
+                                    {/* Envelope flap */}
+                                    <path 
+                                      d="M2 5L12 11L22 5" 
+                                      fill="none" 
+                                      stroke="currentColor" 
+                                      strokeWidth="1.5" 
+                                      strokeLinecap="round" 
+                                      strokeLinejoin="round"
+                                    />
+                                  </svg>
+                                  
+                                  {/* Floating Heart */}
+                                  <div 
+                                    className="absolute text-red-500 text-sm"
+                                    style={{
+                                      animation: 'heart-float 2s ease-in-out infinite',
+                                      top: '-6px',
+                                      right: '-6px'
+                                    }}
+                                  >
+                                    ❤️
+                                  </div>
                                 </div>
                               </div>
                               <div>
