@@ -1244,3 +1244,29 @@ export const searchLocations = async (query: string): Promise<Array<{
     return [];
   }
 };
+
+// Add notification function
+export const addNotification = async (
+  targetUser: string,
+  targetDeviceId: string,
+  type: 'tagged' | 'comment' | 'like',
+  message: string,
+  mediaId?: string,
+  mediaUrl?: string
+): Promise<void> => {
+  try {
+    await addDoc(collection(db, 'notifications'), {
+      type,
+      message,
+      targetUser,
+      targetDeviceId,
+      mediaId,
+      mediaUrl,
+      read: false,
+      createdAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error adding notification:', error);
+    throw error;
+  }
+};
