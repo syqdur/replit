@@ -62,6 +62,16 @@
   }
 }
 
+/* Gentle bounce animation for note icon */
+@keyframes gentle-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
 /* Enhanced slideshow animations */
 @keyframes slideInFromRight {
   from {

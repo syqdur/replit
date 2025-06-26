@@ -244,31 +244,11 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-full flex items-center justify-center relative">
-                                {/* Animated Envelope with Heart */}
-                                <div className="relative w-8 h-6 flex items-center justify-center">
-                                  {/* Envelope Base */}
-                                  <div className={`absolute w-full h-full rounded-sm border-2 transition-all duration-300 ${
-                                    isDarkMode ? 'border-gray-300 bg-gray-100' : 'border-gray-600 bg-white'
-                                  }`} style={{
-                                    animation: 'envelope-float 3s ease-in-out infinite'
-                                  }}>
-                                    {/* Envelope Flap */}
-                                    <div className={`absolute -top-1 left-0 w-full h-3 border-l-2 border-r-2 border-t-2 transition-all duration-300 ${
-                                      isDarkMode ? 'border-gray-300 bg-gray-100' : 'border-gray-600 bg-white'
-                                    }`} style={{
-                                      clipPath: 'polygon(0% 0%, 50% 60%, 100% 0%)',
-                                      animation: 'envelope-flap 3s ease-in-out infinite'
-                                    }}></div>
-                                  </div>
-                                  
-                                  {/* Floating Heart */}
-                                  <div className={`absolute text-red-500 text-xs transition-all duration-500`} style={{
-                                    animation: 'heart-float 2s ease-in-out infinite',
-                                    top: '-8px',
-                                    right: '-4px'
-                                  }}>
-                                    💕
-                                  </div>
+                                {/* Simple animated note icon */}
+                                <div className="text-2xl animate-pulse" style={{
+                                  animation: 'gentle-bounce 3s ease-in-out infinite'
+                                }}>
+                                  📝
                                 </div>
                               </div>
                               <div>
