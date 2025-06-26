@@ -599,6 +599,24 @@ const makeSpotifyApiCall = async (url: string, options: RequestInit = {}): Promi
   
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
+    
+    // Check for insufficient scope error (403 with specific message)
+    if (response.status === 403 && errorData.error?.message?.includes('Insufficient client scope')) {
+      console.log('🔒 === INSUFFICIENT SCOPE DETECTED ===');
+      console.log('Error:', errorData.error.message);
+      console.log('Required action: Re-authentication needed');
+      
+      // Clear existing credentials to force re-auth
+      await disconnectSpotify();
+      
+      // Create enhanced error with re-auth instructions
+      const scopeError = new Error('Insufficient Spotify permissions. Please reconnect to grant required access.');
+      (scopeError as any).status = response.status;
+      (scopeError as any).body = errorData;
+      (scopeError as any).requiresReauth = true;
+      throw scopeError;
+    }
+    
     const error = new Error(`Spotify API error: ${errorData.error?.message || response.statusText}`);
     (error as any).status = response.status;
     (error as any).body = errorData;

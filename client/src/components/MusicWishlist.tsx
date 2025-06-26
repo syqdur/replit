@@ -215,9 +215,16 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       
       console.log('✅ Track added with instant UI update and snapshot tracking');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to add track:', error);
-      setError('Failed to add track to playlist: ' + (error.message || 'Unknown error'));
+      
+      // Check if this is a scope error requiring re-authentication
+      if (error.requiresReauth || (error.status === 403 && error.message?.includes('Insufficient'))) {
+        setError('Spotify permissions insufficient. Please disconnect and reconnect to grant full access.');
+      } else {
+        setError('Failed to add track to playlist: ' + (error.message || 'Unknown error'));
+      }
+      
       setSyncStatus('error');
       setTimeout(() => setSyncStatus('live'), 3000);
     } finally {
