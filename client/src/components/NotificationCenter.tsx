@@ -108,7 +108,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     <div className="relative">
       {/* Notification Bell Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          console.log('🔔 Notification bell clicked! Current state:', isOpen);
+          console.log('📬 Current notifications:', notifications.length);
+          console.log('📊 Unread count:', unreadCount);
+          setIsOpen(!isOpen);
+          console.log('🔔 New state will be:', !isOpen);
+        }}
         className={`relative p-3 rounded-full transition-all duration-300 ${
           isDarkMode 
             ? 'hover:bg-gray-700 text-gray-300 hover:text-white' 
