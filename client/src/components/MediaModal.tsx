@@ -152,22 +152,27 @@ export const MediaModal: React.FC<MediaModalProps> = ({
         }
       }}
     >
-      {/* Mobile-optimized close button */}
+      {/* Large red close button for mobile visibility */}
       <button 
         onClick={onClose}
-        className="fixed top-4 right-4 z-[60] w-12 h-12 flex items-center justify-center rounded-full bg-white/90 text-black shadow-2xl border-2 border-white/50 touch-manipulation active:scale-95"
+        className="fixed top-4 right-4 w-20 h-20 flex items-center justify-center rounded-full bg-red-500 text-white shadow-2xl border-4 border-white touch-manipulation active:scale-95 z-[9999]"
         style={{ 
-          minWidth: '48px', 
-          minHeight: '48px',
-          backdropFilter: 'blur(8px)'
+          position: 'fixed',
+          top: '16px',
+          right: '16px',
+          width: '80px',
+          height: '80px',
+          zIndex: 99999,
+          backgroundColor: '#ef4444',
+          color: 'white'
         }}
       >
-        <X className="w-6 h-6 stroke-2" />
+        <X className="w-10 h-10 stroke-[4]" />
       </button>
 
       {/* Mobile helper text */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-black/70 text-white px-3 py-1 rounded-full text-xs sm:hidden">
-        Tippe außerhalb oder auf X zum Schließen
+      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-3 rounded-lg text-lg font-bold border-4 border-white">
+        RED X BUTTON TOP RIGHT TO CLOSE
       </div>
 
       {/* Navigation buttons */}
