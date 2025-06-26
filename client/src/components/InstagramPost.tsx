@@ -123,9 +123,9 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
   const displayComments = showAllComments ? comments : comments.slice(0, 2);
 
   // Generate beautiful wedding-themed avatar based on username
-  const getAvatarUrl = (username: string) => {
+  const getAvatarUrl = (username: string, targetDeviceId?: string) => {
     // First try to get user's custom profile picture
-    const customAvatar = getUserAvatar?.(username, item.deviceId);
+    const customAvatar = getUserAvatar?.(username, targetDeviceId);
     if (customAvatar) return customAvatar;
     
     // Fallback to generated avatars
