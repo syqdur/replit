@@ -410,7 +410,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
               }`}>
                 📸 Medien ({mediaItems.length})
               </h3>
-              <div className="grid grid-cols-3 gap-1">
+              <div className="grid grid-cols-3 gap-1 px-3">
                 {mediaItems.map((item, mediaIndex) => {
                   // Find the original index in the full items array
                   const originalIndex = items.findIndex(i => i.id === item.id);
