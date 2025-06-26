@@ -928,269 +928,233 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
             </div>
           )}
 
-          {/* Users Table */}
+          {/* Bulk Actions */}
           {!isLoading && users.length > 0 && (
-            <div className={`rounded-xl border overflow-hidden transition-colors duration-300 ${
-              isDarkMode ? 'border-gray-700' : 'border-gray-200'
-            }`}>
-              <div className={`overflow-x-auto transition-colors duration-300 ${
-                isDarkMode ? 'bg-gray-800' : 'bg-white'
-              }`}>
-                <table className="w-full">
-                  <thead className={`transition-colors duration-300 ${
-                    isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
-                  }`}>
-                    <tr>
-                      <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                      }`}>
+            <div className="mb-4">
+              <button
+                onClick={selectAllUsers}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
+                  isDarkMode 
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                }`}
+                title={selectedUsers.size === users.length ? "Alle abwählen" : "Alle auswählen"}
+              >
+                {selectedUsers.size === users.length ? (
+                  <CheckSquare className="w-4 h-4" />
+                ) : (
+                  <Square className="w-4 h-4" />
+                )}
+                <span className="text-sm font-medium">
+                  {selectedUsers.size === users.length ? "Alle abwählen" : "Alle auswählen"}
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* Users Cards - Mobile Friendly */}
+          {!isLoading && users.length > 0 && (
+            <div className="space-y-4">
+              {users.map((user, index) => {
+                const userKey = `${user.userName}-${user.deviceId}`;
+                const isSelected = selectedUsers.has(userKey);
+                
+                return (
+                  <div 
+                    key={userKey} 
+                    className={`p-4 rounded-xl border transition-all duration-300 ${
+                      isSelected 
+                        ? isDarkMode 
+                          ? 'bg-blue-900/30 border-blue-600/50' 
+                          : 'bg-blue-50 border-blue-200'
+                        : isDarkMode 
+                          ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80' 
+                          : 'bg-white border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    {/* Mobile Header Row */}
+                    <div className="flex items-start justify-between mb-3">
+                      {/* User Info with Avatar */}
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {/* Selection Checkbox */}
                         <button
-                          onClick={selectAllUsers}
-                          className={`flex items-center gap-2 hover:opacity-75 transition-opacity duration-200`}
-                          title={selectedUsers.size === users.length ? "Alle abwählen" : "Alle auswählen"}
+                          onClick={() => toggleUserSelection(user.userName, user.deviceId)}
+                          className={`flex-shrink-0 p-1 rounded transition-colors duration-200 ${
+                            isSelected
+                              ? 'text-blue-500'
+                              : isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
+                          }`}
                         >
-                          {selectedUsers.size === users.length ? (
-                            <CheckSquare className="w-4 h-4" />
+                          {isSelected ? (
+                            <CheckSquare className="w-5 h-5" />
                           ) : (
-                            <Square className="w-4 h-4" />
+                            <Square className="w-5 h-5" />
                           )}
-                          Auswahl
                         </button>
-                      </th>
-                      <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                      }`}>
-                        Benutzer
-                      </th>
-                      <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                      }`}>
-                        Status
-                      </th>
-                      <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                      }`}>
-                        Aktivität
-                      </th>
-                      <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                      }`}>
-                        Beiträge
-                      </th>
-                      <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                      }`}>
-                        Aktionen
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className={`divide-y transition-colors duration-300 ${
-                    isDarkMode ? 'divide-gray-700' : 'divide-gray-200'
-                  }`}>
-                    {users.map((user, index) => {
-                      const userKey = `${user.userName}-${user.deviceId}`;
-                      const isSelected = selectedUsers.has(userKey);
-                      
-                      return (
-                        <tr key={userKey} className={`transition-colors duration-300 ${
-                          isSelected 
-                            ? isDarkMode ? 'bg-blue-900/30' : 'bg-blue-50'
-                            : isDarkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
-                        }`}>
-                          {/* Selection Checkbox */}
-                          <td className="px-4 py-4">
-                            <button
-                              onClick={() => toggleUserSelection(user.userName, user.deviceId)}
-                              className={`p-1 rounded transition-colors duration-200 ${
-                                isSelected
-                                  ? 'text-blue-500'
-                                  : isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
-                              }`}
-                            >
-                              {isSelected ? (
-                                <CheckSquare className="w-5 h-5" />
-                              ) : (
-                                <Square className="w-5 h-5" />
-                              )}
-                            </button>
-                          </td>
+
+                        {/* Profile Picture with Upload */}
+                        <div className="relative flex-shrink-0">
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold transition-colors duration-300 ${
+                            user.isOnline
+                              ? isDarkMode ? 'bg-green-600 text-white' : 'bg-green-500 text-white'
+                              : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
+                          }`}>
+                            {getUserAvatar?.(user.userName, user.deviceId) ? (
+                              <img 
+                                src={getUserAvatar(user.userName, user.deviceId)!}
+                                alt={user.userName}
+                                className="w-full h-full object-cover rounded-full"
+                              />
+                            ) : (
+                              <span>{user.userName.charAt(0).toUpperCase()}</span>
+                            )}
+                          </div>
                           
-                          {/* User Info with Profile Picture Management */}
-                          <td className="px-4 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="relative">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors duration-300 ${
-                                  user.isOnline
-                                    ? isDarkMode ? 'bg-green-600 text-white' : 'bg-green-500 text-white'
-                                    : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
-                                }`}>
-                                  {getUserAvatar?.(user.userName, user.deviceId) ? (
-                                    <img 
-                                      src={getUserAvatar(user.userName, user.deviceId)!}
-                                      alt={user.userName}
-                                      className="w-full h-full object-cover rounded-full"
-                                    />
-                                  ) : (
-                                    <span>{user.userName.charAt(0).toUpperCase()}</span>
-                                  )}
-                                </div>
-                                
-                                {/* Profile Picture Upload Button */}
-                                <button
-                                  onClick={() => triggerFileInput(user.userName, user.deviceId)}
-                                  disabled={uploadingProfilePic === userKey}
-                                  className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all duration-200 ${
-                                    uploadingProfilePic === userKey
-                                      ? 'bg-gray-400 cursor-not-allowed'
-                                      : isDarkMode 
-                                        ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg hover:shadow-xl' 
-                                        : 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl'
-                                  }`}
-                                  title="Profilbild für diesen Benutzer setzen"
-                                >
-                                  {uploadingProfilePic === userKey ? (
-                                    <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
-                                  ) : (
-                                    <Camera className="w-3 h-3" />
-                                  )}
-                                </button>
-                                
-                                {/* Hidden File Input */}
-                                <input
-                                  ref={(el) => fileInputRefs.current[userKey] = el}
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={(e) => handleFileChange(user.userName, user.deviceId, e)}
-                                  className="hidden"
-                                />
-                              </div>
-                              <div>
-                                <div className={`font-medium transition-colors duration-300 ${
-                                  isDarkMode ? 'text-white' : 'text-gray-900'
-                                }`}>
-                                  {getDisplayName(user.userName, user.deviceId)}
-                                </div>
-                                <div className={`text-xs font-mono transition-colors duration-300 ${
-                                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                }`}>
-                                  {user.deviceId.substring(0, 8)}...
-                                </div>
-                              </div>
-                            </div>
-                          </td>
+                          {/* Profile Picture Upload Button */}
+                          <button
+                            onClick={() => triggerFileInput(user.userName, user.deviceId)}
+                            disabled={uploadingProfilePic === userKey}
+                            className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all duration-200 ${
+                              uploadingProfilePic === userKey
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : isDarkMode 
+                                  ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg hover:shadow-xl' 
+                                  : 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl'
+                            }`}
+                            title="Profilbild setzen"
+                          >
+                            {uploadingProfilePic === userKey ? (
+                              <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                              <Camera className="w-3 h-3" />
+                            )}
+                          </button>
+                          
+                          {/* Hidden File Input */}
+                          <input
+                            ref={(el) => fileInputRefs.current[userKey] = el}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(user.userName, user.deviceId, e)}
+                            className="hidden"
+                          />
+                        </div>
 
-                          {/* Online Status */}
-                          <td className="px-4 py-4">
-                            <div className="flex items-center gap-2">
-                              {user.isOnline ? (
-                                <>
-                                  <Wifi className="w-4 h-4 text-green-500" />
-                                  <span className={`text-sm font-medium transition-colors duration-300 ${
-                                    isDarkMode ? 'text-green-400' : 'text-green-600'
-                                  }`}>
-                                    Online
-                                  </span>
-                                </>
-                              ) : (
-                                <>
-                                  <WifiOff className="w-4 h-4 text-gray-500" />
-                                  <span className={`text-sm transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                  }`}>
-                                    Offline
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                            <div className={`text-xs mt-1 transition-colors duration-300 ${
-                              isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                            }`}>
-                              {formatTimeAgo(user.lastSeen)}
-                            </div>
-                          </td>
+                        {/* User Details */}
+                        <div className="flex-1 min-w-0">
+                          <div className={`font-medium text-sm truncate transition-colors duration-300 ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>
+                            {getDisplayName(user.userName, user.deviceId)}
+                          </div>
+                          <div className={`text-xs font-mono transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                          }`}>
+                            {user.deviceId.substring(0, 8)}...
+                          </div>
+                        </div>
+                      </div>
 
-                          {/* Last Activity */}
-                          <td className="px-4 py-4">
-                            <div className={`text-sm transition-colors duration-300 ${
-                              isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                              {formatTimeAgo(user.lastActivity)}
-                            </div>
-                            <div className={`text-xs transition-colors duration-300 ${
-                              isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                            }`}>
-                              Letzte Aktivität
-                            </div>
-                          </td>
+                      {/* Delete Action */}
+                      <div className="flex-shrink-0">
+                        {deletingUser === userKey ? (
+                          <div className="flex items-center gap-2 px-2 py-1 rounded bg-red-500 text-white">
+                            <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                            <span className="text-xs">Löschen...</span>
+                          </div>
+                        ) : deleteConfirm === userKey ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => deleteUser(user.userName, user.deviceId)}
+                              className="p-1.5 rounded bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
+                              title="Bestätigen"
+                            >
+                              <AlertTriangle className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirm(null)}
+                              className={`p-1.5 rounded transition-colors duration-200 ${
+                                isDarkMode 
+                                  ? 'bg-gray-600 hover:bg-gray-500 text-gray-300' 
+                                  : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                              }`}
+                              title="Abbrechen"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => deleteUser(user.userName, user.deviceId)}
+                            className={`p-2 rounded-full transition-colors duration-200 ${
+                              isDarkMode 
+                                ? 'hover:bg-red-900/30 text-red-400 hover:text-red-300' 
+                                : 'hover:bg-red-50 text-red-500 hover:text-red-600'
+                            }`}
+                            title="Löschen"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
 
-                          {/* Contributions */}
-                          <td className="px-4 py-4">
-                            <div className={`text-sm font-medium transition-colors duration-300 ${
-                              isDarkMode ? 'text-white' : 'text-gray-900'
-                            }`}>
-                              {user.contributionCount}
-                            </div>
-                            <div className={`text-xs transition-colors duration-300 ${
-                              isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                            }`}>
-                              Beiträge
-                            </div>
-                          </td>
+                    {/* Mobile Info Grid */}
+                    <div className="grid grid-cols-3 gap-3 text-center">
+                      {/* Status */}
+                      <div>
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          {user.isOnline ? (
+                            <Wifi className="w-3 h-3 text-green-500" />
+                          ) : (
+                            <WifiOff className="w-3 h-3 text-gray-500" />
+                          )}
+                          <span className={`text-xs font-medium ${
+                            user.isOnline 
+                              ? isDarkMode ? 'text-green-400' : 'text-green-600'
+                              : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            {user.isOnline ? 'Online' : 'Offline'}
+                          </span>
+                        </div>
+                        <div className={`text-xs ${
+                          isDarkMode ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                          {formatTimeAgo(user.lastSeen)}
+                        </div>
+                      </div>
 
-                          {/* Actions */}
-                          <td className="px-4 py-4">
-                            <div className="flex items-center gap-2">
-                              {deletingUser === `${user.userName}-${user.deviceId}` ? (
-                                <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-                                  <span className={`text-xs transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                  }`}>
-                                    Löschen...
-                                  </span>
-                                </div>
-                              ) : deleteConfirm === `${user.userName}-${user.deviceId}` ? (
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => deleteUser(user.userName, user.deviceId)}
-                                    className="p-1 rounded bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
-                                    title="Löschen bestätigen"
-                                  >
-                                    <AlertTriangle className="w-3 h-3" />
-                                  </button>
-                                  <button
-                                    onClick={() => setDeleteConfirm(null)}
-                                    className={`p-1 rounded transition-colors duration-200 ${
-                                      isDarkMode 
-                                        ? 'bg-gray-600 hover:bg-gray-500 text-gray-300' 
-                                        : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
-                                    }`}
-                                    title="Abbrechen"
-                                  >
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </div>
-                              ) : (
-                                <button
-                                  onClick={() => deleteUser(user.userName, user.deviceId)}
-                                  className={`p-2 rounded-full transition-colors duration-200 ${
-                                    isDarkMode 
-                                      ? 'hover:bg-red-900/30 text-red-400 hover:text-red-300' 
-                                      : 'hover:bg-red-50 text-red-500 hover:text-red-600'
-                                  }`}
-                                  title="Benutzer löschen"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                      {/* Last Activity */}
+                      <div>
+                        <div className={`text-xs font-medium mb-1 ${
+                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Aktivität
+                        </div>
+                        <div className={`text-xs ${
+                          isDarkMode ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                          {formatTimeAgo(user.lastActivity)}
+                        </div>
+                      </div>
+
+                      {/* Contributions */}
+                      <div>
+                        <div className={`text-sm font-bold mb-1 ${
+                          isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}>
+                          {user.contributionCount}
+                        </div>
+                        <div className={`text-xs ${
+                          isDarkMode ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                          Beiträge
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
