@@ -290,6 +290,47 @@ class NotificationService {
 
 export const notificationService = new NotificationService();
 
+// Export standalone functions for easier use in components
+export const subscribeToNotifications = (
+  userName: string,
+  deviceId: string,
+  callback: (notifications: Notification[]) => void
+) => {
+  return notificationService.subscribeToNotifications(userName, deviceId, callback);
+};
+
+export const markNotificationAsRead = async (notificationId: string) => {
+  try {
+    const { doc, updateDoc } = await import('firebase/firestore');
+    await updateDoc(doc(db, 'notifications', notificationId), {
+      read: true
+    });
+  } catch (error) {
+    console.error('❌ Failed to mark notification as read:', error);
+  }
+};
+
+export const markAllNotificationsAsRead = async (userName: string, deviceId: string) => {
+  try {
+    const { query, where, getDocs, doc, updateDoc } = await import('firebase/firestore');
+    const q = query(
+      collection(db, 'notifications'),
+      where('targetUser', '==', userName),
+      where('targetDeviceId', '==', deviceId),
+      where('read', '==', false)
+    );
+    
+    const snapshot = await getDocs(q);
+    const updatePromises = snapshot.docs.map(docSnapshot => 
+      updateDoc(doc(db, 'notifications', docSnapshot.id), { read: true })
+    );
+    
+    await Promise.all(updatePromises);
+  } catch (error) {
+    console.error('❌ Failed to mark all notifications as read:', error);
+  }
+};
+
 // Initialize push notifications for Android/iPhone
 export const initializePushNotifications = async (): Promise<boolean> => {
   try {
