@@ -147,7 +147,7 @@ export const MediaModal: React.FC<MediaModalProps> = ({
       {/* Close button */}
       <button 
         onClick={onClose}
-        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 p-2 sm:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all duration-300 touch-manipulation"
+        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50 p-2 sm:p-3 rounded-full bg-black/70 text-white hover:bg-black/90 transition-all duration-300 touch-manipulation shadow-lg"
         style={{ minWidth: '48px', minHeight: '48px' }}
       >
         <X className="w-5 h-5 sm:w-6 sm:h-6" />
