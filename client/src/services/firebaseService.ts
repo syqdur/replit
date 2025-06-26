@@ -1029,22 +1029,16 @@ const parseGoogleGeocodingResponse = (result: any): { name: string; address: str
     )?.long_name;
   };
   
-  // Try to get the most specific location first
+  // Try to get the most specific location first (excluding street details)
   const establishment = getComponent(['establishment', 'point_of_interest']);
-  const streetNumber = getComponent(['street_number']);
-  const route = getComponent(['route']);
   const locality = getComponent(['locality', 'sublocality']);
   const adminLevel2 = getComponent(['administrative_area_level_2']);
   const adminLevel1 = getComponent(['administrative_area_level_1']);
   const country = getComponent(['country']);
   
-  // Build location name prioritizing specific places
+  // Build location name prioritizing specific places (no street names)
   if (establishment) {
     locationParts.push(establishment);
-  } else if (streetNumber && route) {
-    locationParts.push(`${streetNumber} ${route}`);
-  } else if (route) {
-    locationParts.push(route);
   }
   
   // Add locality (city/town/village)
@@ -1086,17 +1080,13 @@ const parseNominatimResponse = (data: any): { name: string; address: string } =>
     locationParts.push(address.municipality);
   }
   
-  // Add specific location details if available
+  // Add specific location details if available (excluding street details)
   if (address.tourism) {
     locationParts.unshift(address.tourism);
   } else if (address.amenity) {
     locationParts.unshift(address.amenity);
   } else if (address.shop) {
     locationParts.unshift(address.shop);
-  } else if (address.house_number && address.road) {
-    locationParts.unshift(`${address.house_number} ${address.road}`);
-  } else if (address.road) {
-    locationParts.unshift(address.road);
   }
   
   // Add state/region for context
@@ -1186,7 +1176,7 @@ export const searchLocations = async (query: string): Promise<Array<{
         const address = item.address || {};
         const locationParts = [];
         
-        // Prioritize meaningful location names
+        // Prioritize meaningful location names (excluding street details)
         if (address.tourism) {
           locationParts.push(address.tourism);
         } else if (address.amenity) {
@@ -1197,12 +1187,6 @@ export const searchLocations = async (query: string): Promise<Array<{
           locationParts.push(address.leisure);
         } else if (address.building && address.building !== 'yes') {
           locationParts.push(address.building);
-        } else if (address.house_number && address.road) {
-          locationParts.push(`${address.house_number} ${address.road}`);
-        } else if (address.road) {
-          locationParts.push(address.road);
-        } else if (address.pedestrian) {
-          locationParts.push(address.pedestrian);
         }
         
         // Add neighborhood/suburb for context

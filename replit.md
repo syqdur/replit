@@ -126,6 +126,7 @@ This is a comprehensive wedding gallery application with the following architect
 - **Mobile Notification Center Enhancement**: Completely redesigned NotificationCenter component with full mobile responsiveness including full-width dropdown on mobile screens, semi-transparent overlay for touch interaction, proper responsive positioning that prevents off-screen display, and optimized touch-friendly interface for seamless mobile notification management
 - **MediaModal Mobile Optimization**: Redesigned MediaModal for mobile devices with clean white close button (48x48px) positioned lower on screen (top-16), high contrast design, tap-to-close overlay functionality, and touch-optimized interactions for seamless mobile photo viewing from notifications
 - **German Customer README**: Created comprehensive German README.md documentation for customers explaining all features, setup instructions, and best practices for wedding gallery usage
+- **Geo Tagging Street Name Removal**: Updated location services to exclude street names from geo tagging, showing only establishment names, points of interest, and city/region information for cleaner location display
 
 ### January 26, 2025 (Complete Feature Updates)
 - **Real Android/iPhone Push Notifications**: Implemented comprehensive push notification system with enhanced service worker supporting real mobile device notifications, including vibration patterns, notification icons, and click-to-navigate functionality
