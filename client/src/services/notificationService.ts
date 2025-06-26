@@ -248,7 +248,10 @@ class NotificationService {
           ...doc.data()
         } as Notification);
       });
+      console.log('📬 Loaded notifications:', notifications.length);
       callback(notifications);
+    }, (error) => {
+      console.error('❌ Notification subscription error:', error);
     });
   }
 
