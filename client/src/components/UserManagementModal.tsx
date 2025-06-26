@@ -87,6 +87,23 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     return () => clearInterval(interval);
   }, [isOpen]);
 
+  // Listen for profile picture updates from other components
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleProfileUpdate = (event: CustomEvent) => {
+      console.log('🔄 Profile picture updated, refreshing User Management data...');
+      loadUserData();
+      setLastUpdate(new Date());
+    };
+
+    window.addEventListener('profilePictureUpdated', handleProfileUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('profilePictureUpdated', handleProfileUpdate as EventListener);
+    };
+  }, [isOpen]);
+
   // Load user data when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -380,8 +397,17 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       
       console.log(`✅ Profile picture uploaded successfully for ${userName}: ${downloadURL}`);
       
-      // Refresh user data to show updated profile picture
+      // Force immediate refresh of user data
       await loadUserData();
+      
+      // Trigger a custom event to notify other components about profile picture update
+      const profileUpdateEvent = new CustomEvent('profilePictureUpdated', {
+        detail: { userName, deviceId, downloadURL }
+      });
+      window.dispatchEvent(profileUpdateEvent);
+      
+      // Force a re-render by updating the last update timestamp
+      setLastUpdate(new Date());
       
     } catch (error) {
       console.error('❌ Error uploading profile picture:', error);
