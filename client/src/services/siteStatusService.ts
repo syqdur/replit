@@ -27,7 +27,7 @@ export const getSiteStatus = async (): Promise<SiteStatus> => {
       const data = docSnap.data();
       // Ensure backward compatibility by providing defaults for new fields
       return {
-        isUnderConstruction: data.isUnderConstruction ?? true,
+        isUnderConstruction: data.isUnderConstruction ?? false,
         galleryEnabled: data.galleryEnabled ?? true,
         musicWishlistEnabled: data.musicWishlistEnabled ?? true,
         storiesEnabled: data.storiesEnabled ?? true,
@@ -35,13 +35,14 @@ export const getSiteStatus = async (): Promise<SiteStatus> => {
         updatedBy: data.updatedBy ?? 'system'
       } as SiteStatus;
     } else {
-      // Default: site is under construction with all features enabled
+      // Default: site is LIVE with all features enabled (migration from Agent to Replit)
       const defaultStatus: SiteStatus = {
-        isUnderConstruction: true,
+        isUnderConstruction: false,
         galleryEnabled: true,
         musicWishlistEnabled: true,
+        storiesEnabled: true,
         lastUpdated: new Date().toISOString(),
-        updatedBy: 'system'
+        updatedBy: 'migration'
       };
       
       // Create the document with default status
@@ -50,16 +51,62 @@ export const getSiteStatus = async (): Promise<SiteStatus> => {
     }
   } catch (error) {
     console.error('Error getting site status:', error);
-    // Fallback to under construction if Firebase fails
+    
+    // Return safe defaults on error
     return {
-      isUnderConstruction: true,
+      isUnderConstruction: false,
       galleryEnabled: true,
       musicWishlistEnabled: true,
       storiesEnabled: true,
       lastUpdated: new Date().toISOString(),
-      updatedBy: 'system'
+      updatedBy: 'error-fallback'
     };
   }
+};
+
+// Subscribe to site status changes
+export const subscribeSiteStatus = (
+  callback: (status: SiteStatus) => void,
+  onError?: (error: Error) => void
+): (() => void) => {
+  const docRef = doc(db, 'settings', SITE_STATUS_DOC);
+  
+  return onSnapshot(
+    docRef,
+    (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        const status: SiteStatus = {
+          isUnderConstruction: data.isUnderConstruction ?? false,
+          galleryEnabled: data.galleryEnabled ?? true,
+          musicWishlistEnabled: data.musicWishlistEnabled ?? true,
+          storiesEnabled: data.storiesEnabled ?? true,
+          lastUpdated: data.lastUpdated ?? new Date().toISOString(),
+          updatedBy: data.updatedBy ?? 'system'
+        };
+        callback(status);
+      } else {
+        // Document doesn't exist, create default
+        getSiteStatus().then(callback);
+      }
+    },
+    (error) => {
+      console.error('Error listening to site status:', error);
+      if (onError) {
+        onError(error);
+      } else {
+        // Fallback to safe defaults
+        callback({
+          isUnderConstruction: false,
+          galleryEnabled: true,
+          musicWishlistEnabled: true,
+          storiesEnabled: true,
+          lastUpdated: new Date().toISOString(),
+          updatedBy: 'listener-error'
+        });
+      }
+    }
+  );
 };
 
 // Update site status (admin only)
@@ -75,19 +122,21 @@ export const updateSiteStatus = async (
     if (docSnap.exists()) {
       const data = docSnap.data();
       currentStatus = {
-        isUnderConstruction: data.isUnderConstruction ?? true,
+        isUnderConstruction: data.isUnderConstruction ?? false,
         galleryEnabled: data.galleryEnabled ?? true,
         musicWishlistEnabled: data.musicWishlistEnabled ?? true,
+        storiesEnabled: data.storiesEnabled ?? true,
         lastUpdated: data.lastUpdated ?? new Date().toISOString(),
         updatedBy: data.updatedBy ?? 'system'
       };
     } else {
       currentStatus = {
-        isUnderConstruction: true,
+        isUnderConstruction: false,
         galleryEnabled: true,
         musicWishlistEnabled: true,
+        storiesEnabled: true,
         lastUpdated: new Date().toISOString(),
-        updatedBy: 'system'
+        updatedBy: 'migration'
       };
     }
     
@@ -108,9 +157,7 @@ export const updateSiteStatus = async (
 
 // Update feature toggles (admin only)
 export const updateFeatureToggles = async (
-  galleryEnabled: boolean,
-  musicWishlistEnabled: boolean,
-  storiesEnabled: boolean,
+  updates: Partial<Pick<SiteStatus, 'galleryEnabled' | 'musicWishlistEnabled' | 'storiesEnabled'>>,
   adminName: string
 ): Promise<void> => {
   try {
@@ -121,80 +168,56 @@ export const updateFeatureToggles = async (
     if (docSnap.exists()) {
       const data = docSnap.data();
       currentStatus = {
-        isUnderConstruction: data.isUnderConstruction ?? true,
-        galleryEnabled: data.galleryEnabled ?? true,
-        musicWishlistEnabled: data.musicWishlistEnabled ?? true,
-        lastUpdated: data.lastUpdated ?? new Date().toISOString(),
-        updatedBy: data.updatedBy ?? 'system'
-      };
-    } else {
-      currentStatus = {
-        isUnderConstruction: true,
-        galleryEnabled: true,
-        musicWishlistEnabled: true,
-        lastUpdated: new Date().toISOString(),
-        updatedBy: 'system'
-      };
-    }
-    
-    const newStatus: SiteStatus = {
-      ...currentStatus,
-      galleryEnabled,
-      musicWishlistEnabled,
-      storiesEnabled,
-      lastUpdated: new Date().toISOString(),
-      updatedBy: adminName
-    };
-    
-    await setDoc(docRef, newStatus);
-    console.log(`Features updated - Gallery: ${galleryEnabled ? 'ON' : 'OFF'}, Music: ${musicWishlistEnabled ? 'ON' : 'OFF'}, Stories: ${storiesEnabled ? 'ON' : 'OFF'} by ${adminName}`);
-  } catch (error) {
-    console.error('Error updating feature toggles:', error);
-    throw new Error('Fehler beim Aktualisieren der Feature-Einstellungen');
-  }
-};
-
-// Listen to site status changes in real-time
-export const subscribeSiteStatus = (
-  callback: (status: SiteStatus) => void
-): (() => void) => {
-  const docRef = doc(db, 'settings', SITE_STATUS_DOC);
-  
-  return onSnapshot(docRef, (doc) => {
-    if (doc.exists()) {
-      const data = doc.data();
-      callback({
-        isUnderConstruction: data.isUnderConstruction ?? true,
+        isUnderConstruction: data.isUnderConstruction ?? false,
         galleryEnabled: data.galleryEnabled ?? true,
         musicWishlistEnabled: data.musicWishlistEnabled ?? true,
         storiesEnabled: data.storiesEnabled ?? true,
         lastUpdated: data.lastUpdated ?? new Date().toISOString(),
         updatedBy: data.updatedBy ?? 'system'
-      } as SiteStatus);
+      };
     } else {
-      // If document doesn't exist, create it with default status
-      const defaultStatus: SiteStatus = {
-        isUnderConstruction: true,
+      currentStatus = {
+        isUnderConstruction: false,
         galleryEnabled: true,
         musicWishlistEnabled: true,
+        storiesEnabled: true,
         lastUpdated: new Date().toISOString(),
-        updatedBy: 'system'
+        updatedBy: 'migration'
       };
-      
-      setDoc(docRef, defaultStatus).then(() => {
-        callback(defaultStatus);
-      });
     }
-  }, (error) => {
-    console.error('Error listening to site status:', error);
-    // Fallback to under construction on error
-    callback({
-      isUnderConstruction: true,
+    
+    const newStatus: SiteStatus = {
+      ...currentStatus,
+      ...updates,
+      lastUpdated: new Date().toISOString(),
+      updatedBy: adminName
+    };
+    
+    await setDoc(docRef, newStatus);
+    console.log(`Feature toggles updated by ${adminName}:`, updates);
+  } catch (error) {
+    console.error('Error updating feature toggles:', error);
+    throw new Error('Fehler beim Aktualisieren der Features');
+  }
+};
+
+// Force site to be live (migration utility)
+export const forceSiteLive = async (): Promise<void> => {
+  try {
+    const docRef = doc(db, 'settings', SITE_STATUS_DOC);
+    const liveStatus: SiteStatus = {
+      isUnderConstruction: false,
       galleryEnabled: true,
       musicWishlistEnabled: true,
       storiesEnabled: true,
       lastUpdated: new Date().toISOString(),
-      updatedBy: 'system'
-    });
-  });
+      updatedBy: 'migration-force-live'
+    };
+    
+    await setDoc(docRef, liveStatus);
+    console.log('Site forced to live status for migration');
+  } catch (error) {
+    console.error('Error forcing site live:', error);
+    throw new Error('Migration error: Could not force site live');
+  }
 };

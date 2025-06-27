@@ -88,10 +88,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     } catch (error) {
       console.error('Download error:', error);
       
-      if (error.toString().includes('teilweise erfolgreich')) {
-        alert(`⚠️ ${error}\n\n💡 Die ZIP-Datei enthält alle verfügbaren Dateien und Fehlerberichte.`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('teilweise erfolgreich')) {
+        alert(`⚠️ ${errorMessage}\n\n💡 Die ZIP-Datei enthält alle verfügbaren Dateien und Fehlerberichte.`);
       } else {
-        alert(`❌ Download-Fehler:\n${error}\n\n🔧 Versuche es erneut oder verwende einen anderen Browser.`);
+        alert(`❌ Download-Fehler:\n${errorMessage}\n\n🔧 Versuche es erneut oder verwende einen anderen Browser.`);
       }
     } finally {
       setIsDownloading(false);
@@ -133,9 +134,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setIsUpdatingFeatures(true);
     try {
       await updateFeatureToggles(
-        !siteStatus.galleryEnabled,
-        siteStatus.musicWishlistEnabled,
-        siteStatus.storiesEnabled,
+        { galleryEnabled: !siteStatus.galleryEnabled },
         'Admin'
       );
     } catch (error) {
@@ -151,9 +150,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setIsUpdatingFeatures(true);
     try {
       await updateFeatureToggles(
-        siteStatus.galleryEnabled,
-        !siteStatus.musicWishlistEnabled,
-        siteStatus.storiesEnabled,
+        { musicWishlistEnabled: !siteStatus.musicWishlistEnabled },
         'Admin'
       );
     } catch (error) {
@@ -169,9 +166,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setIsUpdatingFeatures(true);
     try {
       await updateFeatureToggles(
-        siteStatus.galleryEnabled,
-        siteStatus.musicWishlistEnabled,
-        !siteStatus.storiesEnabled,
+        { storiesEnabled: !siteStatus.storiesEnabled },
         'Admin'
       );
     } catch (error) {
