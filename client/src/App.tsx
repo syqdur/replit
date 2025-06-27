@@ -789,4 +789,358 @@ function App() {
       <div className={`sticky top-0 z-50 transition-all duration-300 ${
         isDarkMode 
           ? 'bg-gray-900/70 border-gray-700/30 backdrop-blur-xl shadow-xl shadow-purple-500/5' 
-          : 'bg-white/70 border-gray-200/30 backdrop-blur-xl shadow-xl shadow-
+          : 'bg-white/70 border-gray-200/30 backdrop-blur-xl shadow-xl shadow-pink-500/5'
+      } border-b`}>
+        <div className="max-w-md mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center relative bg-transparent">
+                {/* Animated Wedding Rings */}
+                <div className="relative w-full h-full flex items-center justify-center">
+                  {/* Ring 1 */}
+                  <div className={`absolute w-4 h-4 rounded-full border-2 transition-all duration-1000 ${
+                    isDarkMode ? 'border-yellow-300' : 'border-yellow-400'
+                  }`} style={{
+                    animation: 'ring-float-1 4s ease-in-out infinite',
+                    transform: 'translateX(-2px)'
+                  }}></div>
+                  
+                  {/* Ring 2 */}
+                  <div className={`absolute w-4 h-4 rounded-full border-2 transition-all duration-1000 ${
+                    isDarkMode ? 'border-yellow-300' : 'border-yellow-400'
+                  }`} style={{
+                    animation: 'ring-float-2 4s ease-in-out infinite',
+                    transform: 'translateX(2px)'
+                  }}></div>
+                  
+                  {/* Diamond sparkle effect */}
+                  <div className={`absolute w-1 h-1 rounded-full transition-all duration-500 ${
+                    isDarkMode ? 'bg-yellow-200' : 'bg-yellow-300'
+                  }`} style={{
+                    animation: 'sparkle 2s ease-in-out infinite',
+                    top: '20%',
+                    right: '20%'
+                  }}></div>
+                </div>
+              </div>
+              <h1 className={`text-base sm:text-lg font-bold tracking-tight transition-colors duration-300 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
+                kristinundmauro
+              </h1>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Notification Center */}
+              {userName && (
+                <NotificationCenter
+                  userName={userName}
+                  deviceId={deviceId}
+                  isDarkMode={isDarkMode}
+                  onNavigateToMedia={handleNavigateToMedia}
+                />
+              )}
+              
+              {/* Temporary Test Notification Button - For debugging */}
+              {userName && isAdmin && (
+                <button
+                  onClick={async () => {
+                    try {
+                      await createTestNotification(userName, deviceId);
+                      console.log('🧪 Test notification created successfully!');
+                    } catch (error) {
+                      console.error('❌ Failed to create test notification:', error);
+                    }
+                  }}
+                  className={`p-2 rounded-full text-xs transition-all duration-300 ${
+                    isDarkMode 
+                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                      : 'bg-purple-500 hover:bg-purple-600 text-white'
+                  }`}
+                  title="Create Test Notification"
+                >
+                  TEST
+                </button>
+              )}
+              
+              {/* Pure Glassmorphism Profile Edit Button - FIXED für Mobile */}
+              <button
+                onClick={() => setShowUserProfileModal(true)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-2xl transition-all duration-300 hover:scale-105 backdrop-blur-sm shadow-lg h-[40px] ${
+                  isDarkMode 
+                    ? 'bg-white/10 hover:bg-white/15 text-white border border-white/20 shadow-black/20' 
+                    : 'bg-white/20 hover:bg-white/30 text-gray-800 border border-white/30 shadow-gray-500/20'
+                }`}
+                title="Mein Profil bearbeiten"
+              >
+                {/* Profilbild oder UserPlus Icon - IMMER sichtbar */}
+                {currentUserProfile?.profilePicture ? (
+                  <img 
+                    src={currentUserProfile?.profilePicture || ''} 
+                    alt="My Profile"
+                    className="w-6 h-6 rounded-full object-cover ring-2 ring-white/30 shadow-sm flex-shrink-0"
+                  />
+                ) : (
+                  <UserPlus className={`w-4 h-4 transition-colors duration-300 flex-shrink-0 ${
+                    isDarkMode ? 'text-white/80' : 'text-gray-700'
+                  }`} />
+                )}
+                
+                {/* Text nur auf größeren Bildschirmen - SEPARATE vom Bild */}
+                <span className="text-sm font-medium truncate hidden sm:block max-w-16">
+                  Profil
+                </span>
+              </button>
+              
+              {/* Live User Indicator - Moved to right side */}
+              <LiveUserIndicator 
+                currentUser={userName || ''}
+                isDarkMode={isDarkMode}
+              />
+              
+              <button
+                onClick={toggleDarkMode}
+                className={`p-2 sm:p-2.5 rounded-full transition-all duration-300 touch-manipulation ${
+                  isDarkMode 
+                    ? 'text-yellow-400 hover:bg-gray-800/50 hover:scale-110' 
+                    : 'text-gray-600 hover:bg-gray-100/50 hover:scale-110'
+                }`}
+              >
+                {isDarkMode ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
+              </button>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-md mx-auto px-2 sm:px-0">
+        <ProfileHeader 
+          isDarkMode={isDarkMode} 
+          isAdmin={isAdmin}
+          userName={userName ?? undefined}
+          mediaItems={mediaItems}
+          onToggleAdmin={(status) => {
+            if (status) {
+              setShowAdminLogin(true);
+            } else {
+              handleAdminLogout();
+            }
+          }}
+          currentUserProfile={currentUserProfile}
+          onOpenUserProfile={() => setShowUserProfileModal(true)}
+          showTopBarControls={false}
+          showProfileEditModal={showProfileEditModal}
+          onCloseProfileEditModal={() => setShowProfileEditModal(false)}
+        />
+        
+        {/* Stories Bar */}
+        <StoriesBar
+          stories={stories}
+          currentUser={userName || ''}
+          onAddStory={() => setShowStoryUpload(true)}
+          onViewStory={handleViewStory}
+          isDarkMode={isDarkMode}
+          storiesEnabled={siteStatus?.storiesEnabled ?? true}
+        />
+        
+        {/* Tab Navigation */}
+        <TabNavigation 
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          isDarkMode={isDarkMode}
+          galleryEnabled={siteStatus?.galleryEnabled ?? true}
+          musicWishlistEnabled={siteStatus?.musicWishlistEnabled ?? true}
+        />
+
+        {/* Tab Content */}
+        {activeTab === 'gallery' && siteStatus?.galleryEnabled ? (
+          <>
+            <UploadSection
+              onUpload={handleUpload}
+              onVideoUpload={handleVideoUpload}
+              onNoteSubmit={handleNoteSubmit}
+              onAddStory={() => setShowStoryUpload(true)}
+              isUploading={isUploading}
+              progress={uploadProgress}
+              isDarkMode={isDarkMode}
+              storiesEnabled={siteStatus?.storiesEnabled ?? true}
+            />
+
+            {status && (
+              <div className="px-4 py-2">
+                <p className={`text-sm text-center transition-colors duration-300 ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                }`} dangerouslySetInnerHTML={{ __html: status }} />
+              </div>
+            )}
+
+            <InstagramGallery
+              items={mediaItems}
+              onItemClick={openModal}
+              onDelete={handleDelete}
+              onEditNote={handleEditNote}
+              isAdmin={isAdmin}
+              comments={comments}
+              likes={likes}
+              onAddComment={handleAddComment}
+              onDeleteComment={handleDeleteComment}
+              onToggleLike={handleToggleLike}
+              userName={userName || ''}
+              isDarkMode={isDarkMode}
+              getUserAvatar={getUserAvatar}
+              getUserDisplayName={getUserDisplayName}
+              deviceId={deviceId || ''}
+            />
+          </>
+        ) : activeTab === 'timeline' ? (
+          <Timeline 
+            isDarkMode={isDarkMode}
+            userName={userName || ''}
+            isAdmin={isAdmin}
+          />
+        ) : activeTab === 'music' && siteStatus?.musicWishlistEnabled ? (
+          <MusicWishlist isDarkMode={isDarkMode} isAdmin={isAdmin} />
+        ) : (
+          <div className={`p-8 text-center transition-colors duration-300 ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            <p>Diese Funktion ist derzeit deaktiviert.</p>
+          </div>
+        )}
+      </div>
+
+      <MediaModal
+        isOpen={modalOpen}
+        items={mediaItems}
+        currentIndex={currentImageIndex}
+        onClose={() => setModalOpen(false)}
+        onNext={nextImage}
+        onPrev={prevImage}
+        comments={comments}
+        likes={likes}
+        onAddComment={handleAddComment}
+        onDeleteComment={handleDeleteComment}
+        onToggleLike={handleToggleLike}
+        userName={userName || ''}
+        isAdmin={isAdmin}
+        isDarkMode={isDarkMode}
+        getUserAvatar={getUserAvatar}
+        getUserDisplayName={getUserDisplayName}
+      />
+
+      {/* Stories Viewer */}
+      <StoriesViewer
+        isOpen={showStoriesViewer}
+        stories={stories}
+        initialStoryIndex={currentStoryIndex}
+        currentUser={userName || ''}
+        onClose={() => setShowStoriesViewer(false)}
+        onStoryViewed={handleStoryViewed}
+        onDeleteStory={handleDeleteStory}
+        isAdmin={isAdmin}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* Story Upload Modal */}
+      <StoryUploadModal
+        isOpen={showStoryUpload}
+        onClose={() => setShowStoryUpload(false)}
+        onUpload={handleStoryUpload}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* Admin Login Modal */}
+      <AdminLoginModal
+        isOpen={showAdminLogin}
+        onClose={() => setShowAdminLogin(false)}
+        onLogin={handleAdminLogin}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* User Profile Modal */}
+      {userName && deviceId && (
+        <UserProfileModal
+          isOpen={showUserProfileModal}
+          onClose={() => setShowUserProfileModal(false)}
+          userName={userName}
+          deviceId={deviceId}
+          isDarkMode={isDarkMode}
+          onProfileUpdated={handleProfileUpdated}
+          isAdmin={isAdmin}
+          currentUserName={userName}
+          currentDeviceId={deviceId}
+        />
+      )}
+
+      <AdminPanel 
+        isDarkMode={isDarkMode} 
+        isAdmin={isAdmin}
+        onToggleAdmin={(status) => {
+          if (status) {
+            setShowAdminLogin(true);
+          } else {
+            handleAdminLogout();
+          }
+        }}
+        mediaItems={mediaItems}
+        siteStatus={siteStatus}
+        getUserAvatar={getUserAvatar}
+        getUserDisplayName={getUserDisplayName}
+      />
+
+      {/* Back to Top Button */}
+      <BackToTopButton isDarkMode={isDarkMode} />
+
+      {/* Floating Admin Button - Bottom Left Corner */}
+      {userName && (
+        <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2">
+          {/* Admin Toggle Button */}
+          <button
+            onClick={() => {
+              if (isAdmin) {
+                handleAdminLogout();
+              } else {
+                setShowAdminLogin(true);
+              }
+            }}
+            className={`w-12 h-12 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg ring-2 ${
+              isDarkMode 
+                ? 'bg-gray-800/90 hover:bg-gray-700/90 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
+                : 'bg-white/90 hover:bg-gray-50/90 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
+            }`}
+            title={isAdmin ? "Admin-Modus verlassen" : "Admin-Modus"}
+          >
+            {isAdmin ? (
+              <Unlock className={`w-5 h-5 transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`} />
+            ) : (
+              <Lock className={`w-5 h-5 transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`} />
+            )}
+          </button>
+
+          {/* Admin Site Settings - Only visible in admin mode */}
+          {isAdmin && (
+            <button
+              onClick={() => setShowProfileEditModal(true)}
+              className={`w-12 h-12 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg ring-2 ${
+                isDarkMode 
+                  ? 'bg-gray-800/90 hover:bg-gray-700/90 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
+                  : 'bg-white/90 hover:bg-gray-50/90 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
+              }`}
+              title="Website-Profil bearbeiten"
+            >
+              <Settings className={`w-5 h-5 transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`} />
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
