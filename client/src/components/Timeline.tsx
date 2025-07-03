@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Calendar, MapPin, Camera, Plus, Edit3, Trash2, Save, X, Image, Video, Upload, Play } from 'lucide-react';
+import { VideoThumbnail } from './VideoThumbnail';
 import { 
   collection, 
   addDoc, 
@@ -1060,10 +1061,10 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                                   onClick={() => setModalMedia({ url, type: mediaType as 'image' | 'video', title: event.title })}
                                 >
                                   {mediaType === 'video' ? (
-                                    <video
+                                    <VideoThumbnail
                                       src={url}
                                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                      preload="auto"
+                                      showPlayButton={false}
                                     />
                                   ) : (
                                     <img
