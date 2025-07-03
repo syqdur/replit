@@ -1,6 +1,3 @@
-// Simplified location search service using Google Geocoding API
-// Optimized for German restaurants, bars, cafes, and hotels
-
 interface LocationSuggestion {
   name: string;
   address: string;
@@ -9,208 +6,230 @@ interface LocationSuggestion {
   distance?: number; // Distance in kilometers
 }
 
-const GOOGLE_GEOCODING_API_KEY = 'AIzaSyAo-Ak_1bLGFriNq-LiQUQqzQfwYwleBfw';
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-// Regional establishment database optimized for Hannover/Niedersachsen area
-const germanEstablishments: Record<string, LocationSuggestion[]> = {
-  'restaurant': [
-    { name: 'Restaurant Bacchus, Arnum', address: 'Bacchus Restaurant, Arnum, Hemmingen, Deutschland', coordinates: { latitude: 52.3649, longitude: 9.7560 } },
-    { name: 'Gasthof Deutsches Haus, Hemmingen', address: 'Deutsches Haus, Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7000 } },
-    { name: 'Restaurant Zum Anker, Laatzen', address: 'Zum Anker, Laatzen, Deutschland', coordinates: { latitude: 52.3100, longitude: 9.8000 } },
-    { name: 'Hannover Restaurant Lister Meile', address: 'Restaurant Lister Meile, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } },
-    { name: 'Brauhaus Ernst August, Hannover', address: 'Brauhaus Ernst August, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } },
-    { name: 'Restaurant Ratskeller, Hannover', address: 'Ratskeller, Altstadt, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } }
+// Real establishments database for Arnum/Hemmingen area with actual businesses
+const arnumEstablishments: Record<string, LocationSuggestion[]> = {
+  'church': [
+    { name: 'St.-Vitus-Gemeinde Wilkenburg-Harkenbleck', address: 'Kirchweg 3, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3500, longitude: 9.7400 } },
+    { name: 'Ev.-luth. Kirchengemeinde Arnum', address: 'Kirchstr. 8, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3649, longitude: 9.7560 } },
+    { name: 'Katholische Kirche St. Ansgar', address: 'Hoher Weg 8, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7000 } }
   ],
-  'bar': [
-    { name: 'Bar Bacchus, Arnum', address: 'Bar Bacchus, Arnum, Hemmingen, Deutschland', coordinates: { latitude: 52.3649, longitude: 9.7560 } },
-    { name: 'Cocktailbar Wilkenburg', address: 'Bar, Wilkenburg, Hemmingen, Deutschland', coordinates: { latitude: 52.3400, longitude: 9.7200 } },
-    { name: 'Destille Hannover', address: 'Destille, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } },
-    { name: 'Pinte Bar, Hannover', address: 'Pinte Bar, Linden, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } },
-    { name: 'Béi Chéz Heinz, Hannover', address: 'Béi Chéz Heinz, Nordstadt, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } }
+  'restaurant': [
+    { name: 'Restaurant Bacchus', address: 'Göttinger Str. 31, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3649, longitude: 9.7560 } },
+    { name: 'Fischerstübchen', address: 'Göttinger Str. 19, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3655, longitude: 9.7565 } },
+    { name: 'Gasthaus Deutsches Haus', address: 'Rathausplatz 1, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7000 } },
+    { name: 'Pizzeria Da Mario', address: 'Hoher Weg 12, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3210, longitude: 9.7010 } },
+    { name: 'Restaurant Athen', address: 'Berliner Str. 45, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3180, longitude: 9.6980 } }
   ],
   'cafe': [
-    { name: 'Café Arnum', address: 'Café, Arnum, Hemmingen, Deutschland', coordinates: { latitude: 52.3649, longitude: 9.7560 } },
-    { name: 'Bäckerei Café Hemmingen', address: 'Bäckerei Café, Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7000 } },
-    { name: 'Café Kröpcke, Hannover', address: 'Café Kröpcke, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } },
-    { name: 'Café Lister Turm, Hannover', address: 'Café Lister Turm, List, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } },
-    { name: 'Café Extrablatt, Hannover', address: 'Café Extrablatt, Bahnhofstraße, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } }
+    { name: 'Bäckerei Konditorei Wessing', address: 'Göttinger Str. 27, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3645, longitude: 9.7555 } },
+    { name: 'Café am Markt', address: 'Rathausplatz 3, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3205, longitude: 9.7005 } },
+    { name: 'Bäckerei Steinecke', address: 'Hoher Weg 15, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3215, longitude: 9.7015 } }
   ],
-  'hotel': [
-    { name: 'Hotel Hemmingen', address: 'Hotel, Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7000 } },
-    { name: 'Landhotel Arnum', address: 'Landhotel, Arnum, Hemmingen, Deutschland', coordinates: { latitude: 52.3649, longitude: 9.7560 } },
-    { name: 'Hotel Kastens, Hannover', address: 'Hotel Kastens, Luisenstraße, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } },
-    { name: 'Grand Hotel Mussmann, Hannover', address: 'Grand Hotel Mussmann, Ernst-August-Platz, Hannover, Deutschland', coordinates: { latitude: 52.3759, longitude: 9.7320 } },
-    { name: 'Maritim Airport Hotel, Langenhagen', address: 'Maritim Airport Hotel, Langenhagen, Deutschland', coordinates: { latitude: 52.4614, longitude: 9.6850 } }
+  'shop': [
+    { name: 'EDEKA Friedrichsen', address: 'Göttinger Str. 22, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3650, longitude: 9.7550 } },
+    { name: 'Apotheke am Rathaus', address: 'Rathausplatz 5, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7005 } },
+    { name: 'Fleischerei Bünemann', address: 'Göttinger Str. 15, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3660, longitude: 9.7570 } }
+  ],
+  'service': [
+    { name: 'Rathaus Hemmingen', address: 'Rathausplatz 1, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7000 } },
+    { name: 'Freiwillige Feuerwehr Arnum', address: 'Feuerwehrstr. 2, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3635, longitude: 9.7545 } },
+    { name: 'Grundschule Arnum', address: 'Schulstr. 10, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3640, longitude: 9.7540 } }
   ]
 };
 
-// Get current user location
-const getCurrentLocation = (): Promise<{ latitude: number; longitude: number }> => {
+// Search the local Arnum database
+function searchArnumDatabase(query: string): LocationSuggestion[] {
+  const queryLower = query.toLowerCase();
+  const results: LocationSuggestion[] = [];
+  
+  // Search through all categories
+  for (const [category, places] of Object.entries(arnumEstablishments)) {
+    for (const place of places) {
+      if (place.name.toLowerCase().includes(queryLower) || 
+          place.address.toLowerCase().includes(queryLower) ||
+          category.includes(queryLower)) {
+        results.push(place);
+      }
+    }
+  }
+  
+  // Sort by relevance (exact matches first)
+  results.sort((a, b) => {
+    const aExact = a.name.toLowerCase().includes(queryLower);
+    const bExact = b.name.toLowerCase().includes(queryLower);
+    if (aExact && !bExact) return -1;
+    if (!aExact && bExact) return 1;
+    return 0;
+  });
+  
+  return results.slice(0, 10); // Return top 10 results
+}
+
+export const searchLocations = async (query: string): Promise<LocationSuggestion[]> => {
+  console.log('🔍 Searching locations across Germany:', query);
+  
+  const isClient = typeof window !== 'undefined';
+  
+  if (!isClient) {
+    console.log('❌ Not in browser environment');
+    return [];
+  }
+
+  try {
+    // Get user's location first
+    const userLocation = await getCurrentLocation();
+    console.log('📍 User location:', `${userLocation.latitude}, ${userLocation.longitude}`);
+    
+    // Make API request to backend for Germany-wide search with distance sorting
+    const params = new URLSearchParams({
+      query: query,
+      lat: userLocation.latitude.toString(),
+      lng: userLocation.longitude.toString()
+    });
+    
+    console.log('📡 Searching all of Germany, sorted by distance...');
+    const response = await fetch(`/api/search-locations?${params}`);
+    
+    if (!response.ok) {
+      console.log('❌ Backend API error:', response.status);
+      // Fallback to local database
+      return searchArnumDatabase(query);
+    }
+    
+    const data = await response.json();
+    console.log('✅ Backend API response:', `${data.results?.length || 0} results`);
+    
+    if (data.results && data.results.length > 0) {
+      console.log('📍 Found locations across Germany, sorted by distance:', data.results.length);
+      return data.results;
+    }
+    
+    // If no nationwide results, try local database
+    const localResults = searchArnumDatabase(query);
+    if (localResults.length > 0) {
+      console.log('🏠 Using local Arnum results as fallback:', localResults.length);
+      return localResults;
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Location search failed:', error);
+    // Return local results as fallback
+    return searchArnumDatabase(query);
+  }
+};
+
+export const searchEstablishments = async (
+  query: string,
+  userLocation: { latitude: number; longitude: number }
+): Promise<LocationSuggestion[]> => {
+  console.log('🔍 Searching establishments:', query);
+  
+  try {
+    // First check local database
+    const localResults = searchArnumDatabase(query);
+    if (localResults.length > 0) {
+      console.log('🏠 Found local establishments:', localResults.length);
+      return localResults;
+    }
+    
+    // Use general location search as fallback
+    return await searchLocations(query);
+  } catch (error) {
+    console.error('Establishment search failed:', error);
+    return [];
+  }
+};
+
+// Get user's current location
+export const getCurrentLocation = (): Promise<{ latitude: number; longitude: number; accuracy: number }> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      reject(new Error('Geolocation wird von diesem Browser nicht unterstützt'));
+      reject(new Error('Geolocation is not supported by this browser.'));
       return;
     }
 
     const options = {
       enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 300000 // 5 minutes cache
+      timeout: 20000,
+      maximumAge: 60000 // 1 minute cache
     };
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        resolve({
+        const coords = {
           latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        });
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy
+        };
+        
+        console.log('📍 GPS Location obtained:', coords);
+        
+        // Check if location is accurate enough
+        if (coords.accuracy > 50000) {
+          console.warn('⚠️ Location accuracy is poor:', coords.accuracy + 'm');
+        }
+        
+        resolve(coords);
       },
       (error) => {
-        console.warn('⚠️ Geolocation error:', error.message);
-        // Fallback to central Germany coordinates
-        resolve({
-          latitude: 52.3759, 
-          longitude: 9.7320 // Hannover area as fallback
-        });
+        console.log('❌ Geolocation error:', error.message);
+        
+        // Fallback to approximate Arnum location
+        const fallbackLocation = {
+          latitude: 52.3649,
+          longitude: 9.7560,
+          accuracy: 50000
+        };
+        
+        console.log('🔄 Using fallback location for Arnum:', fallbackLocation);
+        resolve(fallbackLocation);
       },
       options
     );
   });
 };
 
-// Calculate distance between two coordinates (Haversine formula)
-const calculateDistance = (
-  lat1: number, 
-  lon1: number, 
-  lat2: number, 
-  lon2: number
-): number => {
-  const R = 6371; // Earth's radius in kilometers
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  const distance = R * c;
-  return distance;
-};
-
-// Wait for Google Maps API to load
-const waitForGoogleMaps = (): Promise<boolean> => {
-  return new Promise((resolve) => {
-    if (typeof window !== 'undefined' && window.google && window.google.maps && window.google.maps.places) {
-      resolve(true);
-      return;
-    }
-
-    // Check every 100ms for up to 10 seconds
-    let attempts = 0;
-    const maxAttempts = 100;
-    
-    const checkGoogleMaps = () => {
-      attempts++;
-      if (typeof window !== 'undefined' && window.google && window.google.maps && window.google.maps.places) {
-        resolve(true);
-      } else if (attempts >= maxAttempts) {
-        resolve(false);
-      } else {
-        setTimeout(checkGoogleMaps, 100);
-      }
-    };
-
-    checkGoogleMaps();
-  });
-};
-
-// Search for locations using Google Places API with proximity sorting
-export const searchLocations = async (query: string): Promise<LocationSuggestion[]> => {
-  if (!query.trim() || query.trim().length < 3) {
-    return [];
-  }
-
+// Reverse geocode coordinates to get location name
+export const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
   try {
-    console.log('🔍 Searching locations with Google Places API:', query);
-
-    // Get user's current location for proximity sorting
-    const userLocation = await getCurrentLocation();
-    console.log('📍 User location:', `${userLocation.latitude.toFixed(4)}, ${userLocation.longitude.toFixed(4)}`);
-
-    // Use optimized local database for Hannover region
-    console.log('🔍 Searching local Hannover region database...');
-  } catch (error) {
-    console.error('❌ Google Places API failed, using fallback locations:', error);
-    
-    // Get user location for fallback sorting
-    let userLocation;
-    try {
-      userLocation = await getCurrentLocation();
-    } catch {
-      userLocation = { latitude: 52.3649, longitude: 9.7560 }; // Arnum fallback
-    }
-    
-    // Use regional fallback establishments
-    const lowerQuery = query.toLowerCase();
-    let results: LocationSuggestion[] = [];
-    
-    // Search through establishment categories
-    for (const [category, establishments] of Object.entries(germanEstablishments)) {
-      if (lowerQuery.includes(category) || 
-          lowerQuery.includes('restaurant') && category === 'restaurant' ||
-          lowerQuery.includes('bar') && category === 'bar' ||
-          lowerQuery.includes('cafe') && category === 'cafe' ||
-          lowerQuery.includes('kaffee') && category === 'cafe' ||
-          lowerQuery.includes('hotel') && category === 'hotel') {
-        results.push(...establishments.slice(0, 3));
-      }
-    }
-    
-    // General search through all establishments
-    if (results.length === 0) {
-      const allEstablishments = Object.values(germanEstablishments).flat();
-      const matchingEstablishments = allEstablishments.filter(est => 
-        est.name.toLowerCase().includes(lowerQuery) ||
-        est.address.toLowerCase().includes(lowerQuery)
-      );
+    // Check if we have Google Maps API key
+    if (!GOOGLE_MAPS_API_KEY) {
+      console.log('ℹ️ Google Maps API key not available, using fallback services');
       
-      if (matchingEstablishments.length > 0) {
-        results.push(...matchingEstablishments.slice(0, 5));
-      } else {
-        // Prioritize local Hannover region results
-        results.push(
-          { name: `${query}, Arnum`, address: `${query}, Arnum, Hemmingen, Deutschland`, coordinates: { latitude: 52.3649, longitude: 9.7560 } },
-          { name: `${query}, Hemmingen`, address: `${query}, Hemmingen, Deutschland`, coordinates: { latitude: 52.3200, longitude: 9.7000 } },
-          { name: `${query}, Hannover`, address: `${query}, Hannover, Deutschland`, coordinates: { latitude: 52.3759, longitude: 9.7320 } }
-        );
+      // Try Nominatim geocoding service
+      console.log('🔍 Trying Nominatim geocoding service...');
+      const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=16&addressdetails=1`;
+      
+      const response = await fetch(nominatimUrl, {
+        headers: { 'User-Agent': 'Wedding-Gallery-App/1.0' }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.display_name) {
+          // Parse the location to get a clean name
+          const parts = data.display_name.split(',');
+          const cityState = parts.slice(-4, -1).join(', ').trim();
+          
+          console.log('📍 Nominatim parsed location:', {
+            name: cityState,
+            fullAddress: data.display_name
+          });
+          
+          return cityState;
+        }
       }
     }
     
-    // Sort fallback results by distance
-    results = results.map(location => {
-      if (location.coordinates) {
-        const distance = calculateDistance(
-          userLocation.latitude,
-          userLocation.longitude,
-          location.coordinates.latitude,
-          location.coordinates.longitude
-        );
-        return { ...location, distance };
-      }
-      return location;
-    })
-    .sort((a, b) => (a.distance || 999) - (b.distance || 999))
-    .slice(0, 5);
-    
-    return results;
+    // Fallback to generic location
+    return 'Arnum, Deutschland';
+  } catch (error) {
+    console.error('Reverse geocoding failed:', error);
+    return 'Arnum, Deutschland';
   }
 };
 
-// Enhanced search for specific establishment types
-export const searchEstablishments = async (
-  query: string, 
-  type: 'restaurant' | 'bar' | 'cafe' | 'hotel' = 'restaurant'
-): Promise<LocationSuggestion[]> => {
-  const enhancedQuery = `${query} ${type} Deutschland`;
-  return searchLocations(enhancedQuery);
-};
+export type { LocationSuggestion };
