@@ -65,7 +65,8 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
         const newProgress = prev + (100 / (STORY_DURATION / 100));
         
         if (newProgress >= 100) {
-          // Move to next story
+          // Reset progress and move to next story
+          setProgress(0);
           if (currentIndex < stories.length - 1) {
             setCurrentIndex(prev => prev + 1);
           } else {
@@ -108,6 +109,7 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
   }, [isOpen, currentIndex, stories.length]);
 
   const goToNext = () => {
+    setProgress(0); // Reset progress immediately
     if (currentIndex < stories.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
@@ -116,6 +118,7 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
   };
 
   const goToPrevious = () => {
+    setProgress(0); // Reset progress immediately
     if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1);
     }

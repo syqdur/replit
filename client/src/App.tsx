@@ -434,11 +434,8 @@ function App() {
   };
 
   const handleViewStory = (storyIndex: number, userName: string) => {
-    // Filter stories for the selected user and find the relative index
-    const userStories = stories.filter(story => story.userName === userName);
-    const userStoryIndex = userStories.findIndex(story => story.id === stories[storyIndex].id);
-    
-    setCurrentStoryIndex(userStoryIndex >= 0 ? userStoryIndex : 0);
+    // Use the actual story index from the full stories array
+    setCurrentStoryIndex(storyIndex);
     setSelectedStoryUser(userName);
     setShowStoriesViewer(true);
   };
@@ -1040,7 +1037,7 @@ function App() {
       {/* Stories Viewer */}
       <StoriesViewer
         isOpen={showStoriesViewer}
-        stories={selectedStoryUser ? stories.filter(story => story.userName === selectedStoryUser) : stories}
+        stories={stories}
         initialStoryIndex={currentStoryIndex}
         currentUser={userName || ''}
         onClose={() => setShowStoriesViewer(false)}
