@@ -1040,6 +1040,7 @@ function App() {
         stories={stories}
         initialStoryIndex={currentStoryIndex}
         currentUser={userName || ''}
+        selectedUserName={selectedStoryUser}
         onClose={() => setShowStoriesViewer(false)}
         onStoryViewed={handleStoryViewed}
         onDeleteStory={handleDeleteStory}

@@ -7,6 +7,7 @@ interface StoriesViewerProps {
   stories: Story[];
   initialStoryIndex: number;
   currentUser: string;
+  selectedUserName?: string; // Add selected user filter
   onClose: () => void;
   onStoryViewed: (storyId: string) => void;
   onDeleteStory: (storyId: string) => void;
@@ -19,18 +20,37 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
   stories,
   initialStoryIndex,
   currentUser,
+  selectedUserName,
   onClose,
   onStoryViewed,
   onDeleteStory,
   isAdmin,
   isDarkMode
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(initialStoryIndex);
+  // Filter stories for selected user or show all if no user selected
+  const filteredStories = selectedUserName 
+    ? stories.filter(story => story.userName === selectedUserName)
+    : stories;
+  
+  // Calculate the correct initial index for filtered stories
+  const getInitialFilteredIndex = () => {
+    if (!selectedUserName) return initialStoryIndex;
+    
+    // Find the story at initialStoryIndex in the full stories array
+    const targetStory = stories[initialStoryIndex];
+    if (!targetStory) return 0;
+    
+    // Find its index in the filtered stories
+    const filteredIndex = filteredStories.findIndex(story => story.id === targetStory.id);
+    return filteredIndex >= 0 ? filteredIndex : 0;
+  };
+
+  const [currentIndex, setCurrentIndex] = useState(getInitialFilteredIndex());
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const currentStory = stories[currentIndex];
+  const currentStory = filteredStories[currentIndex];
   const STORY_DURATION = 5000; // 5 seconds per story
 
   // Check if current user can delete this story
@@ -67,7 +87,7 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
         if (newProgress >= 100) {
           // Reset progress and move to next story
           setProgress(0);
-          if (currentIndex < stories.length - 1) {
+          if (currentIndex < filteredStories.length - 1) {
             setCurrentIndex(prev => prev + 1);
           } else {
             onClose();
@@ -110,7 +130,7 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
 
   const goToNext = () => {
     setProgress(0); // Reset progress immediately
-    if (currentIndex < stories.length - 1) {
+    if (currentIndex < filteredStories.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
       onClose();
@@ -140,8 +160,8 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
       onDeleteStory(currentStory.id);
       
       // Move to next story or close if this was the last one
-      if (stories.length > 1) {
-        if (currentIndex < stories.length - 1) {
+      if (filteredStories.length > 1) {
+        if (currentIndex < filteredStories.length - 1) {
           // Stay at current index, next story will shift into this position
         } else {
           // Go to previous story if this was the last one
@@ -192,7 +212,7 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
     <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
       {/* Progress bars */}
       <div className="absolute top-4 left-4 right-4 flex gap-1 z-10">
-        {stories.map((_, index) => (
+        {filteredStories.map((_, index) => (
           <div key={index} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
             <div 
               className="h-full bg-white transition-all duration-100 ease-linear"
@@ -316,7 +336,7 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
         <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3">
           <div className="flex items-center justify-between text-white text-sm">
             <span>
-              {currentIndex + 1} von {stories.length}
+              {currentIndex + 1} von {filteredStories.length}
             </span>
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4" />
