@@ -3,121 +3,206 @@ interface LocationSuggestion {
   address: string;
   coordinates?: { latitude: number; longitude: number };
   placeId?: string;
-  distance?: number; // Distance in kilometers
+  distance?: number;
+  types?: string[];
+  rating?: number;
+  priceLevel?: number;
 }
 
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const GOOGLE_MAPS_API_KEY = 'AIzaSyBzYPmwISWFA0plYDMSKHZ9zh5eymdqL8Y';
 
-// Real establishments database for Arnum/Hemmingen area with actual businesses
-const arnumEstablishments: Record<string, LocationSuggestion[]> = {
-  'church': [
-    { name: 'St.-Vitus-Gemeinde Wilkenburg-Harkenbleck', address: 'Kirchweg 3, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3500, longitude: 9.7400 } },
-    { name: 'Ev.-luth. Kirchengemeinde Arnum', address: 'Kirchstr. 8, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3649, longitude: 9.7560 } },
-    { name: 'Katholische Kirche St. Ansgar', address: 'Hoher Weg 8, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7000 } }
-  ],
-  'restaurant': [
-    { name: 'Restaurant Bacchus', address: 'Göttinger Str. 31, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3649, longitude: 9.7560 } },
-    { name: 'Fischerstübchen', address: 'Göttinger Str. 19, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3655, longitude: 9.7565 } },
-    { name: 'Gasthaus Deutsches Haus', address: 'Rathausplatz 1, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7000 } },
-    { name: 'Pizzeria Da Mario', address: 'Hoher Weg 12, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3210, longitude: 9.7010 } },
-    { name: 'Restaurant Athen', address: 'Berliner Str. 45, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3180, longitude: 9.6980 } }
-  ],
-  'cafe': [
-    { name: 'Bäckerei Konditorei Wessing', address: 'Göttinger Str. 27, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3645, longitude: 9.7555 } },
-    { name: 'Café am Markt', address: 'Rathausplatz 3, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3205, longitude: 9.7005 } },
-    { name: 'Bäckerei Steinecke', address: 'Hoher Weg 15, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3215, longitude: 9.7015 } }
-  ],
-  'shop': [
-    { name: 'EDEKA Friedrichsen', address: 'Göttinger Str. 22, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3650, longitude: 9.7550 } },
-    { name: 'Apotheke am Rathaus', address: 'Rathausplatz 5, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7005 } },
-    { name: 'Fleischerei Bünemann', address: 'Göttinger Str. 15, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3660, longitude: 9.7570 } }
-  ],
-  'service': [
-    { name: 'Rathaus Hemmingen', address: 'Rathausplatz 1, 30966 Hemmingen, Deutschland', coordinates: { latitude: 52.3200, longitude: 9.7000 } },
-    { name: 'Freiwillige Feuerwehr Arnum', address: 'Feuerwehrstr. 2, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3635, longitude: 9.7545 } },
-    { name: 'Grundschule Arnum', address: 'Schulstr. 10, 30966 Hemmingen-Arnum, Deutschland', coordinates: { latitude: 52.3640, longitude: 9.7540 } }
-  ]
+// Load Google Maps JavaScript API with Places library
+let googleMapsLoaded = false;
+let googleMapsPromise: Promise<void> | null = null;
+
+const loadGoogleMaps = (): Promise<void> => {
+  if (googleMapsLoaded) return Promise.resolve();
+  if (googleMapsPromise) return googleMapsPromise;
+
+  googleMapsPromise = new Promise((resolve, reject) => {
+    if (typeof window === 'undefined') {
+      reject(new Error('Not in browser'));
+      return;
+    }
+
+    if (window.google && window.google.maps) {
+      googleMapsLoaded = true;
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&v=weekly`;
+    script.async = true;
+    script.defer = true;
+
+    script.onload = () => {
+      googleMapsLoaded = true;
+      resolve();
+    };
+
+    script.onerror = () => {
+      reject(new Error('Failed to load Google Maps'));
+    };
+
+    document.head.appendChild(script);
+  });
+
+  return googleMapsPromise;
 };
 
-// Search the local Arnum database
-function searchArnumDatabase(query: string): LocationSuggestion[] {
-  const queryLower = query.toLowerCase();
-  const results: LocationSuggestion[] = [];
-  
-  // Search through all categories
-  for (const [category, places] of Object.entries(arnumEstablishments)) {
-    for (const place of places) {
-      if (place.name.toLowerCase().includes(queryLower) || 
-          place.address.toLowerCase().includes(queryLower) ||
-          category.includes(queryLower)) {
-        results.push(place);
-      }
-    }
-  }
-  
-  // Sort by relevance (exact matches first)
-  results.sort((a, b) => {
-    const aExact = a.name.toLowerCase().includes(queryLower);
-    const bExact = b.name.toLowerCase().includes(queryLower);
-    if (aExact && !bExact) return -1;
-    if (!aExact && bExact) return 1;
-    return 0;
-  });
-  
-  return results.slice(0, 10); // Return top 10 results
-}
-
+// Use new Google Places API (google.maps.places.Place)
 export const searchLocations = async (query: string): Promise<LocationSuggestion[]> => {
-  console.log('🔍 Searching locations across Germany:', query);
-  
-  const isClient = typeof window !== 'undefined';
-  
-  if (!isClient) {
-    console.log('❌ Not in browser environment');
+  console.log('🔍 Searching with new Google Places API:', query);
+
+  if (typeof window === 'undefined') {
+    console.log('❌ Not in browser');
     return [];
   }
 
   try {
-    // Get user's location first
+    // Load Google Maps API
+    await loadGoogleMaps();
+    console.log('✅ Google Maps loaded');
+
+    // Get user location
     const userLocation = await getCurrentLocation();
-    console.log('📍 User location:', `${userLocation.latitude}, ${userLocation.longitude}`);
-    
-    // Make API request to backend for Germany-wide search with distance sorting
-    const params = new URLSearchParams({
-      query: query,
-      lat: userLocation.latitude.toString(),
-      lng: userLocation.longitude.toString()
-    });
-    
-    console.log('📡 Searching all of Germany, sorted by distance...');
-    const response = await fetch(`/api/search-locations?${params}`);
-    
-    if (!response.ok) {
-      console.log('❌ Backend API error:', response.status);
-      // Fallback to local database
-      return searchArnumDatabase(query);
+    console.log('📍 User location:', userLocation);
+
+    // Use new Places API - Text Search
+    const { Place } = await window.google.maps.importLibrary("places") as google.maps.PlacesLibrary;
+
+    const request = {
+      textQuery: query,
+      fields: ['displayName', 'formattedAddress', 'location', 'types', 'rating', 'priceLevel', 'id'],
+      // Remove locationBias for now to avoid API errors
+      maxResultCount: 20
+    };
+
+    console.log('📡 New Places API searchByText request:', request);
+
+    const { places } = await Place.searchByText(request);
+    console.log('📍 New Places API raw results:', places);
+
+    if (places && places.length > 0) {
+      const locations: LocationSuggestion[] = places
+        .map(place => {
+          const location = place.location;
+          if (!location) return null;
+
+          const lat = location.lat();
+          const lng = location.lng();
+
+          const distance = calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            lat,
+            lng
+          );
+
+          return {
+            name: place.displayName || 'Unknown',
+            address: place.formattedAddress || 'No address',
+            coordinates: { latitude: lat, longitude: lng },
+            placeId: place.id,
+            types: place.types,
+            rating: place.rating,
+            priceLevel: place.priceLevel,
+            distance: Math.round(distance * 100) / 100
+          };
+        })
+        .filter((place): place is LocationSuggestion => place !== null)
+        .filter(place => (place.distance || 999) <= 15) // Only within 15km
+        .sort((a, b) => (a.distance || 999) - (b.distance || 999))
+        .slice(0, 10);
+
+      console.log('✅ Processed new Places API results:', locations);
+      return locations;
     }
-    
-    const data = await response.json();
-    console.log('✅ Backend API response:', `${data.results?.length || 0} results`);
-    
-    if (data.results && data.results.length > 0) {
-      console.log('📍 Found locations across Germany, sorted by distance:', data.results.length);
-      return data.results;
-    }
-    
-    // If no nationwide results, try local database
-    const localResults = searchArnumDatabase(query);
-    if (localResults.length > 0) {
-      console.log('🏠 Using local Arnum results as fallback:', localResults.length);
-      return localResults;
-    }
-    
+
+    console.log('❌ No results from new Places API');
     return [];
+
   } catch (error) {
-    console.error('Location search failed:', error);
-    // Return local results as fallback
-    return searchArnumDatabase(query);
+    console.error('❌ New Places API search failed:', error);
+    return [];
+  }
+};
+
+// Nearby search using new Places API
+export const searchNearbyLocations = async (query: string): Promise<LocationSuggestion[]> => {
+  console.log('🔍 Nearby search with new Google Places API:', query);
+
+  try {
+    await loadGoogleMaps();
+    const userLocation = await getCurrentLocation();
+
+    const { Place } = await window.google.maps.importLibrary("places") as google.maps.PlacesLibrary;
+
+    const request = {
+      fields: ['displayName', 'formattedAddress', 'location', 'types', 'rating', 'priceLevel', 'id'],
+      locationRestriction: new window.google.maps.Circle({
+        center: { lat: userLocation.latitude, lng: userLocation.longitude },
+        radius: 3000 // 3km radius for nearby search
+      }),
+      includedTypes: ['restaurant', 'food', 'meal_takeaway', 'meal_delivery', 'establishment'],
+      maxResultCount: 20
+    };
+
+    console.log('📡 New Places API searchNearby request:', request);
+
+    const { places } = await Place.searchNearby(request);
+    console.log('📍 New Places API nearby results:', places);
+
+    if (places && places.length > 0) {
+      // Filter by query match
+      const filteredPlaces = places.filter(place => {
+        const name = place.displayName?.toLowerCase() || '';
+        const address = place.formattedAddress?.toLowerCase() || '';
+        const queryLower = query.toLowerCase();
+
+        return name.includes(queryLower) || address.includes(queryLower);
+      });
+
+      const locations: LocationSuggestion[] = filteredPlaces
+        .map(place => {
+          const location = place.location;
+          if (!location) return null;
+
+          const lat = location.lat();
+          const lng = location.lng();
+
+          const distance = calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            lat,
+            lng
+          );
+
+          return {
+            name: place.displayName || 'Unknown',
+            address: place.formattedAddress || 'No address',
+            coordinates: { latitude: lat, longitude: lng },
+            placeId: place.id,
+            types: place.types,
+            rating: place.rating,
+            priceLevel: place.priceLevel,
+            distance: Math.round(distance * 100) / 100
+          };
+        })
+        .filter((place): place is LocationSuggestion => place !== null)
+        .sort((a, b) => (a.distance || 999) - (b.distance || 999))
+        .slice(0, 10);
+
+      console.log('✅ Processed nearby search results:', locations);
+      return locations;
+    }
+
+    return [];
+
+  } catch (error) {
+    console.error('❌ Nearby search failed:', error);
+    return [];
   }
 };
 
@@ -126,19 +211,20 @@ export const searchEstablishments = async (
   userLocation: { latitude: number; longitude: number }
 ): Promise<LocationSuggestion[]> => {
   console.log('🔍 Searching establishments:', query);
-  
+
   try {
-    // First check local database
-    const localResults = searchArnumDatabase(query);
-    if (localResults.length > 0) {
-      console.log('🏠 Found local establishments:', localResults.length);
-      return localResults;
+    // Try text search first
+    const textResults = await searchLocations(query);
+    if (textResults.length > 0) {
+      return textResults;
     }
-    
-    // Use general location search as fallback
-    return await searchLocations(query);
+
+    // If no text results, try nearby search
+    console.log('🔄 Trying nearby search...');
+    return await searchNearbyLocations(query);
+
   } catch (error) {
-    console.error('Establishment search failed:', error);
+    console.error('❌ Establishment search failed:', error);
     return [];
   }
 };
@@ -147,14 +233,14 @@ export const searchEstablishments = async (
 export const getCurrentLocation = (): Promise<{ latitude: number; longitude: number; accuracy: number }> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported by this browser.'));
+      reject(new Error('Geolocation not supported'));
       return;
     }
 
     const options = {
       enableHighAccuracy: true,
-      timeout: 20000,
-      maximumAge: 60000 // 1 minute cache
+      timeout: 10000,
+      maximumAge: 30000
     };
 
     navigator.geolocation.getCurrentPosition(
@@ -164,72 +250,69 @@ export const getCurrentLocation = (): Promise<{ latitude: number; longitude: num
           longitude: position.coords.longitude,
           accuracy: position.coords.accuracy
         };
-        
-        console.log('📍 GPS Location obtained:', coords);
-        
-        // Check if location is accurate enough
-        if (coords.accuracy > 50000) {
-          console.warn('⚠️ Location accuracy is poor:', coords.accuracy + 'm');
-        }
-        
+
+        console.log('📍 GPS Location:', coords);
         resolve(coords);
       },
       (error) => {
         console.log('❌ Geolocation error:', error.message);
-        
-        // Fallback to approximate Arnum location
-        const fallbackLocation = {
-          latitude: 52.3649,
-          longitude: 9.7560,
-          accuracy: 50000
-        };
-        
-        console.log('🔄 Using fallback location for Arnum:', fallbackLocation);
-        resolve(fallbackLocation);
+        reject(error);
       },
       options
     );
   });
 };
 
-// Reverse geocode coordinates to get location name
+// Reverse geocode using new API
 export const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
   try {
-    // Check if we have Google Maps API key
-    if (!GOOGLE_MAPS_API_KEY) {
-      console.log('ℹ️ Google Maps API key not available, using fallback services');
-      
-      // Try Nominatim geocoding service
-      console.log('🔍 Trying Nominatim geocoding service...');
-      const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=16&addressdetails=1`;
-      
-      const response = await fetch(nominatimUrl, {
-        headers: { 'User-Agent': 'Wedding-Gallery-App/1.0' }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.display_name) {
-          // Parse the location to get a clean name
-          const parts = data.display_name.split(',');
-          const cityState = parts.slice(-4, -1).join(', ').trim();
-          
-          console.log('📍 Nominatim parsed location:', {
-            name: cityState,
-            fullAddress: data.display_name
-          });
-          
-          return cityState;
+    await loadGoogleMaps();
+
+    const { Geocoder } = await window.google.maps.importLibrary("geocoding") as google.maps.GeocodingLibrary;
+    const geocoder = new Geocoder();
+
+    return new Promise((resolve) => {
+      geocoder.geocode(
+        { location: { lat, lng } },
+        (results, status) => {
+          if (status === 'OK' && results && results[0]) {
+            resolve(results[0].formatted_address);
+          } else {
+            resolve('Deutschland');
+          }
         }
-      }
-    }
-    
-    // Fallback to generic location
-    return 'Arnum, Deutschland';
+      );
+    });
+
   } catch (error) {
-    console.error('Reverse geocoding failed:', error);
-    return 'Arnum, Deutschland';
+    console.error('❌ Reverse geocoding failed:', error);
+    return 'Deutschland';
   }
 };
+
+// Calculate distance between two points
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Earth's radius in km
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const d = R * c;
+  return d;
+}
+
+function deg2rad(deg: number): number {
+  return deg * (Math.PI/180);
+}
+
+// TypeScript declarations
+declare global {
+  interface Window {
+    google: any;
+  }
+}
 
 export type { LocationSuggestion };

@@ -33,18 +33,29 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
       setThumbnailGenerated(true);
     };
 
+    const handleCanPlay = () => {
+      console.log('Video can play, thumbnail should be ready');
+      setThumbnailGenerated(true);
+    };
+
     const handleError = (e: any) => {
       console.error('Video thumbnail error:', e);
       setError(true);
     };
 
+    // Multiple event listeners for better mobile compatibility
     video.addEventListener('loadeddata', handleLoadedData);
     video.addEventListener('seeked', handleSeeked);
+    video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('error', handleError);
+
+    // Force load
+    video.load();
 
     return () => {
       video.removeEventListener('loadeddata', handleLoadedData);
       video.removeEventListener('seeked', handleSeeked);
+      video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('error', handleError);
     };
   }, [src]);
@@ -74,11 +85,14 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
         preload="metadata"
         controls={false}
         poster=""
-        style={{ backgroundColor: '#f3f4f6' }}
+        style={{ 
+          backgroundColor: 'transparent',
+          visibility: thumbnailGenerated ? 'visible' : 'hidden'
+        }}
       />
       
       {/* Play button overlay */}
-      {showPlayButton && (
+      {showPlayButton && thumbnailGenerated && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-12 h-12 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm">
             <Play className="w-6 h-6 text-white ml-1" />
@@ -86,11 +100,11 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
         </div>
       )}
       
-      {/* Loading overlay until video loads */}
+      {/* Loading state - only show while loading */}
       {!thumbnailGenerated && !error && (
-        <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center animate-pulse">
-          <div className="text-center text-gray-500 dark:text-gray-400">
-            <div className="w-8 h-8 mx-auto mb-1 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+        <div className="absolute inset-0 bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+          <div className="text-center text-gray-400 dark:text-gray-500">
+            <div className="w-8 h-8 mx-auto mb-1 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center animate-pulse">
               <Play className="w-4 h-4" />
             </div>
             <div className="text-xs">Loading...</div>
