@@ -432,10 +432,49 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                       {/* Media Content */}
                       <div className="w-full h-full overflow-hidden">
                         {item.type === 'video' ? (
-                          <VideoThumbnail 
-                            src={item.url} 
-                            className="w-full h-full object-cover" 
-                          />
+                          <div className="relative w-full h-full">
+  <video
+    src={item.url}
+    className="w-full h-full object-cover"
+    muted
+    preload="metadata"
+    playsInline
+    poster={`${item.url}#t=0.5`}
+    onError={(e) => {
+      // Fallback für mobile Geräte
+      const target = e.target as HTMLVideoElement;
+      const container = target.parentElement;
+      if (container) {
+        container.innerHTML = `
+          <div class="w-full h-full bg-gray-800 flex flex-col items-center justify-center text-white">
+            <div class="w-12 h-12 mb-2 rounded-full bg-white/20 flex items-center justify-center">
+              <svg class="w-6 h-6 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="text-xs text-center">Video</div>
+          </div>
+        `;
+      }
+    }}
+  />
+  
+  {/* Play Button Overlay */}
+  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+    <div className="w-12 h-12 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm">
+      <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+      </svg>
+    </div>
+  </div>
+
+  {/* Video Indikator */}
+  <div className="absolute top-2 right-2 bg-black/60 rounded-full p-1">
+    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+    </svg>
+  </div>
+</div>
                         ) : (
                           <img
                             src={item.url}
