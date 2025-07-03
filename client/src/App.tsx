@@ -21,7 +21,6 @@ import { AdminLoginModal } from './components/AdminLoginModal';
 import { UserProfileModal } from './components/UserProfileModal';
 import { BackToTopButton } from './components/BackToTopButton';
 import { NotificationCenter } from './components/NotificationCenter';
-import { PhotoChallenges } from './components/PhotoChallenges';
 import { useUser } from './hooks/useUser';
 import { useDarkMode } from './hooks/useDarkMode';
 import { MediaItem, Comment, Like } from './types';
@@ -83,10 +82,10 @@ function App() {
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [selectedStoryUser, setSelectedStoryUser] = useState<string>('');
   const [showStoryUpload, setShowStoryUpload] = useState(false);
-  const [activeTab, setActiveTab] = useState<'gallery' | 'music' | 'timeline' | 'challenges'>('gallery');
+  const [activeTab, setActiveTab] = useState<'gallery' | 'music' | 'timeline'>('gallery');
   
   // Handle tab switching when features are disabled
-  const handleTabChange = (tab: 'gallery' | 'music' | 'timeline' | 'challenges') => {
+  const handleTabChange = (tab: 'gallery' | 'music' | 'timeline') => {
     if (tab === 'gallery' && siteStatus && !siteStatus.galleryEnabled) {
       return; // Don't switch to gallery if disabled
     }
@@ -957,7 +956,6 @@ function App() {
           isDarkMode={isDarkMode}
           galleryEnabled={siteStatus?.galleryEnabled ?? true}
           musicWishlistEnabled={siteStatus?.musicWishlistEnabled ?? true}
-          challengesEnabled={siteStatus?.challengesEnabled ?? true}
         />
 
         {/* Tab Content */}
@@ -1008,8 +1006,6 @@ function App() {
           />
         ) : activeTab === 'music' && siteStatus?.musicWishlistEnabled ? (
           <MusicWishlist isDarkMode={isDarkMode} isAdmin={isAdmin} />
-        ) : activeTab === 'challenges' && siteStatus?.challengesEnabled ? (
-          <PhotoChallenges isDarkMode={isDarkMode} isAdmin={isAdmin} />
         ) : (
           <div className={`p-8 text-center transition-colors duration-300 ${
             isDarkMode ? 'text-gray-400' : 'text-gray-600'
