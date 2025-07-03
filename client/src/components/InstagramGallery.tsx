@@ -3,7 +3,7 @@ import { Grid, List, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MediaItem, Comment, Like } from '../types';
 import { InstagramPost } from './InstagramPost';
 import { NotePost } from './NotePost';
-import { VideoThumbnail } from './VideoThumbnail';
+
 
 interface InstagramGalleryProps {
   items: MediaItem[];
