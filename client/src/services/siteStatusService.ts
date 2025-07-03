@@ -11,11 +11,13 @@ export interface SiteStatus {
   galleryEnabled: boolean;
   musicWishlistEnabled: boolean;
   storiesEnabled: boolean;
+  challengesEnabled: boolean;
   lastUpdated: string;
   updatedBy: string;
 }
 
-const SITE_STATUS_DOC = 'site_status';
+// Firebase document names
+const SITE_STATUS_DOC = 'site-status';
 
 // Get current site status
 export const getSiteStatus = async (): Promise<SiteStatus> => {
@@ -31,6 +33,7 @@ export const getSiteStatus = async (): Promise<SiteStatus> => {
         galleryEnabled: data.galleryEnabled ?? true,
         musicWishlistEnabled: data.musicWishlistEnabled ?? true,
         storiesEnabled: data.storiesEnabled ?? true,
+        challengesEnabled: data.challengesEnabled ?? true,
         lastUpdated: data.lastUpdated ?? new Date().toISOString(),
         updatedBy: data.updatedBy ?? 'system'
       } as SiteStatus;
@@ -41,6 +44,7 @@ export const getSiteStatus = async (): Promise<SiteStatus> => {
         galleryEnabled: true,
         musicWishlistEnabled: true,
         storiesEnabled: true,
+        challengesEnabled: true,
         lastUpdated: new Date().toISOString(),
         updatedBy: 'migration'
       };
@@ -58,6 +62,7 @@ export const getSiteStatus = async (): Promise<SiteStatus> => {
       galleryEnabled: true,
       musicWishlistEnabled: true,
       storiesEnabled: true,
+      challengesEnabled: true,
       lastUpdated: new Date().toISOString(),
       updatedBy: 'error-fallback'
     };
@@ -81,6 +86,7 @@ export const subscribeSiteStatus = (
           galleryEnabled: data.galleryEnabled ?? true,
           musicWishlistEnabled: data.musicWishlistEnabled ?? true,
           storiesEnabled: data.storiesEnabled ?? true,
+          challengesEnabled: data.challengesEnabled ?? true,
           lastUpdated: data.lastUpdated ?? new Date().toISOString(),
           updatedBy: data.updatedBy ?? 'system'
         };
@@ -101,6 +107,7 @@ export const subscribeSiteStatus = (
           galleryEnabled: true,
           musicWishlistEnabled: true,
           storiesEnabled: true,
+          challengesEnabled: true,
           lastUpdated: new Date().toISOString(),
           updatedBy: 'listener-error'
         });
@@ -126,6 +133,7 @@ export const updateSiteStatus = async (
         galleryEnabled: data.galleryEnabled ?? true,
         musicWishlistEnabled: data.musicWishlistEnabled ?? true,
         storiesEnabled: data.storiesEnabled ?? true,
+        challengesEnabled: data.challengesEnabled ?? true,
         lastUpdated: data.lastUpdated ?? new Date().toISOString(),
         updatedBy: data.updatedBy ?? 'system'
       };
@@ -135,29 +143,29 @@ export const updateSiteStatus = async (
         galleryEnabled: true,
         musicWishlistEnabled: true,
         storiesEnabled: true,
+        challengesEnabled: true,
         lastUpdated: new Date().toISOString(),
-        updatedBy: 'migration'
+        updatedBy: 'system'
       };
     }
-    
-    const newStatus: SiteStatus = {
+
+    const updatedStatus: SiteStatus = {
       ...currentStatus,
       isUnderConstruction,
       lastUpdated: new Date().toISOString(),
       updatedBy: adminName
     };
-    
-    await setDoc(docRef, newStatus);
-    console.log(`Site status updated: ${isUnderConstruction ? 'Under Construction' : 'Live'} by ${adminName}`);
+
+    await setDoc(docRef, updatedStatus);
   } catch (error) {
     console.error('Error updating site status:', error);
-    throw new Error('Fehler beim Aktualisieren des Website-Status');
+    throw error;
   }
 };
 
 // Update feature toggles (admin only)
 export const updateFeatureToggles = async (
-  updates: Partial<Pick<SiteStatus, 'galleryEnabled' | 'musicWishlistEnabled' | 'storiesEnabled'>>,
+  toggles: Partial<Pick<SiteStatus, 'galleryEnabled' | 'musicWishlistEnabled' | 'storiesEnabled' | 'challengesEnabled'>>,
   adminName: string
 ): Promise<void> => {
   try {
@@ -172,6 +180,7 @@ export const updateFeatureToggles = async (
         galleryEnabled: data.galleryEnabled ?? true,
         musicWishlistEnabled: data.musicWishlistEnabled ?? true,
         storiesEnabled: data.storiesEnabled ?? true,
+        challengesEnabled: data.challengesEnabled ?? true,
         lastUpdated: data.lastUpdated ?? new Date().toISOString(),
         updatedBy: data.updatedBy ?? 'system'
       };
@@ -181,43 +190,22 @@ export const updateFeatureToggles = async (
         galleryEnabled: true,
         musicWishlistEnabled: true,
         storiesEnabled: true,
+        challengesEnabled: true,
         lastUpdated: new Date().toISOString(),
-        updatedBy: 'migration'
+        updatedBy: 'system'
       };
     }
-    
-    const newStatus: SiteStatus = {
+
+    const updatedStatus: SiteStatus = {
       ...currentStatus,
-      ...updates,
+      ...toggles,
       lastUpdated: new Date().toISOString(),
       updatedBy: adminName
     };
-    
-    await setDoc(docRef, newStatus);
-    console.log(`Feature toggles updated by ${adminName}:`, updates);
+
+    await setDoc(docRef, updatedStatus);
   } catch (error) {
     console.error('Error updating feature toggles:', error);
-    throw new Error('Fehler beim Aktualisieren der Features');
-  }
-};
-
-// Force site to be live (migration utility)
-export const forceSiteLive = async (): Promise<void> => {
-  try {
-    const docRef = doc(db, 'settings', SITE_STATUS_DOC);
-    const liveStatus: SiteStatus = {
-      isUnderConstruction: false,
-      galleryEnabled: true,
-      musicWishlistEnabled: true,
-      storiesEnabled: true,
-      lastUpdated: new Date().toISOString(),
-      updatedBy: 'migration-force-live'
-    };
-    
-    await setDoc(docRef, liveStatus);
-    console.log('Site forced to live status for migration');
-  } catch (error) {
-    console.error('Error forcing site live:', error);
-    throw new Error('Migration error: Could not force site live');
+    throw error;
   }
 };
