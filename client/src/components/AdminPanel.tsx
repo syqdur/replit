@@ -237,16 +237,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     <>
       
 
-      {/* Admin Controls - Instagram 2.0 Style */}
+      {/* Admin Controls - Compact Style */}
       {isAdmin && (
-        <div className="fixed bottom-16 left-4 flex flex-col gap-2 sm:gap-4 max-w-xs">
+        <div className="fixed bottom-16 left-4 flex flex-col gap-1 sm:gap-2 max-w-[200px]">
           {/* POST-WEDDING RECAP BUTTON */}
           <button
             onClick={handleOpenPostWeddingRecap}
-            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
-                ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-purple-500/20'
-                : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-purple-500/20'
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
             }`}
             title="Post-Hochzeits-Zusammenfassung"
           >
@@ -271,10 +271,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {/* USER MANAGEMENT BUTTON */}
           <button
             onClick={() => setShowUserManagement(true)}
-            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
-                ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-cyan-500/20'
-                : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-cyan-500/20'
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-cyan-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-cyan-500/10'
             }`}
             title="User Management"
           >
@@ -299,10 +299,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {/* SPOTIFY ADMIN BUTTON */}
           <button
             onClick={() => setShowSpotifyAdmin(true)}
-            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
-                ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-green-500/20'
-                : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-green-500/20'
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-green-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-green-500/10'
             }`}
             title="Spotify Admin"
           >
@@ -327,10 +327,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {/* Showcase Button */}
           <button
             onClick={() => setShowShowcase(true)}
-            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
-                ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-yellow-500/20'
-                : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-yellow-500/20'
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-yellow-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-yellow-500/10'
             }`}
             title="WeddingPix Showcase"
           >
@@ -357,14 +357,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleGallery}
               disabled={isUpdatingFeatures}
-              className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
                     : 'bg-white/40 border-gray-200/30 cursor-not-allowed opacity-50'
                   : isDarkMode
-                    ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-blue-500/20'
-                    : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-blue-500/20'
+                    ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-blue-500/10'
+                    : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-blue-500/10'
               }`}
               title={`Galerie ${siteStatus.galleryEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
@@ -400,14 +400,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleMusicWishlist}
               disabled={isUpdatingFeatures}
-              className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
                     : 'bg-white/40 border-gray-200/30 cursor-not-allowed opacity-50'
                   : isDarkMode
-                    ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-purple-500/20'
-                    : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-purple-500/20'
+                    ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
+                    : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
               }`}
               title={`Musikwünsche ${siteStatus.musicWishlistEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
@@ -443,14 +443,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleStories}
               disabled={isUpdatingFeatures}
-              className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
                     : 'bg-white/40 border-gray-200/30 cursor-not-allowed opacity-50'
                   : isDarkMode
-                    ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-green-500/20'
-                    : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-green-500/20'
+                    ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-green-500/10'
+                    : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-green-500/10'
               }`}
               title={`Stories ${siteStatus.storiesEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
@@ -486,13 +486,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleSiteStatus}
               disabled={isUpdatingSiteStatus}
-              className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
                 isUpdatingSiteStatus
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
                     : 'bg-white/40 border-gray-200/30 cursor-not-allowed opacity-50'
                   : isDarkMode
-                    ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-orange-500/20'
+                    ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-orange-500/10'
                     : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-orange-500/20'
               }`}
               title={getSiteStatusInfo()}
@@ -531,10 +531,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {/* External Services Button */}
           <button
             onClick={() => setShowExternalServices(true)}
-            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDarkMode
-                ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-purple-500/20'
-                : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-purple-500/20'
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
             }`}
             title="Deutsche Fotobuch-Services"
           >
@@ -560,14 +560,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <button
             onClick={handleDownloadAll}
             disabled={isDownloading || mediaItems.length === 0}
-            className={`relative p-2 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
               isDownloading || mediaItems.length === 0
                 ? isDarkMode
                   ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
                   : 'bg-white/40 border-gray-200/30 cursor-not-allowed opacity-50'
                 : isDarkMode
-                  ? 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-800/80 shadow-2xl shadow-indigo-500/20'
-                  : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-indigo-500/20'
+                  ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-indigo-500/10'
+                  : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-indigo-500/10'
             }`}
             title={getDownloadButtonText()}
           >

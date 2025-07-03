@@ -1155,38 +1155,83 @@ export const searchLocations = async (query: string): Promise<Array<{
   }
 
   try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=8&addressdetails=1&extratags=1&namedetails=1&bounded=0&dedupe=1`,
-      {
-        headers: {
-          'User-Agent': 'Wedding-Gallery-App'
+    // Enhanced search with specific amenity types for restaurants/bars/cafes
+    const responses = await Promise.allSettled([
+      // General search
+      fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=10&addressdetails=1&extratags=1&namedetails=1&bounded=0&dedupe=1`,
+        {
+          headers: { 'User-Agent': 'Wedding-Gallery-App' }
         }
+      ),
+      // Specific search for restaurants/bars/cafes
+      fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' restaurant OR bar OR cafe OR pub OR hotel')}&limit=10&addressdetails=1&extratags=1&namedetails=1&bounded=0&dedupe=1`,
+        {
+          headers: { 'User-Agent': 'Wedding-Gallery-App' }
+        }
+      )
+    ]);
+
+    let allResults: any[] = [];
+    
+    for (const response of responses) {
+      if (response.status === 'fulfilled' && response.value.ok) {
+        const data = await response.value.json();
+        allResults = allResults.concat(data);
       }
+    }
+
+    // Remove duplicates and filter by importance and relevance
+    const uniqueResults = allResults.filter((item, index, array) => 
+      array.findIndex(other => other.place_id === item.place_id) === index
     );
     
-    if (!response.ok) {
-      throw new Error('Location search request failed');
-    }
-    
-    const data = await response.json();
-    
-    return data
-      .filter((item: any) => item.importance > 0.3) // Filter by importance score
+    return uniqueResults
+      .filter((item: any) => {
+        // Higher relevance for restaurants, bars, cafes, hotels
+        const isEstablishment = item.address?.amenity && 
+          ['restaurant', 'bar', 'cafe', 'pub', 'hotel', 'fast_food', 'biergarten', 'nightclub'].includes(item.address.amenity);
+        const isTourism = item.address?.tourism;
+        
+        return item.importance > (isEstablishment || isTourism ? 0.2 : 0.4);
+      })
+      .sort((a: any, b: any) => {
+        // Prioritize establishments
+        const aIsEstablishment = a.address?.amenity && 
+          ['restaurant', 'bar', 'cafe', 'pub', 'hotel', 'fast_food', 'biergarten', 'nightclub'].includes(a.address.amenity);
+        const bIsEstablishment = b.address?.amenity && 
+          ['restaurant', 'bar', 'cafe', 'pub', 'hotel', 'fast_food', 'biergarten', 'nightclub'].includes(b.address.amenity);
+        
+        if (aIsEstablishment && !bIsEstablishment) return -1;
+        if (!aIsEstablishment && bIsEstablishment) return 1;
+        
+        return b.importance - a.importance;
+      })
+      .slice(0, 8) // Limit to 8 results
       .map((item: any) => {
         const address = item.address || {};
         const locationParts = [];
         
-        // Prioritize meaningful location names (excluding street details)
-        if (address.tourism) {
-          locationParts.push(address.tourism);
-        } else if (address.amenity) {
-          locationParts.push(address.amenity);
+        // Extract establishment name first
+        if (item.namedetails?.name || item.display_name.split(',')[0]) {
+          const establishmentName = item.namedetails?.name || item.display_name.split(',')[0];
+          locationParts.push(establishmentName);
+        }
+        
+        // Add establishment type for context
+        if (address.amenity && ['restaurant', 'bar', 'cafe', 'pub', 'hotel', 'fast_food', 'biergarten', 'nightclub'].includes(address.amenity)) {
+          // Don't repeat if name already contains type
+          const name = item.namedetails?.name || item.display_name.split(',')[0];
+          if (!name?.toLowerCase().includes(address.amenity.toLowerCase())) {
+            locationParts.push(`(${address.amenity})`);
+          }
+        } else if (address.tourism) {
+          locationParts.push(`(${address.tourism})`);
         } else if (address.shop) {
-          locationParts.push(address.shop);
+          locationParts.push(`(${address.shop})`);
         } else if (address.leisure) {
-          locationParts.push(address.leisure);
-        } else if (address.building && address.building !== 'yes') {
-          locationParts.push(address.building);
+          locationParts.push(`(${address.leisure})`);
         }
         
         // Add neighborhood/suburb for context

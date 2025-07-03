@@ -71,9 +71,21 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
     }
   };
 
-  const handleDelete = () => {
-    if (onDelete && window.confirm('Beitrag wirklich löschen?')) {
-      onDelete(item);
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const confirmed = window.confirm('Beitrag wirklich löschen?');
+      if (confirmed && onDelete) {
+        onDelete(item);
+      }
+    } catch (error) {
+      console.error('Delete confirmation failed:', error);
+      // Fallback for browsers without confirm support
+      if (onDelete) {
+        onDelete(item);
+      }
     }
   };
 
@@ -222,10 +234,12 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
             {canDeletePost && (
               <button
                 onClick={handleDelete}
-                className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                onTouchStart={() => {}} // Improve touch compatibility
+                className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 touch-manipulation ${
                   isDarkMode ? 'text-red-400 hover:bg-red-900/30' : 'text-red-500 hover:bg-red-50/80'
                 }`}
                 title="Beitrag löschen"
+                style={{ minWidth: '44px', minHeight: '44px' }} // Ensure minimum touch target size
               >
                 <Trash2 className="w-5 h-5" />
               </button>

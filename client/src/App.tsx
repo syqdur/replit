@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageCircle, MoreHorizontal, Sun, Moon, UserPlus, Lock, Unlock, Settings } from 'lucide-react';
+import { Heart, MessageCircle, MoreHorizontal, Sun, Moon, UserPlus, Lock, Unlock, Settings, Menu } from 'lucide-react';
 import { UserNamePrompt } from './components/UserNamePrompt';
 import { UploadSection } from './components/UploadSection';
 import { InstagramGallery } from './components/InstagramGallery';
@@ -106,6 +106,7 @@ function App() {
     }
   }, [siteStatus, activeTab]);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
 
   // Check if we're on the Spotify callback page
   const isSpotifyCallback = () => {
@@ -1091,53 +1092,83 @@ function App() {
       {/* Back to Top Button */}
       <BackToTopButton isDarkMode={isDarkMode} />
 
-      {/* Floating Admin Button - Bottom Left Corner */}
+      {/* Mobile Admin Burger Menu - Bottom Left Corner */}
       {userName && (
-        <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2">
-          {/* Admin Toggle Button */}
+        <div className="fixed bottom-4 left-4 z-50">
+          {/* Admin Burger Menu Button */}
           <button
-            onClick={() => {
-              if (isAdmin) {
-                handleAdminLogout();
-              } else {
-                setShowAdminLogin(true);
-              }
-            }}
-            className={`w-12 h-12 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg ring-2 ${
+            onClick={() => setShowAdminMenu(!showAdminMenu)}
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg ring-2 ${
               isDarkMode 
                 ? 'bg-gray-800/90 hover:bg-gray-700/90 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
                 : 'bg-white/90 hover:bg-gray-50/90 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
-            }`}
-            title={isAdmin ? "Admin-Modus verlassen" : "Admin-Modus"}
+            } ${showAdminMenu ? 'rotate-90' : ''}`}
+            title="Admin-Menü"
           >
-            {isAdmin ? (
-              <Unlock className={`w-5 h-5 transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`} />
-            ) : (
-              <Lock className={`w-5 h-5 transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`} />
-            )}
+            <Menu className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
+            }`} />
           </button>
 
-          {/* Admin Site Settings - Only visible in admin mode */}
-          {isAdmin && (
-            <button
-              onClick={() => setShowProfileEditModal(true)}
-              className={`w-12 h-12 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg ring-2 ${
-                isDarkMode 
-                  ? 'bg-gray-800/90 hover:bg-gray-700/90 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
-                  : 'bg-white/90 hover:bg-gray-50/90 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
-              }`}
-              title="Website-Profil bearbeiten"
-            >
-              <Settings className={`w-5 h-5 transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`} />
-            </button>
+          {/* Admin Menu Dropdown */}
+          {showAdminMenu && (
+            <div className={`absolute bottom-12 left-0 mb-2 min-w-[140px] rounded-xl shadow-xl backdrop-blur-sm border transition-all duration-300 ${
+              isDarkMode 
+                ? 'bg-gray-800/95 border-gray-700/50' 
+                : 'bg-white/95 border-gray-200/50'
+            }`}>
+              {/* Admin Toggle */}
+              <button
+                onClick={() => {
+                  if (isAdmin) {
+                    handleAdminLogout();
+                  } else {
+                    setShowAdminLogin(true);
+                  }
+                  setShowAdminMenu(false);
+                }}
+                className={`w-full p-3 text-left text-sm flex items-center gap-3 transition-colors duration-300 rounded-t-xl ${
+                  isDarkMode 
+                    ? 'hover:bg-gray-700/50 text-gray-300' 
+                    : 'hover:bg-gray-100/50 text-gray-700'
+                }`}
+              >
+                {isAdmin ? (
+                  <Unlock className="w-4 h-4" />
+                ) : (
+                  <Lock className="w-4 h-4" />
+                )}
+                {isAdmin ? "Admin beenden" : "Admin-Login"}
+              </button>
+
+              {/* Admin Settings - Only visible in admin mode */}
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    setShowProfileEditModal(true);
+                    setShowAdminMenu(false);
+                  }}
+                  className={`w-full p-3 text-left text-sm flex items-center gap-3 transition-colors duration-300 rounded-b-xl ${
+                    isDarkMode 
+                      ? 'hover:bg-gray-700/50 text-gray-300' 
+                      : 'hover:bg-gray-100/50 text-gray-700'
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  Website-Profil
+                </button>
+              )}
+            </div>
           )}
         </div>
+      )}
+
+      {/* Click outside to close menu */}
+      {showAdminMenu && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setShowAdminMenu(false)}
+        />
       )}
     </div>
   );

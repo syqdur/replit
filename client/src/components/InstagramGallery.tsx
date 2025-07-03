@@ -421,17 +421,45 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                     <div
                       key={item.id}
                       className="relative aspect-square cursor-pointer group"
-                      onClick={() => onItemClick(originalIndex)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        // Always open the modal for both videos and images
+                        // Autoplay will happen in the modal, not in grid view
+                        onItemClick(originalIndex);
+                      }}
                     >
                       {/* Media Content */}
                       <div className="w-full h-full overflow-hidden">
                         {item.type === 'video' ? (
                           <div className="relative w-full h-full">
+                            {/* Mobile-friendly video with poster image */}
                             <video
                               src={item.url}
                               className="w-full h-full object-cover"
                               muted
                               preload="metadata"
+                              playsInline
+                              loop
+                              poster={`${item.url}#t=0.1`}
+                              onError={(e) => {
+                                // Fallback for mobile devices that can't show video previews
+                                const target = e.target as HTMLVideoElement;
+                                const container = target.parentElement;
+                                if (container) {
+                                  container.innerHTML = `
+                                    <div class="w-full h-full bg-gray-800 flex items-center justify-center">
+                                      <div class="text-center text-white">
+                                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-white/20 flex items-center justify-center">
+                                          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                          </svg>
+                                        </div>
+                                        <div class="text-xs">Video</div>
+                                      </div>
+                                    </div>
+                                  `;
+                                }
+                              }}
                             />
                             {/* Video indicator */}
                             <div className="absolute top-2 right-2 bg-black/60 rounded-full p-1">

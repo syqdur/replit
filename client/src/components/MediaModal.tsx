@@ -199,6 +199,7 @@ export const MediaModal: React.FC<MediaModalProps> = ({
               <video
                 src={currentItem.url}
                 controls
+                autoPlay
                 className="max-w-full max-h-full rounded-lg shadow-2xl"
                 preload="metadata"
                 onLoadStart={() => setImageLoading(true)}

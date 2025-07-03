@@ -57,9 +57,21 @@ export const NotePost: React.FC<NotePostProps> = ({
     }
   };
 
-  const handleDelete = () => {
-    if (onDelete && window.confirm('Notiz wirklich löschen?')) {
-      onDelete(item);
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const confirmed = window.confirm('Notiz wirklich löschen?');
+      if (confirmed && onDelete) {
+        onDelete(item);
+      }
+    } catch (error) {
+      console.error('Delete confirmation failed:', error);
+      // Fallback for browsers without confirm support
+      if (onDelete) {
+        onDelete(item);
+      }
     }
   };
 
@@ -193,10 +205,12 @@ export const NotePost: React.FC<NotePostProps> = ({
             {canDeletePost && (
               <button
                 onClick={handleDelete}
-                className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                onTouchStart={() => {}} // Improve touch compatibility
+                className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 touch-manipulation ${
                   isDarkMode ? 'text-red-400 hover:bg-red-900/30' : 'text-red-500 hover:bg-red-50/80'
                 }`}
                 title="Notiz löschen"
+                style={{ minWidth: '44px', minHeight: '44px' }} // Ensure minimum touch target size
               >
                 <Trash2 className="w-5 h-5" />
               </button>
