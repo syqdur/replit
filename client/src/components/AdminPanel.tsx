@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Unlock, Settings, Download, Globe, Users, ExternalLink, Image, Video, MessageSquare, Gift, Heart, Star, Eye, Code, Music, Sparkles, Camera } from 'lucide-react';
+import { Lock, Unlock, Settings, Download, Globe, Users, ExternalLink, Image, Video, MessageSquare, Gift, Heart, Star, Eye, Code, Music, Sparkles, Camera, LogOut } from 'lucide-react';
 import { MediaItem } from '../types';
 import { downloadAllMedia } from '../services/downloadService';
 import { SiteStatus, updateSiteStatus, updateFeatureToggles } from '../services/siteStatusService';
@@ -237,119 +237,72 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     <>
       
 
-      {/* Admin Controls - Compact Style */}
+      {/* Admin Controls - Icon Only */}
       {isAdmin && (
-        <div className="fixed bottom-16 left-4 flex flex-col gap-1 sm:gap-2 max-w-[200px]">
+        <div className="fixed bottom-16 left-4 flex flex-col gap-2">
+          {/* LOGOUT BUTTON */}
+          <button
+            onClick={() => onToggleAdmin(false)}
+            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+              isDarkMode
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-red-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-red-500/10'
+            }`}
+            title="Admin Modus verlassen"
+          >
+            <LogOut className="w-5 h-5 text-red-400" />
+          </button>
+
           {/* POST-WEDDING RECAP BUTTON */}
           <button
             onClick={handleOpenPostWeddingRecap}
-            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDarkMode
                 ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
                 : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
             }`}
             title="Post-Hochzeits-Zusammenfassung"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-2 sm:gap-3">
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                isDarkMode ? 'bg-gradient-to-br from-purple-600/30 to-pink-600/30' : 'bg-gradient-to-br from-purple-500/20 to-pink-500/20'
-              }`}>
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
-              </div>
-              <div className="flex-1 text-left">
-                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Wedding Recap
-                </div>
-                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Zusammenfassung
-                </div>
-              </div>
-            </div>
+            <Sparkles className="w-5 h-5 text-purple-400" />
           </button>
 
           {/* USER MANAGEMENT BUTTON */}
           <button
             onClick={() => setShowUserManagement(true)}
-            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDarkMode
                 ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-cyan-500/10'
                 : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-cyan-500/10'
             }`}
             title="User Management"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-2 sm:gap-3">
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                isDarkMode ? 'bg-gradient-to-br from-cyan-600/30 to-blue-600/30' : 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20'
-              }`}>
-                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
-              </div>
-              <div className="flex-1 text-left">
-                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  User Management
-                </div>
-                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Benutzer verwalten
-                </div>
-              </div>
-            </div>
+            <Users className="w-5 h-5 text-cyan-400" />
           </button>
 
           {/* SPOTIFY ADMIN BUTTON */}
           <button
             onClick={() => setShowSpotifyAdmin(true)}
-            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDarkMode
                 ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-green-500/10'
                 : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-green-500/10'
             }`}
             title="Spotify Admin"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-2 sm:gap-3">
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                isDarkMode ? 'bg-gradient-to-br from-green-600/30 to-emerald-600/30' : 'bg-gradient-to-br from-green-500/20 to-emerald-500/20'
-              }`}>
-                <Music className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
-              </div>
-              <div className="flex-1 text-left">
-                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Spotify Admin
-                </div>
-                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Musik verwalten
-                </div>
-              </div>
-            </div>
+            <Music className="w-5 h-5 text-green-400" />
           </button>
 
           {/* Showcase Button */}
           <button
             onClick={() => setShowShowcase(true)}
-            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDarkMode
                 ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-yellow-500/10'
                 : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-yellow-500/10'
             }`}
             title="WeddingPix Showcase"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-2 sm:gap-3">
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                isDarkMode ? 'bg-gradient-to-br from-yellow-600/30 to-orange-600/30' : 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20'
-              }`}>
-                <Code className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
-              </div>
-              <div className="flex-1 text-left">
-                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  WeddingPix
-                </div>
-                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Showcase
-                </div>
-              </div>
-            </div>
+            <Code className="w-5 h-5 text-yellow-400" />
           </button>
 
           {/* Gallery Toggle */}
@@ -357,7 +310,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleGallery}
               disabled={isUpdatingFeatures}
-              className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -368,30 +321,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               }`}
               title={`Galerie ${siteStatus.galleryEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
-              <div className={`absolute inset-0 bg-gradient-to-r opacity-60 ${
-                siteStatus.galleryEnabled ? 'from-blue-500/20 to-indigo-500/20' : 'from-gray-500/10 to-gray-600/10'
-              }`}></div>
-              <div className="relative flex items-center gap-2 sm:gap-3">
-                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                  siteStatus.galleryEnabled
-                    ? isDarkMode ? 'bg-gradient-to-br from-blue-600/30 to-indigo-600/30' : 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20'
-                    : isDarkMode ? 'bg-gradient-to-br from-gray-600/30 to-gray-700/30' : 'bg-gradient-to-br from-gray-400/20 to-gray-500/20'
-                }`}>
-                  <Image className={`w-4 h-4 sm:w-5 sm:h-5 ${siteStatus.galleryEnabled ? 'text-blue-400' : 'text-gray-400'}`} />
-                </div>
-                <div className="flex-1 text-left">
-                  <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Gallery
-                  </div>
-                  <div className={`text-xs hidden sm:block ${
-                    siteStatus.galleryEnabled
-                      ? 'text-blue-400'
-                      : isDarkMode ? 'text-gray-500' : 'text-gray-600'
-                  }`}>
-                    {siteStatus.galleryEnabled ? 'Aktiviert' : 'Deaktiviert'}
-                  </div>
-                </div>
-              </div>
+              <Image className={`w-5 h-5 ${siteStatus.galleryEnabled ? 'text-blue-400' : 'text-gray-400'}`} />
             </button>
           )}
 
@@ -400,7 +330,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleMusicWishlist}
               disabled={isUpdatingFeatures}
-              className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -411,30 +341,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               }`}
               title={`Musikwünsche ${siteStatus.musicWishlistEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
-              <div className={`absolute inset-0 bg-gradient-to-r opacity-60 ${
-                siteStatus.musicWishlistEnabled ? 'from-purple-500/20 to-pink-500/20' : 'from-gray-500/10 to-gray-600/10'
-              }`}></div>
-              <div className="relative flex items-center gap-2 sm:gap-3">
-                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                  siteStatus.musicWishlistEnabled
-                    ? isDarkMode ? 'bg-gradient-to-br from-purple-600/30 to-pink-600/30' : 'bg-gradient-to-br from-purple-500/20 to-pink-500/20'
-                    : isDarkMode ? 'bg-gradient-to-br from-gray-600/30 to-gray-700/30' : 'bg-gradient-to-br from-gray-400/20 to-gray-500/20'
-                }`}>
-                  <Music className={`w-4 h-4 sm:w-5 sm:h-5 ${siteStatus.musicWishlistEnabled ? 'text-purple-400' : 'text-gray-400'}`} />
-                </div>
-                <div className="flex-1 text-left">
-                  <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Music Wishlist
-                  </div>
-                  <div className={`text-xs hidden sm:block ${
-                    siteStatus.musicWishlistEnabled
-                      ? 'text-purple-400'
-                      : isDarkMode ? 'text-gray-500' : 'text-gray-600'
-                  }`}>
-                    {siteStatus.musicWishlistEnabled ? 'Aktiviert' : 'Deaktiviert'}
-                  </div>
-                </div>
-              </div>
+              <Music className={`w-5 h-5 ${siteStatus.musicWishlistEnabled ? 'text-purple-400' : 'text-gray-400'}`} />
             </button>
           )}
 
@@ -443,7 +350,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleStories}
               disabled={isUpdatingFeatures}
-              className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -454,30 +361,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               }`}
               title={`Stories ${siteStatus.storiesEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
-              <div className={`absolute inset-0 bg-gradient-to-r opacity-60 ${
-                siteStatus.storiesEnabled ? 'from-green-500/20 to-emerald-500/20' : 'from-gray-500/10 to-gray-600/10'
-              }`}></div>
-              <div className="relative flex items-center gap-2 sm:gap-3">
-                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                  siteStatus.storiesEnabled
-                    ? isDarkMode ? 'bg-gradient-to-br from-green-600/30 to-emerald-600/30' : 'bg-gradient-to-br from-green-500/20 to-emerald-500/20'
-                    : isDarkMode ? 'bg-gradient-to-br from-gray-600/30 to-gray-700/30' : 'bg-gradient-to-br from-gray-400/20 to-gray-500/20'
-                }`}>
-                  <Camera className={`w-4 h-4 sm:w-5 sm:h-5 ${siteStatus.storiesEnabled ? 'text-green-400' : 'text-gray-400'}`} />
-                </div>
-                <div className="flex-1 text-left">
-                  <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Stories
-                  </div>
-                  <div className={`text-xs hidden sm:block ${
-                    siteStatus.storiesEnabled
-                      ? 'text-green-400'
-                      : isDarkMode ? 'text-gray-500' : 'text-gray-600'
-                  }`}>
-                    {siteStatus.storiesEnabled ? 'Aktiviert' : 'Deaktiviert'}
-                  </div>
-                </div>
-              </div>
+              <Camera className={`w-5 h-5 ${siteStatus.storiesEnabled ? 'text-green-400' : 'text-gray-400'}`} />
             </button>
           )}
 
@@ -486,7 +370,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleSiteStatus}
               disabled={isUpdatingSiteStatus}
-              className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
                 isUpdatingSiteStatus
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -497,70 +381,32 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               }`}
               title={getSiteStatusInfo()}
             >
-              <div className={`absolute inset-0 bg-gradient-to-r opacity-60 ${
-                siteStatus.isUnderConstruction ? 'from-orange-500/20 to-yellow-500/20' : 'from-red-500/20 to-pink-500/20'
-              }`}></div>
-              <div className="relative flex items-center gap-2 sm:gap-3">
-                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                  siteStatus.isUnderConstruction
-                    ? isDarkMode ? 'bg-gradient-to-br from-orange-600/30 to-yellow-600/30' : 'bg-gradient-to-br from-orange-500/20 to-yellow-500/20'
-                    : isDarkMode ? 'bg-gradient-to-br from-red-600/30 to-pink-600/30' : 'bg-gradient-to-br from-red-500/20 to-pink-500/20'
-                }`}>
-                  {isUpdatingSiteStatus ? (
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Globe className={`w-4 h-4 sm:w-5 sm:h-5 ${siteStatus.isUnderConstruction ? 'text-orange-400' : 'text-red-400'}`} />
-                  )}
-                </div>
-                <div className="flex-1 text-left">
-                  <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Website Status
-                  </div>
-                  <div className={`text-xs hidden sm:block ${
-                    siteStatus.isUnderConstruction
-                      ? 'text-orange-400'
-                      : 'text-red-400'
-                  }`}>
-                    {siteStatus.isUnderConstruction ? 'Gesperrt' : 'Freigeschaltet'}
-                  </div>
-                </div>
-              </div>
+              {isUpdatingSiteStatus ? (
+                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Globe className={`w-5 h-5 ${siteStatus.isUnderConstruction ? 'text-orange-400' : 'text-red-400'}`} />
+              )}
             </button>
           )}
 
           {/* External Services Button */}
           <button
             onClick={() => setShowExternalServices(true)}
-            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDarkMode
                 ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
                 : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
             }`}
             title="Deutsche Fotobuch-Services"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-2 sm:gap-3">
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                isDarkMode ? 'bg-gradient-to-br from-purple-600/30 to-indigo-600/30' : 'bg-gradient-to-br from-purple-500/20 to-indigo-500/20'
-              }`}>
-                <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
-              </div>
-              <div className="flex-1 text-left">
-                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Fotobuch Services
-                </div>
-                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Deutsche Anbieter
-                </div>
-              </div>
-            </div>
+            <Heart className="w-5 h-5 text-purple-400" />
           </button>
           
           {/* ZIP Download Button */}
           <button
             onClick={handleDownloadAll}
             disabled={isDownloading || mediaItems.length === 0}
-            className={`relative p-1 sm:p-2 rounded-lg backdrop-blur-xl transition-all duration-300 hover:scale-105 border overflow-hidden ${
+            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDownloading || mediaItems.length === 0
                 ? isDarkMode
                   ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -571,22 +417,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             }`}
             title={getDownloadButtonText()}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-blue-500/20 opacity-60"></div>
-            <div className="relative flex items-center gap-2 sm:gap-3">
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                isDarkMode ? 'bg-gradient-to-br from-indigo-600/30 to-blue-600/30' : 'bg-gradient-to-br from-indigo-500/20 to-blue-500/20'
-              }`}>
-                <Download className={`w-4 h-4 sm:w-5 sm:h-5 text-indigo-400 ${isDownloading ? 'animate-bounce' : ''}`} />
-              </div>
-              <div className="flex-1 text-left">
-                <div className={`font-semibold text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  ZIP Download
-                </div>
-                <div className={`text-xs hidden sm:block ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {mediaItems.length === 0 ? 'Keine Medien' : `${mediaItems.length} Datei${mediaItems.length > 1 ? 'en' : ''}`}
-                </div>
-              </div>
-            </div>
+            <Download className={`w-5 h-5 text-indigo-400 ${isDownloading ? 'animate-bounce' : ''}`} />
           </button>
         </div>
       )}
