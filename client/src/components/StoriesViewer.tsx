@@ -32,29 +32,37 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
     ? stories.filter(story => story.userName === selectedUserName)
     : stories;
   
-  // Calculate the correct initial index for filtered stories
-  const getInitialFilteredIndex = () => {
-    if (!selectedUserName) return initialStoryIndex;
-    
-    // Find the story at initialStoryIndex in the full stories array
-    const targetStory = stories[initialStoryIndex];
-    if (!targetStory) return 0;
-    
-    // Find its index in the filtered stories
-    const filteredIndex = filteredStories.findIndex(story => story.id === targetStory.id);
-    return filteredIndex >= 0 ? filteredIndex : 0;
-  };
-
-  const [currentIndex, setCurrentIndex] = useState(getInitialFilteredIndex());
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const currentStory = filteredStories[currentIndex];
   const STORY_DURATION = 5000; // 5 seconds per story
-
+  
   // Check if current user can delete this story
   const canDeleteStory = isAdmin || (currentStory && currentStory.userName === currentUser);
+
+  // Calculate the correct initial index for filtered stories when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    if (!selectedUserName) {
+      setCurrentIndex(initialStoryIndex);
+      return;
+    }
+    
+    // Find the story at initialStoryIndex in the full stories array
+    const targetStory = stories[initialStoryIndex];
+    if (!targetStory) {
+      setCurrentIndex(0);
+      return;
+    }
+    
+    // Find its index in the filtered stories
+    const filteredIndex = filteredStories.findIndex(story => story.id === targetStory.id);
+    setCurrentIndex(filteredIndex >= 0 ? filteredIndex : 0);
+  }, [isOpen, initialStoryIndex, selectedUserName, stories, filteredStories]);
 
   useEffect(() => {
     if (!isOpen || !currentStory) return;
@@ -206,7 +214,22 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
     return weddingAvatars[Math.abs(hash) % weddingAvatars.length];
   };
 
-  if (!isOpen || !currentStory) return null;
+  if (!isOpen) return null;
+  
+  // If no stories are available for this user, close the modal
+  if (filteredStories.length === 0) {
+    onClose();
+    return null;
+  }
+  
+  // If currentStory is not available yet (loading), show loading state
+  if (!currentStory) {
+    return (
+      <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+        <div className="text-white">Loading story...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
