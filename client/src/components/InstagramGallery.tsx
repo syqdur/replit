@@ -431,25 +431,45 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                       {/* Media Content */}
                       <div className="w-full h-full overflow-hidden">
                         {item.type === 'video' ? (
-                          <div className="relative w-full h-full">
+                          <div className="relative w-full h-full bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900">
+                            {/* Verstecktes Video für eventuelle Thumbnail-Generierung */}
                             <video
                               src={item.url}
-                              className="w-full h-full object-cover"
+                              className="absolute inset-0 w-full h-full object-cover opacity-0"
                               muted
-                              preload="metadata"
+                              preload="none"
                               playsInline
-                              controls={false}
-                              poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzc0MTUxIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7wn46lIFZpZGVvPC90ZXh0Pjwvc3ZnPg=="
+                              onLoadedData={(e) => {
+                                // Versuche das erste Frame als Thumbnail zu zeigen
+                                const video = e.target as HTMLVideoElement;
+                                video.currentTime = 0.1;
+                                setTimeout(() => {
+                                  video.style.opacity = '1';
+                                  const overlay = video.parentElement?.querySelector('.video-overlay') as HTMLElement;
+                                  if (overlay) overlay.style.backgroundColor = 'rgba(0,0,0,0.3)';
+                                }, 100);
+                              }}
+                              onError={() => {
+                                // Bei Fehler: Zeige grauen Hintergrund mit Icon
+                                console.log('Video preview failed, showing fallback');
+                              }}
                             />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                                <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                                </svg>
+                            
+                            {/* Fallback Thumbnail mit schönem Gradient */}
+                            <div className="absolute inset-0 flex items-center justify-center video-overlay bg-black/50">
+                              <div className="text-center">
+                                <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-3 mx-auto">
+                                  <svg className="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                                <div className="text-white text-sm font-medium">Video</div>
                               </div>
                             </div>
-                            <div className="absolute top-2 right-2 bg-red-600 rounded px-2 py-1 text-white text-xs">
-                              VIDEO
+                            
+                            {/* Video Badge */}
+                            <div className="absolute top-2 right-2 bg-red-600 rounded px-2 py-1 text-white text-xs font-bold shadow-lg">
+                              🎥 VIDEO
                             </div>
                           </div>
                         ) : (
