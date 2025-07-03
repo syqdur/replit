@@ -72,7 +72,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
     }
   };
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -88,6 +88,12 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
         onDelete(item);
       }
     }
+  };
+
+  const handleDeleteTouch = (e: React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleDelete(e);
   };
 
   const handleDeleteComment = (commentId: string, comment: Comment) => {
@@ -235,12 +241,20 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
             {canDeletePost && (
               <button
                 onClick={handleDelete}
-                onTouchStart={() => {}} // Improve touch compatibility
-                className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 touch-manipulation ${
-                  isDarkMode ? 'text-red-400 hover:bg-red-900/30' : 'text-red-500 hover:bg-red-50/80'
+                onTouchEnd={handleDeleteTouch}
+                onTouchStart={(e) => e.preventDefault()}
+                className={`p-3 rounded-full transition-all duration-300 transform active:scale-95 touch-manipulation ${
+                  isDarkMode ? 'text-red-400 hover:bg-red-900/30 active:bg-red-900/50' : 'text-red-500 hover:bg-red-50/80 active:bg-red-100'
                 }`}
                 title="Beitrag löschen"
-                style={{ minWidth: '44px', minHeight: '44px' }} // Ensure minimum touch target size
+                style={{ 
+                  minWidth: '48px', 
+                  minHeight: '48px',
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTouchCallout: 'none',
+                  WebkitUserSelect: 'none',
+                  touchAction: 'manipulation'
+                }}
               >
                 <Trash2 className="w-5 h-5" />
               </button>
