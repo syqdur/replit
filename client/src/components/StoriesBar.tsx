@@ -82,6 +82,7 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
   });
 
   console.log(`📋 User stories sorted:`, userStories.map(us => `${us.userName} (${us.stories.length} stories, unviewed: ${us.hasUnviewed})`));
+  console.log(`👥 Will render ${userStories.length} user story buttons`);
 
   const getAvatarUrl = (username: string) => {
     // First try to get user's custom profile picture
