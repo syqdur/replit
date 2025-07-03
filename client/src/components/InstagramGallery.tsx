@@ -3,7 +3,6 @@ import { Grid, List, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MediaItem, Comment, Like } from '../types';
 import { InstagramPost } from './InstagramPost';
 import { NotePost } from './NotePost';
-import { VideoThumbnail } from './VideoThumbnail';
 
 interface InstagramGalleryProps {
   items: MediaItem[];
@@ -432,10 +431,47 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                       {/* Media Content */}
                       <div className="w-full h-full overflow-hidden">
                         {item.type === 'video' ? (
-                          <VideoThumbnail 
-                            src={item.url} 
-                            className="w-full h-full object-cover" 
-                          />
+                          <div className="relative w-full h-full bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900">
+                            {/* Verstecktes Video für eventuelle Thumbnail-Generierung */}
+                            <video
+                              src={item.url}
+                              className="absolute inset-0 w-full h-full object-cover opacity-0"
+                              muted
+                              preload="none"
+                              playsInline
+                              onLoadedData={(e) => {
+                                // Versuche das erste Frame als Thumbnail zu zeigen
+                                const video = e.target as HTMLVideoElement;
+                                video.currentTime = 0.1;
+                                setTimeout(() => {
+                                  video.style.opacity = '1';
+                                  const overlay = video.parentElement?.querySelector('.video-overlay') as HTMLElement;
+                                  if (overlay) overlay.style.backgroundColor = 'rgba(0,0,0,0.3)';
+                                }, 100);
+                              }}
+                              onError={() => {
+                                // Bei Fehler: Zeige grauen Hintergrund mit Icon
+                                console.log('Video preview failed, showing fallback');
+                              }}
+                            />
+                            
+                            {/* Fallback Thumbnail mit schönem Gradient */}
+                            <div className="absolute inset-0 flex items-center justify-center video-overlay bg-black/50">
+                              <div className="text-center">
+                                <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-3 mx-auto">
+                                  <svg className="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                                <div className="text-white text-sm font-medium">Video</div>
+                              </div>
+                            </div>
+                            
+                            {/* Video Badge */}
+                            <div className="absolute top-2 right-2 bg-red-600 rounded px-2 py-1 text-white text-xs font-bold shadow-lg">
+                              🎥 VIDEO
+                            </div>
+                          </div>
                         ) : (
                           <img
                             src={item.url}
