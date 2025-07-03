@@ -145,6 +145,23 @@ This is a comprehensive wedding gallery application with the following architect
 - **Timeline Component Enhancement**: Applied same video thumbnail fix to Timeline component ensuring consistent video display across all app sections
 - **Performance Optimization**: Implemented efficient thumbnail caching and blob URL management to prevent memory leaks
 
+### January 3, 2025 (StoriesBar Sorting Bug Fixed)
+- **Stories Bar Viewed Sorting Fix**: Fixed critical bug where viewed stories weren't moving to the end of horizontal StoriesBar - angesehene Stories now correctly move to back position sorted by oldest first instead of newest first
+- **Instagram-like Story Behavior**: Implemented proper Instagram behavior where newly viewed stories automatically move to the end of the horizontal scroll list without colored rings
+- **Story Position Logic**: Updated sorting algorithm so viewed stories sort by creation time (oldest first) ensuring recently viewed stories move to the back while maintaining chronological order for viewed content
+
+### January 3, 2025 (StoriesBar Enhancement & Migration Complete)
+- **Horizontal Scrollable StoriesBar**: Enhanced StoriesBar component with smooth horizontal scrolling using snap-scroll behavior and touch-friendly navigation for mobile devices
+- **Profile Picture Integration**: Updated StoriesBar to use visitor profile pictures as story placeholders with fallback to story thumbnails, ensuring proper visitor separation and identification
+- **Visitor Story Separation**: Fixed story display to properly separate stories by individual visitors instead of cumulating all stories together
+- **StoriesViewer User Filtering**: Implemented user-specific story filtering in StoriesViewer component - now shows only selected visitor's stories instead of all stories mixed together
+- **Enhanced Story Navigation**: Updated story click handling to pass userName parameter and filter stories appropriately for seamless visitor-specific story viewing experience
+- **Story Ring Behavior Fix**: Fixed story rings to disappear after viewing and implemented proper sorting so viewed stories move to the end of the list, prioritizing unviewed content first
+- **Device ID Tracking Integration**: Enhanced viewed story tracking to use deviceId instead of username for consistent story viewing state across user interactions
+- **Smart Story Sorting**: Implemented priority-based sorting: unviewed stories first, then viewed stories at the end, with current user priority within each group
+- **Snap Scroll Navigation**: Added snap-start classes to story items for better mobile scrolling experience with smooth transitions between story previews
+- **Enhanced Story Visual Design**: Improved story ring indicators with proper unviewed story highlighting and story count badges for users with multiple stories
+
 ### January 3, 2025 (Replit Environment Migration Complete)
 - **Replit Agent to Replit Migration**: Successfully migrated wedding gallery app from Replit Agent to Replit environment with full functionality preserved
 - **Video Thumbnail System Fix**: Fixed video thumbnail display on mobile browsers by improving the VideoThumbnail component with better mobile compatibility, enhanced loading states, and transparent background handling

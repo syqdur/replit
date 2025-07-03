@@ -80,6 +80,7 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showStoriesViewer, setShowStoriesViewer] = useState(false);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
+  const [selectedStoryUser, setSelectedStoryUser] = useState<string>('');
   const [showStoryUpload, setShowStoryUpload] = useState(false);
   const [activeTab, setActiveTab] = useState<'gallery' | 'music' | 'timeline'>('gallery');
   
@@ -432,8 +433,13 @@ function App() {
     }
   };
 
-  const handleViewStory = (storyIndex: number) => {
-    setCurrentStoryIndex(storyIndex);
+  const handleViewStory = (storyIndex: number, userName: string) => {
+    // Filter stories for the selected user and find the relative index
+    const userStories = stories.filter(story => story.userName === userName);
+    const userStoryIndex = userStories.findIndex(story => story.id === stories[storyIndex].id);
+    
+    setCurrentStoryIndex(userStoryIndex >= 0 ? userStoryIndex : 0);
+    setSelectedStoryUser(userName);
     setShowStoriesViewer(true);
   };
 
@@ -938,10 +944,12 @@ function App() {
         <StoriesBar
           stories={stories}
           currentUser={userName || ''}
+          deviceId={deviceId}
           onAddStory={() => setShowStoryUpload(true)}
           onViewStory={handleViewStory}
           isDarkMode={isDarkMode}
           storiesEnabled={siteStatus?.storiesEnabled ?? true}
+          getUserAvatar={getUserAvatar}
         />
         
         {/* Tab Navigation */}
@@ -1032,7 +1040,7 @@ function App() {
       {/* Stories Viewer */}
       <StoriesViewer
         isOpen={showStoriesViewer}
-        stories={stories}
+        stories={selectedStoryUser ? stories.filter(story => story.userName === selectedStoryUser) : stories}
         initialStoryIndex={currentStoryIndex}
         currentUser={userName || ''}
         onClose={() => setShowStoriesViewer(false)}
