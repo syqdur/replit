@@ -75,7 +75,13 @@ export const searchLocations = async (query: string): Promise<LocationSuggestion
     const request = {
       textQuery: query,
       fields: ['displayName', 'formattedAddress', 'location', 'types', 'rating', 'priceLevel', 'id'],
-      // Remove locationBias for now to avoid API errors
+      locationBias: {
+        center: { 
+          lat: userLocation.latitude, 
+          lng: userLocation.longitude 
+        },
+        radius: 5000 // 5km radius
+      },
       maxResultCount: 20
     };
 
@@ -141,10 +147,13 @@ export const searchNearbyLocations = async (query: string): Promise<LocationSugg
 
     const request = {
       fields: ['displayName', 'formattedAddress', 'location', 'types', 'rating', 'priceLevel', 'id'],
-      locationRestriction: new window.google.maps.Circle({
-        center: { lat: userLocation.latitude, lng: userLocation.longitude },
+      locationRestriction: {
+        center: { 
+          lat: userLocation.latitude, 
+          lng: userLocation.longitude 
+        },
         radius: 3000 // 3km radius for nearby search
-      }),
+      },
       includedTypes: ['restaurant', 'food', 'meal_takeaway', 'meal_delivery', 'establishment'],
       maxResultCount: 20
     };

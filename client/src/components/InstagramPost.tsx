@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, MoreHorizontal, Trash2, Edit3, AlertTriangle } from 'lucide-react';
 import { MediaItem, Comment, Like, MediaTag } from '../types';
 import { MediaTagging } from './MediaTagging';
+import { VideoThumbnail } from './VideoThumbnail';
 import { getMediaTags } from '../services/firebaseService';
 
 interface InstagramPostProps {
@@ -253,19 +254,13 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
         {/* Media Content */}
         <div className="relative mx-6 mb-4 rounded-2xl overflow-hidden">
           {item.type === 'video' ? (
-          <video
-            src={item.url}
-            className="w-full aspect-square object-cover"
-            controls
-            preload="metadata"
-            onLoadStart={() => setImageLoading(true)}
-            onLoadedData={() => setImageLoading(false)}
-            onError={() => {
-              setImageLoading(false);
-              setImageError(true);
-            }}
-          />
-        ) : (
+            <VideoThumbnail
+              src={item.url}
+              className="w-full aspect-square"
+              onClick={onClick}
+              showPlayButton={true}
+            />
+          ) : (
           <div className="relative w-full aspect-square">
             {imageLoading && !item.isUnavailable && (
               <div className={`absolute inset-0 flex items-center justify-center transition-colors duration-300 ${
