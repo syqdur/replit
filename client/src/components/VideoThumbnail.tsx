@@ -6,16 +6,19 @@ interface VideoThumbnailProps {
   className?: string;
   onClick?: () => void;
   showPlayButton?: boolean;
+  autoplayOnClick?: boolean;
 }
 
 export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   src,
   className = '',
   onClick,
-  showPlayButton = true
+  showPlayButton = true,
+  autoplayOnClick = false
 }) => {
   const [thumbnailGenerated, setThumbnailGenerated] = useState(false);
   const [error, setError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -73,8 +76,23 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
     );
   }
 
+  const handleClick = () => {
+    if (autoplayOnClick && videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        videoRef.current.currentTime = 0; // Reset to beginning
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    } else if (onClick) {
+      onClick();
+    }
+  };
+
   return (
-    <div className={`relative w-full h-full ${className}`} onClick={onClick}>
+    <div className={`relative w-full h-full ${className}`} onClick={handleClick}>
       {/* Direct video element that shows first frame */}
       <video
         ref={videoRef}
@@ -83,16 +101,19 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
         muted
         playsInline
         preload="metadata"
-        controls={false}
+        controls={autoplayOnClick && isPlaying}
         poster=""
         style={{ 
           backgroundColor: 'transparent',
           visibility: thumbnailGenerated ? 'visible' : 'hidden'
         }}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onEnded={() => setIsPlaying(false)}
       />
       
-      {/* Play button overlay */}
-      {showPlayButton && thumbnailGenerated && (
+      {/* Play button overlay - hide when playing */}
+      {showPlayButton && thumbnailGenerated && !isPlaying && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-12 h-12 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm">
             <Play className="w-6 h-6 text-white ml-1" />

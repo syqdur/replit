@@ -259,6 +259,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
               className="w-full aspect-square"
               onClick={onClick}
               showPlayButton={true}
+              autoplayOnClick={true}
             />
           ) : (
           <div className="relative w-full aspect-square">
