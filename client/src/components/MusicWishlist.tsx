@@ -597,23 +597,39 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                   </p>
                 </div>
               </div>
-              {canDeleteTrack(item) && (
-                <button
-                  onClick={() => handleRemoveTrack(item)}
-                  disabled={isRemovingTrack === item.track.id}
-                  className={`p-3 rounded-xl transition-all duration-300 hover:scale-110 shadow-lg disabled:opacity-50 ${
+              <div className="flex items-center gap-3">
+                {/* Spotify Link Button */}
+                <a
+                  href={item.track.external_urls.spotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`p-2 rounded-lg transition-all duration-300 hover:scale-110 shadow-md ${
                     isDarkMode 
-                      ? 'bg-gradient-to-br from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white' 
-                      : 'bg-gradient-to-br from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white'
+                      ? 'bg-gradient-to-br from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white' 
+                      : 'bg-gradient-to-br from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
                   }`}
+                  title="In Spotify öffnen"
                 >
-                  {isRemovingTrack === item.track.id ? (
-                    <RefreshCw className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Trash2 className="w-5 h-5" />
-                  )}
-                </button>
-              )}
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                {canDeleteTrack(item) && (
+                  <button
+                    onClick={() => handleRemoveTrack(item)}
+                    disabled={isRemovingTrack === item.track.id}
+                    className={`p-3 rounded-xl transition-all duration-300 hover:scale-110 shadow-lg disabled:opacity-50 ${
+                      isDarkMode 
+                        ? 'bg-gradient-to-br from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white' 
+                        : 'bg-gradient-to-br from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white'
+                    }`}
+                  >
+                    {isRemovingTrack === item.track.id ? (
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-5 h-5" />
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         ))}

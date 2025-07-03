@@ -36,6 +36,7 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [indexInitialized, setIndexInitialized] = useState(false);
 
   const currentStory = filteredStories[currentIndex];
   const STORY_DURATION = 5000; // 5 seconds per story
@@ -45,10 +46,11 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
 
   // Calculate the correct initial index for filtered stories when modal opens
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || indexInitialized) return;
     
     if (!selectedUserName) {
       setCurrentIndex(initialStoryIndex);
+      setIndexInitialized(true);
       return;
     }
     
@@ -56,13 +58,22 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
     const targetStory = stories[initialStoryIndex];
     if (!targetStory) {
       setCurrentIndex(0);
+      setIndexInitialized(true);
       return;
     }
     
     // Find its index in the filtered stories
     const filteredIndex = filteredStories.findIndex(story => story.id === targetStory.id);
     setCurrentIndex(filteredIndex >= 0 ? filteredIndex : 0);
-  }, [isOpen, initialStoryIndex, selectedUserName, stories, filteredStories]);
+    setIndexInitialized(true);
+  }, [isOpen, initialStoryIndex, selectedUserName, stories, filteredStories, indexInitialized]);
+
+  // Reset initialization when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setIndexInitialized(false);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen || !currentStory) return;
@@ -86,29 +97,27 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
   }, [currentIndex, currentStory, isOpen, onStoryViewed]);
 
   useEffect(() => {
-    if (!isOpen || isPaused || isLoading) return;
+    if (!isOpen || isPaused || isLoading || !currentStory) return;
 
+    let progressValue = 0;
     const interval = setInterval(() => {
-      setProgress(prev => {
-        const newProgress = prev + (100 / (STORY_DURATION / 100));
-        
-        if (newProgress >= 100) {
-          // Reset progress and move to next story
-          setProgress(0);
-          if (currentIndex < filteredStories.length - 1) {
-            setCurrentIndex(prev => prev + 1);
-          } else {
-            onClose();
-          }
-          return 0;
+      progressValue += (100 / (STORY_DURATION / 100));
+      
+      if (progressValue >= 100) {
+        // Move to next story or close
+        if (currentIndex < filteredStories.length - 1) {
+          setCurrentIndex(prev => prev + 1);
+        } else {
+          onClose();
         }
-        
-        return newProgress;
-      });
+        return;
+      }
+      
+      setProgress(progressValue);
     }, 100);
 
     return () => clearInterval(interval);
-  }, [isOpen, isPaused, isLoading, currentIndex, stories.length, onClose]);
+  }, [isOpen, isPaused, isLoading, currentIndex, filteredStories.length, onClose, currentStory]);
 
   // 🎯 NEW: Keyboard navigation
   useEffect(() => {
@@ -134,7 +143,7 @@ export const StoriesViewer: React.FC<StoriesViewerProps> = ({
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isOpen, currentIndex, stories.length]);
+  }, [isOpen, currentIndex, filteredStories.length]);
 
   const goToNext = () => {
     setProgress(0); // Reset progress immediately
