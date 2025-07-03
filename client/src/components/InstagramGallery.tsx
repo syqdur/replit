@@ -374,10 +374,44 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                                 )}
                                 {canDelete && onDelete && (
                                   <button
-                                    onClick={() => onDelete(item)}
-                                    className={`text-sm px-3 py-1 rounded-full transition-colors duration-300 ${
-                                      isDarkMode ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-red-100 hover:bg-red-200 text-red-800'
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      try {
+                                        const confirmed = window.confirm('Beitrag wirklich löschen?');
+                                        if (confirmed) {
+                                          onDelete(item);
+                                        }
+                                      } catch (error) {
+                                        console.error('Delete confirmation failed:', error);
+                                        onDelete(item);
+                                      }
+                                    }}
+                                    onTouchEnd={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      try {
+                                        const confirmed = window.confirm('Beitrag wirklich löschen?');
+                                        if (confirmed) {
+                                          onDelete(item);
+                                        }
+                                      } catch (error) {
+                                        console.error('Delete confirmation failed:', error);
+                                        onDelete(item);
+                                      }
+                                    }}
+                                    onTouchStart={(e) => e.preventDefault()}
+                                    className={`text-sm px-4 py-2 rounded-full transition-colors duration-300 touch-manipulation ${
+                                      isDarkMode ? 'bg-red-600 hover:bg-red-700 active:bg-red-800 text-white' : 'bg-red-100 hover:bg-red-200 active:bg-red-300 text-red-800'
                                     }`}
+                                    style={{ 
+                                      minWidth: '48px', 
+                                      minHeight: '44px',
+                                      WebkitTapHighlightColor: 'transparent',
+                                      WebkitTouchCallout: 'none',
+                                      WebkitUserSelect: 'none',
+                                      touchAction: 'manipulation'
+                                    }}
                                   >
                                     Löschen
                                   </button>
