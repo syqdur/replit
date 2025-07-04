@@ -511,53 +511,53 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
 
   return (
     <div className="mx-4 my-6 space-y-6">
-      {/* Header */}
-      <div className={`p-6 rounded-3xl transition-all duration-500 relative overflow-hidden ${
+      {/* Header - Mobile Optimized */}
+      <div className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-500 relative overflow-hidden ${
         isDarkMode 
           ? 'bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl shadow-black/20' 
           : 'bg-white/70 border border-white/40 backdrop-blur-xl shadow-2xl shadow-gray-500/10'
       }`}>
 
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className={`w-16 h-16 p-3 rounded-2xl transition-all duration-300 shadow-lg ${
+          <div className="flex items-start justify-between mb-4 sm:mb-6">
+            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+              <div className={`w-12 h-12 sm:w-16 sm:h-16 p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-lg flex-shrink-0 ${
                 isDarkMode ? 'bg-white/10 border border-white/20 backdrop-blur-sm' : 'bg-white/60 border border-white/40 backdrop-blur-sm'
               }`}>
                 <Camera className={`w-full h-full transition-all duration-300 ${
                   isDarkMode ? 'text-white/80' : 'text-gray-700'
                 }`} />
               </div>
-              <div>
-                <h3 className={`text-2xl font-bold ${
+              <div className="min-w-0 flex-1">
+                <h3 className={`text-lg sm:text-2xl font-bold ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>
                   Foto-Challenges
                 </h3>
-                <p className={`text-sm transition-colors duration-300 ${
+                <p className={`text-xs sm:text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-white/80' : 'text-gray-700'
                 }`}>
                   {getCompletedChallenges().length} von {challenges.length} abgeschlossen
                 </p>
               </div>
             </div>
-            <div className="text-right flex flex-col items-end gap-3">
-              <div className={`text-3xl font-bold ${
+            <div className="text-right flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
+              <div className={`text-xl sm:text-3xl font-bold ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
                 {completionPercentage}%
               </div>
-              <div className={`flex items-center gap-2 ${
+              <div className={`hidden sm:flex items-center gap-2 ${
                 isDarkMode ? 'text-white/80' : 'text-gray-700'
               }`}>
                 <Trophy className="w-4 h-4" />
                 <span className="text-sm font-medium">Fortschritt</span>
               </div>
               
-              {/* Leaderboard Button */}
+              {/* Leaderboard Button - Mobile Optimized */}
               <button
                 onClick={() => setShowLeaderboard(!showLeaderboard)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 touch-manipulation ${
                   showLeaderboard
                     ? isDarkMode
                       ? 'bg-white/20 text-white border border-white/30 shadow-lg'
@@ -567,9 +567,10 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                       : 'bg-white/60 text-gray-700 hover:bg-white/80 border border-gray-200'
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <Medal className="w-4 h-4" />
-                  <span>Bestenliste</span>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Medal className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Bestenliste</span>
+                  <span className="sm:hidden">Liste</span>
                 </div>
               </button>
             </div>
@@ -590,7 +591,7 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
       </div>
 
       {/* Category Filter - Mobile Optimized */}
-      <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 mb-4 sm:mb-6 scrollbar-hide">
+      <div className="flex justify-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 mb-4 sm:mb-6 scrollbar-hide">
         {categories.map((category) => (
           <button
             key={category}
@@ -610,28 +611,28 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
         ))}
       </div>
 
-      {/* Leaderboard Section */}
+      {/* Leaderboard Section - Mobile Optimized */}
       {showLeaderboard && (
-        <div className={`p-6 rounded-3xl backdrop-blur-xl border transition-all duration-500 ${
+        <div className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl backdrop-blur-xl border transition-all duration-500 ${
           isDarkMode 
             ? 'bg-white/10 border-white/20 shadow-2xl shadow-black/20' 
             : 'bg-white/70 border-white/40 shadow-2xl shadow-gray-500/10'
         }`}>
-          <div className="flex items-center gap-4 mb-6">
-            <div className={`w-12 h-12 p-2 rounded-2xl transition-all duration-300 shadow-lg ${
+          <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 p-2 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-lg flex-shrink-0 ${
               isDarkMode ? 'bg-white/10 border border-white/20 backdrop-blur-sm' : 'bg-white/60 border border-white/40 backdrop-blur-sm'
             }`}>
               <Trophy className={`w-full h-full transition-all duration-300 ${
                 isDarkMode ? 'text-white/80' : 'text-gray-700'
               }`} />
             </div>
-            <div>
-              <h4 className={`text-xl font-bold ${
+            <div className="min-w-0 flex-1">
+              <h4 className={`text-lg sm:text-xl font-bold ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
                 🏆 Bestenliste
               </h4>
-              <p className={`text-sm transition-colors duration-300 ${
+              <p className={`text-xs sm:text-sm transition-colors duration-300 ${
                 isDarkMode ? 'text-white/80' : 'text-gray-700'
               }`}>
                 Punkte: Einfach=1, Mittel=2, Schwer=3
@@ -639,12 +640,12 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {leaderboardData.length > 0 ? (
               leaderboardData.slice(0, 10).map((user, index) => (
                 <div
                   key={`${user.name}-${user.deviceId}`}
-                  className={`flex items-center justify-between p-4 rounded-2xl backdrop-blur-sm transition-all duration-300 ${
+                  className={`flex items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-sm transition-all duration-300 ${
                     index === 0
                       ? isDarkMode
                         ? 'bg-white/15 border border-white/30'
@@ -662,23 +663,23 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                             : 'bg-white/60 border border-white/30'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-10 h-10 rounded-full">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                    <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full flex-shrink-0">
                       {getUserProfilePicture(user.name, user.deviceId || '') ? (
                         <img
                           src={getUserProfilePicture(user.name, user.deviceId || '')}
                           alt={user.name}
-                          className="w-10 h-10 rounded-full object-cover"
+                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
                         />
                       ) : (
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm ${
                           isDarkMode ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'
                         }`}>
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                       )}
                       {/* Ranking badge overlay */}
-                      <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                      <div className={`absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-xs font-bold ${
                         index === 0
                           ? 'bg-yellow-500 text-white'
                           : index === 1
@@ -692,17 +693,17 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                         {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
                       </div>
                     </div>
-                    <div>
-                      <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <div className="min-w-0 flex-1">
+                      <div className={`font-semibold text-sm sm:text-base truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                         {user.name}
                       </div>
-                      <div className={`text-sm ${isDarkMode ? 'text-white/60' : 'text-gray-600'}`}>
+                      <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-white/60' : 'text-gray-600'}`}>
                         {user.completions} Challenges
                       </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className={`text-xl font-bold ${
+                  <div className="text-right flex-shrink-0">
+                    <div className={`text-lg sm:text-xl font-bold ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
                     }`}>
                       {user.points}
@@ -715,19 +716,19 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                         onClick={async (e) => {
                           e.stopPropagation();
                           const confirmed = window.confirm(
-                            `Möchten Sie alle Challenges für ${user.userName} zurücksetzen?`
+                            `Möchten Sie alle Challenges für ${user.name} zurücksetzen?`
                           );
                           if (confirmed) {
                             try {
-                              await resetUserChallenges(user.userName, user.deviceId);
-                              alert(`Challenges für ${user.userName} wurden zurückgesetzt.`);
+                              await resetUserChallenges(user.name, user.deviceId || '');
+                              alert(`Challenges für ${user.name} wurden zurückgesetzt.`);
                             } catch (error) {
                               console.error('Error resetting challenges:', error);
                               alert('Fehler beim Zurücksetzen der Challenges.');
                             }
                           }
                         }}
-                        className={`mt-1 px-2 py-1 text-xs rounded-lg transition-colors hover:scale-105 ${
+                        className={`mt-1 px-1.5 sm:px-2 py-1 text-xs rounded-lg transition-colors hover:scale-105 touch-manipulation ${
                           isDarkMode ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30' : 'bg-red-100 text-red-600 hover:bg-red-200'
                         }`}
                       >
