@@ -414,6 +414,30 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
     }
   };
 
+  // Reset all challenges for a user
+  const resetUserChallenges = async (userName: string, deviceId: string) => {
+    try {
+      console.log(`🔄 Resetting challenges for user: ${userName}`);
+      
+      const completionsQuery = query(
+        collection(db, 'challengeCompletions'),
+        where('userName', '==', userName),
+        where('deviceId', '==', deviceId)
+      );
+      const snapshot = await getDocs(completionsQuery);
+      
+      console.log(`📊 Found ${snapshot.docs.length} completions to delete`);
+      
+      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+      
+      console.log(`✅ Reset ${snapshot.docs.length} challenges for user ${userName}`);
+    } catch (error) {
+      console.error('❌ Error resetting user challenges:', error);
+      throw error;
+    }
+  };
+
   const isChallengeCompleted = (challengeId: string) => {
     return completions.some(
       c => c.challengeId === challengeId && c.userName === currentUser && c.deviceId === currentDeviceId
@@ -565,13 +589,13 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
         </div>
       </div>
 
-      {/* Category Filter */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      {/* Category Filter - Mobile Optimized */}
+      <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 mb-4 sm:mb-6 scrollbar-hide">
         {categories.map((category) => (
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+            className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap flex-shrink-0 ${
               selectedCategory === category
                 ? isDarkMode
                   ? 'bg-white/20 text-white border border-white/30 shadow-lg'
@@ -688,11 +712,22 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                     </div>
                     {isAdmin && (
                       <button
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          // Here admins could reset user progress if needed
+                          const confirmed = window.confirm(
+                            `Möchten Sie alle Challenges für ${user.userName} zurücksetzen?`
+                          );
+                          if (confirmed) {
+                            try {
+                              await resetUserChallenges(user.userName, user.deviceId);
+                              alert(`Challenges für ${user.userName} wurden zurückgesetzt.`);
+                            } catch (error) {
+                              console.error('Error resetting challenges:', error);
+                              alert('Fehler beim Zurücksetzen der Challenges.');
+                            }
+                          }
                         }}
-                        className={`mt-1 px-2 py-1 text-xs rounded-lg transition-colors ${
+                        className={`mt-1 px-2 py-1 text-xs rounded-lg transition-colors hover:scale-105 ${
                           isDarkMode ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30' : 'bg-red-100 text-red-600 hover:bg-red-200'
                         }`}
                       >
