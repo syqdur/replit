@@ -8,7 +8,7 @@ import {
   Gem, Diamond, Shirt, Building, Baby, Utensils, 
   Handshake, Palette, Volume2, ChefHat, Disc3, Play, Shuffle
 } from 'lucide-react';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { getUserName, getDeviceId } from '../utils/deviceId';
 
@@ -298,26 +298,34 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
   const [leaderboardApiData, setLeaderboardApiData] = useState<Array<{ userName: string; deviceId: string; completedCount: number }>>([]);
 
-  // Load completions from database API
+  // Load completions from Firebase (production-ready)
   useEffect(() => {
-    const loadCompletions = async () => {
-      try {
-        const response = await fetch(`/api/challenges/completions/${currentUser}/${currentDeviceId}`);
-        if (response.ok) {
-          const userCompletions = await response.json();
-          setCompletions(userCompletions);
-        }
-      } catch (error) {
+    if (!currentUser || !currentDeviceId) return;
+
+    const unsubscribe = onSnapshot(
+      collection(db, 'challengeCompletions'),
+      (snapshot) => {
+        const userCompletions: ChallengeCompletion[] = [];
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.userName === currentUser && data.deviceId === currentDeviceId) {
+            userCompletions.push({
+              id: doc.id,
+              challengeId: data.challengeId,
+              userName: data.userName,
+              deviceId: data.deviceId,
+              completedAt: data.completedAt
+            });
+          }
+        });
+        setCompletions(userCompletions);
+      },
+      (error) => {
         console.error('Error loading challenge completions:', error);
       }
-    };
+    );
 
-    if (currentUser && currentDeviceId) {
-      loadCompletions();
-      // Refresh completions every 5 seconds to get updates
-      const interval = setInterval(loadCompletions, 5000);
-      return () => clearInterval(interval);
-    }
+    return () => unsubscribe();
   }, [currentUser, currentDeviceId]);
 
   // Load user profiles for profile pictures
@@ -338,48 +346,68 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
     return () => unsubscribe();
   }, []);
 
-  // Load leaderboard data from API
+  // Load leaderboard data from Firebase (production-ready)
   useEffect(() => {
-    const loadLeaderboard = async () => {
-      try {
-        const response = await fetch('/api/challenges/leaderboard');
-        if (response.ok) {
-          const data = await response.json();
-          setLeaderboardApiData(data);
-        }
-      } catch (error) {
+    const unsubscribe = onSnapshot(
+      collection(db, 'challengeCompletions'),
+      (snapshot) => {
+        const leaderboard = new Map<string, { userName: string; deviceId: string; completedCount: number }>();
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const userKey = `${data.userName}_${data.deviceId}`;
+          const existing = leaderboard.get(userKey);
+          
+          if (existing) {
+            existing.completedCount++;
+          } else {
+            leaderboard.set(userKey, {
+              userName: data.userName,
+              deviceId: data.deviceId,
+              completedCount: 1
+            });
+          }
+        });
+
+        const sortedLeaderboard = Array.from(leaderboard.values())
+          .sort((a, b) => b.completedCount - a.completedCount);
+        
+        setLeaderboardApiData(sortedLeaderboard);
+      },
+      (error) => {
         console.error('Error loading leaderboard:', error);
       }
-    };
+    );
 
-    loadLeaderboard();
-    // Refresh leaderboard every 10 seconds
-    const interval = setInterval(loadLeaderboard, 10000);
-    return () => clearInterval(interval);
+    return () => unsubscribe();
   }, []);
 
   const handleToggleChallenge = async (challengeId: string) => {
     try {
-      const response = await fetch('/api/challenges/toggle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Check if challenge is already completed
+      const q = query(
+        collection(db, 'challengeCompletions'),
+        where('challengeId', '==', challengeId),
+        where('userName', '==', currentUser),
+        where('deviceId', '==', currentDeviceId)
+      );
+      
+      const snapshot = await getDocs(q);
+      
+      if (!snapshot.empty) {
+        // Remove completion (uncomplete the challenge)
+        const docToDelete = snapshot.docs[0];
+        await deleteDoc(doc(db, 'challengeCompletions', docToDelete.id));
+        console.log(`Challenge ${challengeId} unmarked as completed`);
+      } else {
+        // Add completion (complete the challenge)
+        await addDoc(collection(db, 'challengeCompletions'), {
           challengeId,
           userName: currentUser,
-          deviceId: currentDeviceId
-        })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        // Reload completions to reflect the change
-        const completionsResponse = await fetch(`/api/challenges/completions/${currentUser}/${currentDeviceId}`);
-        if (completionsResponse.ok) {
-          const userCompletions = await completionsResponse.json();
-          setCompletions(userCompletions);
-        }
+          deviceId: currentDeviceId,
+          completedAt: new Date().toISOString()
+        });
+        console.log(`Challenge ${challengeId} marked as completed`);
       }
     } catch (error) {
       console.error('Error toggling challenge:', error);
@@ -718,7 +746,7 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                   }
                 } else if (isAdmin) {
                   // Allow admins to toggle completed challenges back to incomplete
-                  handleReactivateChallenge(challenge.id, currentUser, currentDeviceId);
+                  handleToggleChallenge(challenge.id);
                 }
               }}
             >
