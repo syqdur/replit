@@ -8,7 +8,7 @@ import {
   Gem, Diamond, Shirt, Building, Baby, Utensils, 
   Handshake, Palette, Volume2, ChefHat, Disc3, Play, Shuffle
 } from 'lucide-react';
-import { collection, doc, setDoc, getDocs, query, where, onSnapshot, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { getUserName, getDeviceId } from '../utils/deviceId';
 
@@ -22,7 +22,7 @@ interface Challenge {
   title: string;
   description: string;
   icon: React.ComponentType<any>;
-  category: 'ceremony' | 'reception' | 'fun' | 'group' | 'romantic';
+  category: 'reception' | 'fun' | 'group' | 'romantic';
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
@@ -35,21 +35,21 @@ interface ChallengeCompletion {
 }
 
 const defaultChallenges: Challenge[] = [
-  // Ceremony Challenges
+  // Reception Challenges
   {
-    id: 'bridal-shoes',
-    title: 'Die Brautschuhe',
-    description: 'Mache ein Foto von den eleganten Brautschuhen',
-    icon: Gem,
-    category: 'ceremony',
+    id: 'dance-floor-energy',
+    title: 'Tanzflächen-Power',
+    description: 'Fotografiere die ausgelassene Stimmung auf der Tanzfläche',
+    icon: Music,
+    category: 'reception',
     difficulty: 'easy'
   },
   {
-    id: 'ring-exchange',
-    title: 'Ringaustausch',
-    description: 'Halte den magischen Moment des Ringaustauschs fest',
-    icon: Diamond,
-    category: 'ceremony',
+    id: 'toast-moment',
+    title: 'Anstoß-Moment',
+    description: 'Halte einen besonderen Toast oder Anstoß fest',
+    icon: Wine,
+    category: 'reception',
     difficulty: 'medium'
   },
   {
@@ -57,23 +57,23 @@ const defaultChallenges: Challenge[] = [
     title: 'Das Brautkleid',
     description: 'Fotografiere das wunderschöne Brautkleid im Detail',
     icon: Crown,
-    category: 'ceremony',
+    category: 'reception',
     difficulty: 'easy'
   },
   {
-    id: 'ceremony-venue',
-    title: 'Trauungsort',
-    description: 'Mache ein Foto der gesamten Zeremonie-Location',
-    icon: Church,
-    category: 'ceremony',
+    id: 'party-venue',
+    title: 'Feier-Location',
+    description: 'Mache ein Foto der geschmückten Feier-Location',
+    icon: PartyPopper,
+    category: 'reception',
     difficulty: 'easy'
   },
   {
-    id: 'walking-aisle',
-    title: 'Gang zum Altar',
-    description: 'Fotografiere den Moment des Einzugs der Braut',
-    icon: Footprints,
-    category: 'ceremony',
+    id: 'dj-action',
+    title: 'DJ im Einsatz',
+    description: 'Fotografiere den DJ beim Auflegen',
+    icon: Disc3,
+    category: 'reception',
     difficulty: 'medium'
   },
   {
@@ -81,7 +81,7 @@ const defaultChallenges: Challenge[] = [
     title: 'Brautstrauß',
     description: 'Ein Detailfoto des Brautstraußes',
     icon: Flower,
-    category: 'ceremony',
+    category: 'reception',
     difficulty: 'easy'
   },
 
@@ -263,7 +263,6 @@ const defaultChallenges: Challenge[] = [
 ];
 
 const categoryColors = {
-  ceremony: 'from-purple-500 to-pink-500',
   reception: 'from-blue-500 to-cyan-500',
   fun: 'from-yellow-500 to-orange-500',
   group: 'from-green-500 to-emerald-500',
@@ -271,7 +270,6 @@ const categoryColors = {
 };
 
 const categoryNames = {
-  ceremony: 'Zeremonie',
   reception: 'Feier',
   fun: 'Spaß',
   group: 'Gruppe',
@@ -298,22 +296,29 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
   const [currentDeviceId] = useState(getDeviceId() || '');
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
+  const [leaderboardApiData, setLeaderboardApiData] = useState<Array<{ userName: string; deviceId: string; completedCount: number }>>([]);
 
-  // Load completions from Firebase
+  // Load completions from database API
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(db, 'challengeCompletions'),
-      (snapshot) => {
-        const completionData: ChallengeCompletion[] = [];
-        snapshot.forEach((doc) => {
-          completionData.push({ id: doc.id, ...doc.data() } as ChallengeCompletion);
-        });
-        setCompletions(completionData);
+    const loadCompletions = async () => {
+      try {
+        const response = await fetch(`/api/challenges/completions/${currentUser}/${currentDeviceId}`);
+        if (response.ok) {
+          const userCompletions = await response.json();
+          setCompletions(userCompletions);
+        }
+      } catch (error) {
+        console.error('Error loading challenge completions:', error);
       }
-    );
+    };
 
-    return () => unsubscribe();
-  }, []);
+    if (currentUser && currentDeviceId) {
+      loadCompletions();
+      // Refresh completions every 5 seconds to get updates
+      const interval = setInterval(loadCompletions, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [currentUser, currentDeviceId]);
 
   // Load user profiles for profile pictures
   useEffect(() => {
@@ -333,24 +338,51 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
     return () => unsubscribe();
   }, []);
 
-  const handleToggleChallenge = async (challengeId: string) => {
-    const existingCompletion = completions.find(
-      c => c.challengeId === challengeId && c.userName === currentUser && c.deviceId === currentDeviceId
-    );
+  // Load leaderboard data from API
+  useEffect(() => {
+    const loadLeaderboard = async () => {
+      try {
+        const response = await fetch('/api/challenges/leaderboard');
+        if (response.ok) {
+          const data = await response.json();
+          setLeaderboardApiData(data);
+        }
+      } catch (error) {
+        console.error('Error loading leaderboard:', error);
+      }
+    };
 
-    if (existingCompletion) {
-      // Remove completion
-      await deleteDoc(doc(db, 'challengeCompletions', existingCompletion.id));
-    } else {
-      // Add completion
-      const newCompletion: Omit<ChallengeCompletion, 'id'> = {
-        challengeId,
-        userName: currentUser,
-        deviceId: currentDeviceId,
-        completedAt: new Date().toISOString()
-      };
-      
-      await setDoc(doc(collection(db, 'challengeCompletions')), newCompletion);
+    loadLeaderboard();
+    // Refresh leaderboard every 10 seconds
+    const interval = setInterval(loadLeaderboard, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleToggleChallenge = async (challengeId: string) => {
+    try {
+      const response = await fetch('/api/challenges/toggle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          challengeId,
+          userName: currentUser,
+          deviceId: currentDeviceId
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        // Reload completions to reflect the change
+        const completionsResponse = await fetch(`/api/challenges/completions/${currentUser}/${currentDeviceId}`);
+        if (completionsResponse.ok) {
+          const userCompletions = await completionsResponse.json();
+          setCompletions(userCompletions);
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling challenge:', error);
     }
   };
 
@@ -378,48 +410,48 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
   const handleReactivateChallenge = async (challengeId: string, userName: string, deviceId: string) => {
     if (!isAdmin) return;
     
-    const existingCompletion = completions.find(
-      c => c.challengeId === challengeId && c.userName === userName && c.deviceId === deviceId
-    );
-    
-    if (existingCompletion) {
-      await deleteDoc(doc(db, 'challengeCompletions', existingCompletion.id));
+    try {
+      const response = await fetch('/api/challenges/toggle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          challengeId,
+          userName,
+          deviceId
+        })
+      });
+
+      if (response.ok) {
+        // Reload completions to reflect the change
+        const completionsResponse = await fetch(`/api/challenges/completions/${currentUser}/${currentDeviceId}`);
+        if (completionsResponse.ok) {
+          const userCompletions = await completionsResponse.json();
+          setCompletions(userCompletions);
+        }
+      }
+    } catch (error) {
+      console.error('Error reactivating challenge:', error);
     }
   };
 
-  // Get leaderboard data
+  // Transform API leaderboard data for display
   const getLeaderboardData = () => {
-    const userStats: { [key: string]: { name: string; completions: number; points: number; deviceId: string } } = {};
-    
-    completions.forEach(completion => {
-      const challenge = challenges.find(c => c.id === completion.challengeId);
-      if (!challenge) return;
-      
-      const userKey = `${completion.userName}-${completion.deviceId}`;
-      if (!userStats[userKey]) {
-        userStats[userKey] = {
-          name: completion.userName,
-          completions: 0,
-          points: 0,
-          deviceId: completion.deviceId
-        };
-      }
-      
-      userStats[userKey].completions++;
-      
-      // Point system based on difficulty
-      const points = challenge.difficulty === 'easy' ? 1 : challenge.difficulty === 'medium' ? 2 : 3;
-      userStats[userKey].points += points;
-    });
-    
-    return Object.values(userStats).sort((a, b) => b.points - a.points);
+    return leaderboardApiData.map(entry => ({
+      name: entry.userName,
+      completions: entry.completedCount,
+      points: entry.completedCount, // Simple 1:1 points for now, could be enhanced later
+      deviceId: entry.deviceId,
+      userName: entry.userName
+    }));
   };
 
   const filteredChallenges = selectedCategory === 'all' 
     ? challenges 
     : challenges.filter(challenge => challenge.category === selectedCategory);
 
-  const categories = ['all', ...Array.from(new Set(challenges.map(c => c.category)))];
+  const categories = ['all', 'reception', 'fun', 'group', 'romantic'];
 
   const completionPercentage = Math.round((getCompletedChallenges().length / challenges.length) * 100);
   
@@ -663,7 +695,11 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
           return (
             <div
               key={challenge.id}
-              className={`group relative p-4 sm:p-6 rounded-2xl backdrop-blur-xl transition-all duration-300 shadow-lg min-h-[160px] sm:min-h-[180px] flex flex-col cursor-pointer ${
+              className={`group relative rounded-2xl backdrop-blur-xl transition-all duration-500 shadow-lg flex flex-col cursor-pointer transform ${
+                isCompleted 
+                  ? 'p-2 sm:p-3 min-h-[80px] sm:min-h-[100px] scale-75 opacity-60' 
+                  : 'p-4 sm:p-6 min-h-[160px] sm:min-h-[180px] scale-100 opacity-100'
+              } ${
                 isDarkMode 
                   ? 'bg-white/10 border border-white/20 hover:bg-white/15 shadow-black/20' 
                   : 'bg-white/70 border border-white/40 hover:bg-white/85 shadow-gray-500/10'

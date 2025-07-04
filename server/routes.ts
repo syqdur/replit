@@ -155,11 +155,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ results: [] });
     }
   });
-  // put application routes here
-  // prefix all routes with /api
+  // Challenge completion routes
+  
+  // Get user's challenge completions
+  app.get('/api/challenges/completions/:userName/:deviceId', async (req, res) => {
+    try {
+      const { userName, deviceId } = req.params;
+      const completions = await storage.getUserChallengeCompletions(userName, deviceId);
+      res.json(completions);
+    } catch (error) {
+      console.error('Error fetching challenge completions:', error);
+      res.status(500).json({ error: 'Failed to fetch challenge completions' });
+    }
+  });
 
-  // use storage to perform CRUD operations on the storage interface
-  // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
+  // Toggle challenge completion
+  app.post('/api/challenges/toggle', async (req, res) => {
+    try {
+      const { challengeId, userName, deviceId } = req.body;
+      
+      if (!challengeId || !userName || !deviceId) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      const isCompleted = await storage.toggleChallengeCompletion(challengeId, userName, deviceId);
+      res.json({ completed: isCompleted });
+    } catch (error) {
+      console.error('Error toggling challenge completion:', error);
+      res.status(500).json({ error: 'Failed to toggle challenge completion' });
+    }
+  });
+
+  // Get challenge leaderboard
+  app.get('/api/challenges/leaderboard', async (req, res) => {
+    try {
+      const leaderboard = await storage.getChallengeLeaderboard();
+      res.json(leaderboard);
+    } catch (error) {
+      console.error('Error fetching challenge leaderboard:', error);
+      res.status(500).json({ error: 'Failed to fetch challenge leaderboard' });
+    }
+  });
 
   const httpServer = createServer(app);
 
