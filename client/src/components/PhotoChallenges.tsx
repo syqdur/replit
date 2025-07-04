@@ -297,6 +297,7 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
   const [currentUser] = useState(getUserName() || '');
   const [currentDeviceId] = useState(getDeviceId() || '');
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
 
   // Load completions from Firebase
   useEffect(() => {
@@ -308,6 +309,24 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
           completionData.push({ id: doc.id, ...doc.data() } as ChallengeCompletion);
         });
         setCompletions(completionData);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  // Load user profiles for profile pictures
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, 'userProfiles'),
+      (snapshot) => {
+        const profiles: {[key: string]: any} = {};
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const profileKey = `${data.userName}_${data.deviceId}`;
+          profiles[profileKey] = data;
+        });
+        setUserProfiles(profiles);
       }
     );
 
@@ -343,6 +362,12 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
 
   const getChallengeCompletionCount = (challengeId: string) => {
     return completions.filter(c => c.challengeId === challengeId).length;
+  };
+
+  const getUserProfilePicture = (userName: string, deviceId: string) => {
+    const profileKey = `${userName}_${deviceId}`;
+    const profile = userProfiles[profileKey];
+    return profile?.profilePicture || null;
   };
 
   const getCompletedChallenges = () => {
@@ -405,30 +430,24 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
       {/* Header */}
       <div className={`p-6 rounded-3xl transition-all duration-500 relative overflow-hidden ${
         isDarkMode 
-          ? 'bg-gradient-to-br from-purple-900/40 via-pink-900/30 to-rose-900/30 border border-purple-500/20 backdrop-blur-xl shadow-2xl shadow-purple-500/20' 
-          : 'bg-gradient-to-br from-purple-50/90 via-pink-50/80 to-rose-50/80 border border-purple-200/60 backdrop-blur-xl shadow-2xl shadow-purple-500/15'
+          ? 'bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl shadow-black/20' 
+          : 'bg-white/70 border border-white/40 backdrop-blur-xl shadow-2xl shadow-gray-500/10'
       }`}>
-        <div className="absolute inset-0 opacity-25">
-          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${
-            isDarkMode ? 'bg-gradient-to-br from-purple-500 to-pink-500' : 'bg-gradient-to-br from-purple-300 to-pink-300'
-          }`} style={{ transform: 'translate(50%, -50%)' }}></div>
-          <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
-            isDarkMode ? 'bg-gradient-to-br from-rose-500 to-red-500' : 'bg-gradient-to-br from-rose-300 to-red-300'
-          }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
-        </div>
 
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <div className={`w-16 h-16 p-3 rounded-2xl transition-all duration-300 shadow-lg ${
-                isDarkMode ? 'bg-gradient-to-br from-purple-600/40 to-pink-600/40 backdrop-blur-sm' : 'bg-gradient-to-br from-purple-100/80 to-pink-100/80 backdrop-blur-sm'
+                isDarkMode ? 'bg-white/10 border border-white/20 backdrop-blur-sm' : 'bg-white/60 border border-white/40 backdrop-blur-sm'
               }`}>
                 <Camera className={`w-full h-full transition-all duration-300 ${
-                  isDarkMode ? 'text-purple-300' : 'text-purple-600'
+                  isDarkMode ? 'text-white/80' : 'text-gray-700'
                 }`} />
               </div>
               <div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 bg-clip-text text-transparent">
+                <h3 className={`text-2xl font-bold ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>
                   Foto-Challenges
                 </h3>
                 <p className={`text-sm transition-colors duration-300 ${
@@ -439,10 +458,14 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
               </div>
             </div>
             <div className="text-right flex flex-col items-end gap-3">
-              <div className={`text-3xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent`}>
+              <div className={`text-3xl font-bold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
                 {completionPercentage}%
               </div>
-              <div className={`flex items-center gap-2 ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
+              <div className={`flex items-center gap-2 ${
+                isDarkMode ? 'text-white/80' : 'text-gray-700'
+              }`}>
                 <Trophy className="w-4 h-4" />
                 <span className="text-sm font-medium">Fortschritt</span>
               </div>
@@ -452,7 +475,9 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                 onClick={() => setShowLeaderboard(!showLeaderboard)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                   showLeaderboard
-                    ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg'
+                    ? isDarkMode
+                      ? 'bg-white/20 text-white border border-white/30 shadow-lg'
+                      : 'bg-gray-200 text-gray-900 border border-gray-300 shadow-lg'
                     : isDarkMode
                       ? 'bg-white/10 text-white/70 hover:bg-white/20 border border-white/20'
                       : 'bg-white/60 text-gray-700 hover:bg-white/80 border border-gray-200'
@@ -471,7 +496,9 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
             isDarkMode ? 'bg-white/10' : 'bg-gray-200/50'
           }`}>
             <div 
-              className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 ease-out"
+              className={`h-full transition-all duration-500 ease-out ${
+                isDarkMode ? 'bg-white/60' : 'bg-gray-500'
+              }`}
               style={{ width: `${completionPercentage}%` }}
             ></div>
           </div>
@@ -487,8 +514,8 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 whitespace-nowrap ${
               selectedCategory === category
                 ? isDarkMode
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                  : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                  ? 'bg-white/20 text-white border border-white/30 shadow-lg'
+                  : 'bg-gray-200 text-gray-900 border border-gray-300 shadow-lg'
                 : isDarkMode
                   ? 'bg-white/10 text-white/70 hover:bg-white/20'
                   : 'bg-white/60 text-gray-700 hover:bg-white/80'
@@ -503,19 +530,21 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
       {showLeaderboard && (
         <div className={`p-6 rounded-3xl backdrop-blur-xl border transition-all duration-500 ${
           isDarkMode 
-            ? 'bg-gradient-to-br from-yellow-900/40 via-orange-900/30 to-red-900/30 border-yellow-500/20 shadow-2xl shadow-yellow-500/20' 
-            : 'bg-gradient-to-br from-yellow-50/90 via-orange-50/80 to-red-50/80 border-yellow-200/60 shadow-2xl shadow-yellow-500/15'
+            ? 'bg-white/10 border-white/20 shadow-2xl shadow-black/20' 
+            : 'bg-white/70 border-white/40 shadow-2xl shadow-gray-500/10'
         }`}>
           <div className="flex items-center gap-4 mb-6">
             <div className={`w-12 h-12 p-2 rounded-2xl transition-all duration-300 shadow-lg ${
-              isDarkMode ? 'bg-gradient-to-br from-yellow-600/40 to-orange-600/40 backdrop-blur-sm' : 'bg-gradient-to-br from-yellow-100/80 to-orange-100/80 backdrop-blur-sm'
+              isDarkMode ? 'bg-white/10 border border-white/20 backdrop-blur-sm' : 'bg-white/60 border border-white/40 backdrop-blur-sm'
             }`}>
               <Trophy className={`w-full h-full transition-all duration-300 ${
-                isDarkMode ? 'text-yellow-300' : 'text-yellow-600'
+                isDarkMode ? 'text-white/80' : 'text-gray-700'
               }`} />
             </div>
             <div>
-              <h4 className="text-xl font-bold bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
+              <h4 className={`text-xl font-bold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
                 🏆 Bestenliste
               </h4>
               <p className={`text-sm transition-colors duration-300 ${
@@ -533,29 +562,51 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                   key={`${user.name}-${user.deviceId}`}
                   className={`flex items-center justify-between p-4 rounded-2xl backdrop-blur-sm transition-all duration-300 ${
                     index === 0
-                      ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 ring-2 ring-yellow-500/30'
+                      ? isDarkMode
+                        ? 'bg-white/15 border border-white/30'
+                        : 'bg-white/80 border border-white/50'
                       : index === 1
-                        ? 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 ring-2 ring-gray-400/30'
+                        ? isDarkMode
+                          ? 'bg-white/12 border border-white/25'
+                          : 'bg-white/70 border border-white/45'
                         : index === 2
-                          ? 'bg-gradient-to-r from-amber-600/20 to-yellow-600/20 ring-2 ring-amber-500/30'
+                          ? isDarkMode
+                            ? 'bg-white/10 border border-white/20'
+                            : 'bg-white/65 border border-white/40'
                           : isDarkMode
                             ? 'bg-white/5 border border-white/10'
                             : 'bg-white/60 border border-white/30'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
-                      index === 0
-                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
-                        : index === 1
-                          ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white'
-                          : index === 2
-                            ? 'bg-gradient-to-r from-amber-600 to-yellow-600 text-white'
-                            : isDarkMode
-                              ? 'bg-white/20 text-white'
-                              : 'bg-gray-200 text-gray-700'
-                    }`}>
-                      {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                    <div className="relative w-10 h-10 rounded-full">
+                      {getUserProfilePicture(user.name, user.deviceId || '') ? (
+                        <img
+                          src={getUserProfilePicture(user.name, user.deviceId || '')}
+                          alt={user.name}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+                          isDarkMode ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'
+                        }`}>
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      {/* Ranking badge overlay */}
+                      <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                        index === 0
+                          ? 'bg-yellow-500 text-white'
+                          : index === 1
+                            ? 'bg-gray-400 text-white'
+                            : index === 2
+                              ? 'bg-amber-600 text-white'
+                              : isDarkMode
+                                ? 'bg-white/20 text-white'
+                                : 'bg-gray-300 text-gray-700'
+                      }`}>
+                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                      </div>
                     </div>
                     <div>
                       <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -568,7 +619,7 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                   </div>
                   <div className="text-right">
                     <div className={`text-xl font-bold ${
-                      index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-500' : isDarkMode ? 'text-white' : 'text-gray-900'
+                      isDarkMode ? 'text-white' : 'text-gray-900'
                     }`}>
                       {user.points}
                     </div>
@@ -602,8 +653,8 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
         </div>
       )}
 
-      {/* Challenges Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {/* Challenges Grid - Mobile Optimized */}
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
         {filteredChallenges.map((challenge) => {
           const Icon = challenge.icon;
           const isCompleted = isChallengeCompleted(challenge.id);
@@ -612,76 +663,84 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
           return (
             <div
               key={challenge.id}
-              className={`group relative p-6 rounded-3xl backdrop-blur-xl transition-all duration-500 ${isAdmin || !isCompleted ? 'hover:scale-[1.03] cursor-pointer' : 'cursor-default'} shadow-2xl min-h-[280px] flex flex-col ${
+              className={`group relative p-4 sm:p-6 rounded-2xl backdrop-blur-xl transition-all duration-300 shadow-lg min-h-[160px] sm:min-h-[180px] flex flex-col cursor-pointer ${
                 isDarkMode 
                   ? 'bg-white/10 border border-white/20 hover:bg-white/15 shadow-black/20' 
                   : 'bg-white/70 border border-white/40 hover:bg-white/85 shadow-gray-500/10'
-              } ${isCompleted ? 'ring-3 ring-green-400/60 shadow-green-400/20' : ''}`}
+              } ${isCompleted ? 'ring-2 ring-green-400/60 shadow-green-400/20' : ''}`}
               onClick={() => {
-                if (isAdmin) {
-                  handleToggleChallenge(challenge.id);
-                } else if (!isCompleted) {
-                  // Guest confirmation for marking challenge as completed
-                  const confirmed = window.confirm(
-                    `Möchtest du die Challenge "${challenge.title}" als abgeschlossen markieren?\n\nDu kannst sie später nicht selbst wieder rückgängig machen.`
-                  );
-                  if (confirmed) {
+                if (!isCompleted) {
+                  if (isAdmin) {
                     handleToggleChallenge(challenge.id);
+                  } else {
+                    const confirmed = window.confirm(
+                      `Möchtest du die Challenge "${challenge.title}" als abgeschlossen markieren?\n\nDu kannst sie später nicht selbst wieder rückgängig machen.`
+                    );
+                    if (confirmed) {
+                      handleToggleChallenge(challenge.id);
+                    }
                   }
+                } else if (isAdmin) {
+                  // Allow admins to toggle completed challenges back to incomplete
+                  handleReactivateChallenge(challenge.id, currentUser, currentDeviceId);
                 }
               }}
             >
               <div className="flex items-start justify-between mb-4">
-                <div className={`relative p-4 rounded-2xl bg-gradient-to-br ${categoryColors[challenge.category]} shadow-lg backdrop-blur-sm group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon className="w-6 h-6 text-white drop-shadow-sm" />
-                  <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className={`relative p-1.5 sm:p-2 rounded-lg transition-transform duration-300 ${
+                  isDarkMode 
+                    ? 'bg-white/10 border border-white/20' 
+                    : 'bg-white/60 border border-white/40'
+                }`}>
+                  <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${
+                    isDarkMode ? 'text-white/80' : 'text-gray-700'
+                  }`} />
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   {completionCount > 0 && (
-                    <span className={`text-xs px-3 py-1.5 rounded-full backdrop-blur-md border font-medium ${
+                    <span className={`text-xs px-2 py-1 rounded-full backdrop-blur-md border font-medium ${
                       isDarkMode 
                         ? 'bg-white/15 border-white/20 text-white/80' 
                         : 'bg-white/50 border-white/60 text-gray-700'
                     }`}>
-                      {completionCount}x
+                      {completionCount}
                     </span>
                   )}
                   {isCompleted ? (
                     <div className="relative">
-                      <CheckCircle2 className="w-7 h-7 text-green-400 drop-shadow-md" />
-                      <div className="absolute inset-0 rounded-full bg-green-400/20 animate-pulse"></div>
+                      <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-green-400 drop-shadow-md" />
                     </div>
                   ) : (
-                    <Circle className={`w-7 h-7 transition-colors duration-300 ${
-                      isDarkMode ? 'text-white/40 group-hover:text-white/60' : 'text-gray-400 group-hover:text-gray-600'
+                    <Circle className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-300 ${
+                      isDarkMode ? 'text-white/40' : 'text-gray-400'
                     }`} />
                   )}
                 </div>
               </div>
 
-              <div className="flex-1">
-                <h4 className={`font-semibold mb-3 text-base leading-tight break-words ${
+              <div className="flex-1 space-y-3">
+                <h4 className={`font-semibold text-sm sm:text-base leading-tight ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>
                   {challenge.title}
                 </h4>
 
-                <p className={`text-sm mb-4 leading-relaxed break-words ${
+                <p className={`text-xs sm:text-sm leading-relaxed ${
                   isDarkMode ? 'text-white/70' : 'text-gray-600'
                 }`}>
                   {challenge.description}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between mt-auto gap-2">
-                <span className={`text-xs px-2 py-1 rounded-full backdrop-blur-md border font-medium transition-all duration-300 truncate max-w-[120px] ${
+              <div className="flex items-center justify-between mt-4 gap-2">
+                <span className={`text-xs px-2 py-1 rounded-full backdrop-blur-md border font-medium flex-shrink-0 ${
                   isDarkMode 
-                    ? 'bg-white/10 border-white/20 text-white/80 group-hover:bg-white/15' 
-                    : 'bg-white/40 border-white/50 text-gray-700 group-hover:bg-white/60'
+                    ? 'bg-white/10 border-white/20 text-white/80' 
+                    : 'bg-white/40 border-white/50 text-gray-700'
                 }`}>
                   {categoryNames[challenge.category]}
                 </span>
-                <span className={`text-xs font-bold px-2 py-1 rounded-full backdrop-blur-md border transition-all duration-300 truncate max-w-[80px] ${
+                <span className={`text-xs font-bold px-2 py-1 rounded-full backdrop-blur-md border flex-shrink-0 ${
                   challenge.difficulty === 'easy' 
                     ? 'bg-green-500/20 border-green-400/30 text-green-400' 
                     : challenge.difficulty === 'medium'
@@ -691,67 +750,6 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                   {difficultyNames[challenge.difficulty]}
                 </span>
               </div>
-
-              {/* Admin Controls */}
-              {isAdmin && isCompleted && (
-                <div className="mt-5 pt-5 border-t border-white/20">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleReactivateChallenge(challenge.id, currentUser, currentDeviceId);
-                    }}
-                    className={`w-full px-4 py-3 text-sm rounded-2xl backdrop-blur-md border transition-all duration-300 flex items-center justify-center gap-3 font-medium ${
-                      isDarkMode 
-                        ? 'bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 border-orange-400/40 hover:scale-105 shadow-lg' 
-                        : 'bg-orange-100/80 text-orange-700 hover:bg-orange-200/80 border-orange-300/50 hover:scale-105 shadow-lg'
-                    }`}
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                    <span>Reaktivieren</span>
-                  </button>
-                </div>
-              )}
-
-              {/* Show who completed this challenge */}
-              {isAdmin && completionCount > 0 && (
-                <div className="mt-3 pt-3 border-t border-white/10">
-                  <div className={`text-xs ${isDarkMode ? 'text-white/60' : 'text-gray-500'}`}>
-                    Abgeschlossen von:
-                  </div>
-                  <div className="mt-1 space-y-1">
-                    {completions
-                      .filter(c => c.challengeId === challenge.id)
-                      .slice(0, 3)
-                      .map((completion, idx) => (
-                        <div key={idx} className="flex items-center justify-between">
-                          <span className={`text-xs ${isDarkMode ? 'text-white/80' : 'text-gray-700'}`}>
-                            {completion.userName}
-                          </span>
-                          {isAdmin && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleReactivateChallenge(challenge.id, completion.userName, completion.deviceId);
-                              }}
-                              className={`px-2 py-1 text-xs rounded transition-colors ${
-                                isDarkMode 
-                                  ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30' 
-                                  : 'bg-red-100 text-red-600 hover:bg-red-200'
-                              }`}
-                            >
-                              <RotateCcw className="w-3 h-3" />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    {completionCount > 3 && (
-                      <div className={`text-xs ${isDarkMode ? 'text-white/50' : 'text-gray-400'}`}>
-                        +{completionCount - 3} weitere
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           );
         })}
@@ -765,9 +763,9 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
         }`}>
           <div className="relative mb-6">
             <Camera className={`w-20 h-20 mx-auto ${
-              isDarkMode ? 'text-purple-400' : 'text-purple-500'
+              isDarkMode ? 'text-white/60' : 'text-gray-500'
             }`} />
-            <div className="absolute inset-0 rounded-full bg-purple-500/10 animate-pulse"></div>
+            <div className="absolute inset-0 rounded-full bg-white/10 animate-pulse"></div>
           </div>
           <p className={`text-xl font-semibold ${
             isDarkMode ? 'text-white/90' : 'text-gray-800'
@@ -776,6 +774,8 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
           </p>
         </div>
       )}
+
+
     </div>
   );
 };
