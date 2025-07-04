@@ -189,6 +189,17 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
   const handleAddTrack = async (track: SpotifyTrack) => {
     if (isAddingTrack) return;
 
+    // Check if track is already in the playlist
+    const isTrackAlreadyInPlaylist = playlistTracks.some(playlistTrack => 
+      playlistTrack.track?.id === track.id
+    );
+
+    if (isTrackAlreadyInPlaylist) {
+      setError('Dieser Song ist bereits in der Playlist vorhanden.');
+      setTimeout(() => setError(null), 3000);
+      return;
+    }
+
     setIsAddingTrack(track.id);
     setError(null);
     setSyncStatus('syncing');
@@ -351,8 +362,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       {/* Compact Header */}
       <div className={`p-4 rounded-2xl transition-all duration-500 ${
         isDarkMode 
-          ? 'bg-gray-900/95 border border-green-500/30 backdrop-blur-sm shadow-xl shadow-green-500/10' 
-          : 'bg-white border border-green-200 backdrop-blur-sm shadow-lg shadow-green-100'
+          ? 'bg-green-900/20 border border-green-500/30 backdrop-blur-md shadow-xl shadow-green-500/10' 
+          : 'bg-green-50/80 border border-green-200 backdrop-blur-md shadow-lg shadow-green-100'
       }`}>
 
         <div className="flex items-center justify-between mb-4">
