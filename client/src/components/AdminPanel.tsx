@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Unlock, Settings, Download, Globe, Users, ExternalLink, Image, Video, MessageSquare, Gift, Heart, Star, Eye, Code, Music, Sparkles, Camera, LogOut, Target } from 'lucide-react';
+import { Lock, Unlock, Settings, Download, Globe, Users, ExternalLink, Image, Video, MessageSquare, Gift, Heart, Star, Eye, Code, Music, Sparkles, Camera, LogOut, Target, Clock } from 'lucide-react';
 import { MediaItem } from '../types';
 import { downloadAllMedia } from '../services/downloadService';
 import { SiteStatus, updateSiteStatus, updateFeatureToggles } from '../services/siteStatusService';
@@ -187,6 +187,50 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       );
     } catch (error) {
       alert('Fehler beim Aktualisieren der Challenges-Einstellung');
+    } finally {
+      setIsUpdatingFeatures(false);
+    }
+  };
+
+  const handleToggleTabLock = async () => {
+    if (!siteStatus) return;
+    
+    const newState = !siteStatus.tabsLockedUntilCountdown;
+    const confirmMessage = newState 
+      ? '🔒 Tabs bis zum Countdown-Ende sperren?\n\nAlle Tabs außer Timeline werden für Besucher gesperrt bis der Countdown abläuft.'
+      : '🔓 Tab-Sperre aufheben?\n\nAlle Tabs werden wieder für alle Besucher zugänglich.';
+
+    if (window.confirm(confirmMessage)) {
+      setIsUpdatingFeatures(true);
+      try {
+        await updateFeatureToggles(
+          { tabsLockedUntilCountdown: newState },
+          'Admin'
+        );
+        
+        const successMessage = newState
+          ? '🔒 Tab-Sperre bis Countdown-Ende wurde aktiviert!'
+          : '🔓 Tab-Sperre wurde aufgehoben!';
+        alert(successMessage);
+      } catch (error) {
+        alert('Fehler beim Aktualisieren der Tab-Sperre');
+      } finally {
+        setIsUpdatingFeatures(false);
+      }
+    }
+  };
+
+  const handleToggleAdminOverride = async () => {
+    if (!siteStatus) return;
+    
+    setIsUpdatingFeatures(true);
+    try {
+      await updateFeatureToggles(
+        { adminOverrideTabLock: !siteStatus.adminOverrideTabLock },
+        'Admin'
+      );
+    } catch (error) {
+      alert('Fehler beim Aktualisieren der Admin-Override-Einstellung');
     } finally {
       setIsUpdatingFeatures(false);
     }
@@ -398,6 +442,50 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               title={`Challenges ${siteStatus.challengesEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
               <Target className={`w-5 h-5 ${siteStatus.challengesEnabled ? 'text-orange-400' : 'text-gray-400'}`} />
+            </button>
+          )}
+
+          {/* Tab Lock Toggle */}
+          {siteStatus && (
+            <button
+              onClick={handleToggleTabLock}
+              disabled={isUpdatingFeatures}
+              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+                isUpdatingFeatures
+                  ? isDarkMode
+                    ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
+                    : 'bg-white/40 border-gray-200/30 cursor-not-allowed opacity-50'
+                  : isDarkMode
+                    ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-red-500/10'
+                    : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-red-500/10'
+              }`}
+              title={`Tab-Sperre bis Countdown ${siteStatus.tabsLockedUntilCountdown ? 'deaktivieren' : 'aktivieren'}`}
+            >
+              {siteStatus.tabsLockedUntilCountdown ? (
+                <Lock className="w-5 h-5 text-red-400" />
+              ) : (
+                <Unlock className="w-5 h-5 text-gray-400" />
+              )}
+            </button>
+          )}
+
+          {/* Admin Override Toggle */}
+          {siteStatus && siteStatus.tabsLockedUntilCountdown && (
+            <button
+              onClick={handleToggleAdminOverride}
+              disabled={isUpdatingFeatures}
+              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+                isUpdatingFeatures
+                  ? isDarkMode
+                    ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
+                    : 'bg-white/40 border-gray-200/30 cursor-not-allowed opacity-50'
+                  : isDarkMode
+                    ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-cyan-500/10'
+                    : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-cyan-500/10'
+              }`}
+              title={`Admin Override ${siteStatus.adminOverrideTabLock ? 'deaktivieren' : 'aktivieren'}`}
+            >
+              <Settings className={`w-5 h-5 ${siteStatus.adminOverrideTabLock ? 'text-cyan-400' : 'text-gray-400'}`} />
             </button>
           )}
 

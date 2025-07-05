@@ -146,8 +146,6 @@ export const updateSiteStatus = async (
         musicWishlistEnabled: data.musicWishlistEnabled ?? true,
         storiesEnabled: data.storiesEnabled ?? true,
         challengesEnabled: data.challengesEnabled ?? true,
-        tabsLockedUntilCountdown: data.tabsLockedUntilCountdown ?? false,
-        adminOverrideTabLock: data.adminOverrideTabLock ?? false,
         lastUpdated: data.lastUpdated ?? new Date().toISOString(),
         updatedBy: data.updatedBy ?? 'system'
       };
@@ -158,8 +156,6 @@ export const updateSiteStatus = async (
         musicWishlistEnabled: true,
         storiesEnabled: true,
         challengesEnabled: true,
-        tabsLockedUntilCountdown: false,
-        adminOverrideTabLock: false,
         lastUpdated: new Date().toISOString(),
         updatedBy: 'system'
       };
@@ -181,7 +177,7 @@ export const updateSiteStatus = async (
 
 // Update feature toggles (admin only)
 export const updateFeatureToggles = async (
-  toggles: Partial<Pick<SiteStatus, 'galleryEnabled' | 'musicWishlistEnabled' | 'storiesEnabled' | 'challengesEnabled' | 'tabsLockedUntilCountdown' | 'adminOverrideTabLock'>>,
+  toggles: Partial<Pick<SiteStatus, 'galleryEnabled' | 'musicWishlistEnabled' | 'storiesEnabled' | 'challengesEnabled'>>,
   adminName: string
 ): Promise<void> => {
   try {
@@ -197,8 +193,6 @@ export const updateFeatureToggles = async (
         musicWishlistEnabled: data.musicWishlistEnabled ?? true,
         storiesEnabled: data.storiesEnabled ?? true,
         challengesEnabled: data.challengesEnabled ?? true,
-        tabsLockedUntilCountdown: data.tabsLockedUntilCountdown ?? false,
-        adminOverrideTabLock: data.adminOverrideTabLock ?? false,
         lastUpdated: data.lastUpdated ?? new Date().toISOString(),
         updatedBy: data.updatedBy ?? 'system'
       };
@@ -209,8 +203,6 @@ export const updateFeatureToggles = async (
         musicWishlistEnabled: true,
         storiesEnabled: true,
         challengesEnabled: true,
-        tabsLockedUntilCountdown: false,
-        adminOverrideTabLock: false,
         lastUpdated: new Date().toISOString(),
         updatedBy: 'system'
       };

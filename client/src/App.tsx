@@ -113,6 +113,13 @@ function App() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [showAdminMenu, setShowAdminMenu] = useState(false);
 
+  // Helper function to check if countdown is active
+  const isCountdownActive = () => {
+    // For now, return false since we need to integrate with ProfileData
+    // This will be updated when countdown integration is complete
+    return false;
+  };
+
   // Check if we're on the Spotify callback page
   const isSpotifyCallback = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -961,6 +968,10 @@ function App() {
           galleryEnabled={siteStatus?.galleryEnabled ?? true}
           musicWishlistEnabled={siteStatus?.musicWishlistEnabled ?? true}
           challengesEnabled={siteStatus?.challengesEnabled ?? true}
+          isCountdownActive={isCountdownActive()}
+          tabsLockedUntilCountdown={siteStatus?.tabsLockedUntilCountdown ?? false}
+          adminOverrideTabLock={siteStatus?.adminOverrideTabLock ?? false}
+          isAdmin={isAdmin}
         />
 
         {/* Tab Content */}

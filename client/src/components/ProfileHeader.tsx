@@ -50,7 +50,11 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
     }
 
     const updateCountdown = () => {
+      if (!profileData?.countdownDate) return;
+      
       const target = new Date(profileData.countdownDate);
+      if (isNaN(target.getTime())) return; // Invalid date check
+      
       const now = new Date();
       const difference = target.getTime() - now.getTime();
 
@@ -241,34 +245,6 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
         </div>
        
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className={`font-bold text-lg tracking-tight transition-colors duration-300 ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}>
-              {profileData?.name || 'Kristin & Maurizio 💕'}
-            </h3>
-          </div>
-          <p className={`text-sm transition-colors duration-300 ${
-            isDarkMode ? 'text-gray-300' : 'text-gray-600'
-          }`}>
-            {profileData?.bio || (
-              <>
-                Wir sagen JA! ✨<br/>
-                12.07.2025 - Der schönste Tag unseres Lebens 💍<br/>
-                Teilt eure Lieblingsmomente mit uns! 📸<br/>
-                #MaurizioUndKristin #Hochzeit2025 #FürImmer
-              </>
-            )}
-            <br/>
-            <span className={`inline-block mt-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${
-              isDarkMode 
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25' 
-                : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25'
-            }`}>
-              💻 coded by Mauro
-            </span>
-          </p>
-
           {/* Countdown Display - Instagram 2.0 Style */}
           {countdown && (
             <div className={`mt-6 p-8 rounded-3xl transition-all duration-500 relative overflow-hidden ${
